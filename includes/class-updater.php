@@ -22,7 +22,7 @@ defined( 'ABSPATH' ) || exit;
  */
 class Updater {
 
-	const DEFAULT_REPO = 'pyordanovdev/otkazpro';
+	const DEFAULT_REPO = 'Project-Yordanov/otkazpro';
 	const SLUG         = 'otkazpro';
 	const CACHE_KEY    = 'py_otkaz_release';
 
@@ -216,7 +216,7 @@ class Updater {
 	 * @return bool|\WP_Error|string
 	 */
 	public static function download( $reply, $package, $upgrader = null, $hook_extra = array() ) {
-		if ( false !== $reply || 0 !== strpos( (string) $package, 'https://api.github.com/repos/' . self::repo() . '/' ) ) {
+		if ( false !== $reply || 0 !== stripos( (string) $package, 'https://api.github.com/repos/' . self::repo() . '/' ) ) {
 			return $reply;
 		}
 

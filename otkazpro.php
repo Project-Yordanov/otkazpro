@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name:       OtkazPro – Бутон за отказ от договор
- * Plugin URI:        https://github.com/pyordanovdev/otkazpro
+ * Plugin URI:        https://github.com/Project-Yordanov/otkazpro
  * Description:       Онлайн функция за отказ от договор (чл. 52а ЗЗП / Директива (ЕС) 2023/2673) за WooCommerce: бутон „Откажете се от договора тук“, двустъпкова форма, частичен отказ, потвърждение на траен носител и регистър на изявленията.
  * Version:           1.0.0
  * Requires at least: 6.4
@@ -13,7 +13,7 @@
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain:       otkazpro
  * Domain Path:       /languages
- * Update URI:        https://github.com/pyordanovdev/otkazpro
+ * Update URI:        https://github.com/Project-Yordanov/otkazpro
  * WC requires at least: 8.0
  * WC tested up to:   11.2
  *

@@ -100,7 +100,7 @@ Override в темата: `wp-content/themes/<тема>/woocommerce/otkazpro/` �
 
 ## Обновления (GitHub Releases)
 
-1. Repo: `pyordanovdev/otkazpro` (private), вписано в `includes/class-updater.php` → `DEFAULT_REPO`. Ако repo-то се премести (напр. в организация), сменете `DEFAULT_REPO` или задайте `PY_OTKAZ_UPDATE_REPO` в `wp-config.php`.
+1. Repo: `Project-Yordanov/otkazpro` (private), вписано в `includes/class-updater.php` → `DEFAULT_REPO`. Ако repo-то се премести (напр. в организация), сменете `DEFAULT_REPO` или задайте `PY_OTKAZ_UPDATE_REPO` в `wp-config.php`.
    Всеки клиентски сайт има нужда от read-only токен в `wp-config.php` (repo-то е private):
    ```php
    define( 'PY_OTKAZ_GITHUB_TOKEN', 'github_pat_…' ); // fine-grained token, само за otkazpro, „Contents: Read-only“
