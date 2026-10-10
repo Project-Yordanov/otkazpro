@@ -100,11 +100,7 @@ Override в темата: `wp-content/themes/<тема>/woocommerce/otkazpro/` �
 
 ## Обновления (GitHub Releases)
 
-1. Repo: `Project-Yordanov/otkazpro` (private), вписано в `includes/class-updater.php` → `DEFAULT_REPO`. Ако repo-то се премести (напр. в организация), сменете `DEFAULT_REPO` или задайте `PY_OTKAZ_UPDATE_REPO` в `wp-config.php`.
-   Всеки клиентски сайт има нужда от read-only токен в `wp-config.php` (repo-то е private):
-   ```php
-   define( 'PY_OTKAZ_GITHUB_TOKEN', 'github_pat_…' ); // fine-grained token, само за otkazpro, „Contents: Read-only“
-   ```
+1. Repo: `Project-Yordanov/otkazpro` (**public**), вписано в `includes/class-updater.php` → `DEFAULT_REPO`. Сайтовете не се нуждаят от настройка или токен – изтеглят `otkazpro.zip` директно от публичния release. Ако repo-то някога стане private, всеки сайт ще има нужда от read-only токен: `define( 'PY_OTKAZ_GITHUB_TOKEN', 'github_pat_…' );` в `wp-config.php`.
 2. Вдигнете версията в `otkazpro.php` (хедър `Version` и `PY_OTKAZ_VERSION`), commit, `git tag v1.0.1 && git push --tags`.
 3. GitHub Action `.github/workflows/release.yml` проверява версията, lint-ва, build-ва и прикачва `otkazpro.zip` към release-а. Сайтовете виждат обновлението в Табло → Обновления (проверка на 6 ч).
 
