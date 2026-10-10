@@ -1,0 +1,50 @@
+# Builds otkazpro.zip and attaches it to the GitHub release when a tag v*.*.* is pushed.
+# Client sites pick the release up through the built-in updater (see README → Updates).
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+
+      - name: Check version matches tag
+        run: |
+          TAG="${GITHUB_REF_NAME#v}"
+          HEADER=$(grep -m1 -E '^\s*\*\s*Version:' otkazpro.php | awk '{print $3}')
+          CONST=$(grep -m1 "PY_OTKAZ_VERSION'" otkazpro.php | sed -E "s/.*'([0-9.]+)'.*/\1/")
+          echo "tag=$TAG header=$HEADER const=$CONST"
+          test "$TAG" = "$HEADER" && test "$TAG" = "$CONST"
+
+      - name: Lint PHP
+        run: find . -name '*.php' -not -path './.git/*' -print0 | xargs -0 -n1 php -l
+
+      - name: Build (minify CSS, translations)
+        run: php bin/build.php
+
+      - name: Package
+        run: |
+          mkdir -p dist/otkazpro
+          git archive HEAD | tar -x -C dist/otkazpro
+          # Built artefacts may be newer than the committed ones.
+          cp assets/css/otkazpro.min.css dist/otkazpro/assets/css/
+          cp languages/* dist/otkazpro/languages/
+          cd dist && zip -rq otkazpro.zip otkazpro
+
+      - name: Publish release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/otkazpro.zip
+          generate_release_notes: true
