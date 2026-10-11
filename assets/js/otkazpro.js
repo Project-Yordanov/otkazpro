@@ -109,7 +109,15 @@
 
 			var focus = root.querySelector('[data-py-focus]');
 			if (focus) {
-				focus.focus({ preventScroll: false });
+				// Page builders may keep the content hidden while an entrance animation runs.
+				var tries = 0;
+				var tryFocus = function () {
+					focus.focus({ preventScroll: false });
+					if (document.activeElement !== focus && tries++ < 10) {
+						setTimeout(tryFocus, 300);
+					}
+				};
+				tryFocus();
 			}
 
 			each(root.querySelectorAll('[data-py-print]'), function (btn) {

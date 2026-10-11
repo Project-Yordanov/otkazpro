@@ -20,6 +20,8 @@ class Emails {
 	public static function init() {
 		add_filter( 'woocommerce_email_classes', array( __CLASS__, 'register' ) );
 		add_action( 'woocommerce_email_after_order_table', array( __CLASS__, 'order_email_link' ), 20, 4 );
+		// Runs after email customizers (VillaTheme uses 999) have built the final message.
+		add_filter( 'woocommerce_mail_callback_params', array( __CLASS__, 'ensure_link_in_message' ), PHP_INT_MAX - 10, 2 );
 	}
 
 	/**
@@ -105,7 +107,7 @@ class Emails {
 	}
 
 	/**
-	 * Link block in WooCommerce customer order emails.
+	 * Link block in WooCommerce customer order emails (standard template hook).
 	 *
 	 * @param \WC_Order $order         Order.
 	 * @param bool      $sent_to_admin Admin email.
@@ -113,26 +115,87 @@ class Emails {
 	 * @param \WC_Email $email         Email.
 	 */
 	public static function order_email_link( $order, $sent_to_admin = false, $plain_text = false, $email = null ) {
-		if ( $sent_to_admin || ! $order instanceof \WC_Order || ! $email instanceof \WC_Email ) {
+		if ( $sent_to_admin ) {
 			return;
+		}
+		echo self::link_block( $order, $email, (bool) $plain_text ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped in link_block().
+	}
+
+	/**
+	 * Fallback for email customizers (VillaTheme, YayMail, Kadence…) that replace the
+	 * WooCommerce templates without firing woocommerce_email_after_order_table:
+	 * append the block to the final message if it is not there yet.
+	 *
+	 * @param array     $params [to, subject, message, headers, attachments].
+	 * @param \WC_Email $email  Email.
+	 * @return array
+	 */
+	public static function ensure_link_in_message( $params, $email = null ) {
+		if ( ! $email instanceof \WC_Email || ! isset( $params[2] ) || ! is_string( $params[2] ) ) {
+			return $params;
+		}
+		if ( ! apply_filters( 'py_otkaz_email_link_fallback', true, $email ) ) {
+			return $params;
+		}
+		$order = $email->object;
+		if ( ! $order instanceof \WC_Order ) {
+			return $params;
+		}
+		$plain   = 'plain' === $email->get_email_type();
+		$message = $params[2];
+		$url     = Form::order_url( $order, I18n::order_language( $order ) );
+		if ( false !== strpos( $message, 'py-otkaz-email-link' ) || false !== strpos( $message, esc_url( $url ) ) || false !== strpos( $message, $url ) ) {
+			return $params;
+		}
+		$block = self::link_block( $order, $email, $plain );
+		if ( '' === $block ) {
+			return $params;
+		}
+		if ( $plain ) {
+			$params[2] = rtrim( $message ) . "
+
+" . trim( $block ) . "
+";
+			return $params;
+		}
+		$block = '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;"><tr><td align="center" style="padding:16px 12px;"><table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;width:100%;"><tr><td style="font-family:Helvetica,Arial,sans-serif;font-size:14px;line-height:1.5;color:#333333;">' . $block . '</td></tr></table></td></tr></table>';
+		$pos   = strripos( $message, '</body>' );
+		$params[2] = false === $pos ? $message . $block : substr( $message, 0, $pos ) . $block . substr( $message, $pos );
+		return $params;
+	}
+
+	/**
+	 * The link block markup (or '' when not applicable).
+	 *
+	 * @param \WC_Order      $order Order.
+	 * @param \WC_Email|null $email Email.
+	 * @param bool           $plain Plain text.
+	 * @return string
+	 */
+	public static function link_block( $order, $email, $plain = false ) {
+		if ( ! $order instanceof \WC_Order || ! $email instanceof \WC_Email ) {
+			return '';
 		}
 		if ( ! in_array( $email->id, (array) Settings::get( 'email_link_emails' ), true ) ) {
-			return;
+			return '';
 		}
 		if ( ! Order_Data::has_selectable_items( $order ) ) {
-			return;
+			return '';
 		}
 
 		$url   = Form::order_url( $order, I18n::order_language( $order ) );
 		$label = Settings::text( 'text_start_button' );
 		$intro = __( 'You can withdraw from the contract within 14 days of receiving the goods, without giving a reason:', 'otkazpro' );
 
-		if ( $plain_text ) {
-			echo "\n" . esc_html( wp_strip_all_tags( $intro ) ) . "\n" . esc_html( $label ) . ': ' . esc_url_raw( $url ) . "\n\n";
-			return;
+		if ( $plain ) {
+			return "
+" . esc_html( wp_strip_all_tags( $intro ) ) . "
+" . esc_html( $label ) . ': ' . esc_url_raw( $url ) . "
+
+";
 		}
 
-		printf(
+		return sprintf(
 			'<div class="py-otkaz-email-link" style="margin:0 0 24px;padding:12px 16px;border:1px solid #e5e5e5;border-radius:4px;"><p style="margin:0 0 6px;">%1$s</p><p style="margin:0;"><a href="%2$s" style="font-weight:600;text-decoration:underline;">%3$s</a></p></div>',
 			esc_html( $intro ),
 			esc_url( $url ),

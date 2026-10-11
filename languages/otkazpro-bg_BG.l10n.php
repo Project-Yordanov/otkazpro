@@ -1,6 +1,6 @@
 <?php
 return array (
-  'project-id-version' => 'OtkazPro 1.0.1',
+  'project-id-version' => 'OtkazPro 1.0.3',
   'domain' => 'otkazpro',
   'language' => 'bg_BG',
   'plural-forms' => 'nplurals=2; plural=(n != 1);',

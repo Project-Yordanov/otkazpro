@@ -253,7 +253,8 @@ class Updater {
 	}
 
 	/**
-	 * Rename "owner-repo-hash/" (zipball) to "otkazpro/".
+	 * Install the update into the folder the plugin already lives in (e.g. "otkazpro" or
+	 * "otkazpro-main" when installed from a GitHub source zip), so it stays active.
 	 *
 	 * @param string       $source        Extracted source.
 	 * @param string       $remote_source Remote source dir.
@@ -266,7 +267,8 @@ class Updater {
 		if ( empty( $hook_extra['plugin'] ) || PY_OTKAZ_BASENAME !== $hook_extra['plugin'] ) {
 			return $source;
 		}
-		$wanted = trailingslashit( $remote_source ) . self::SLUG . '/';
+		$folder = dirname( PY_OTKAZ_BASENAME );
+		$wanted = trailingslashit( $remote_source ) . ( '.' !== $folder && '' !== $folder ? $folder : self::SLUG ) . '/';
 		if ( untrailingslashit( $source ) === untrailingslashit( $wanted ) ) {
 			return $source;
 		}
