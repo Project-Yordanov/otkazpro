@@ -14,7 +14,7 @@ defined( 'ABSPATH' ) || exit;
  */
 class Settings {
 
-	const TAB    = 'py_otkaz';
+	const TAB    = 'otkazpro';
 	const PREFIX = 'py_otkaz_';
 
 	/**

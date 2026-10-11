@@ -130,6 +130,13 @@ class Install {
 			return;
 		}
 
+		// Reuse an existing page (e.g. after uninstall + reinstall) instead of creating a duplicate.
+		$existing = self::find_existing_page();
+		if ( $existing ) {
+			update_option( Settings::PREFIX . 'page_id', $existing );
+			return;
+		}
+
 		$page_id = wp_insert_post(
 			array(
 				'post_type'      => 'page',
@@ -145,5 +152,33 @@ class Install {
 		if ( $page_id && ! is_wp_error( $page_id ) ) {
 			update_option( Settings::PREFIX . 'page_id', (int) $page_id );
 		}
+	}
+
+	/**
+	 * The oldest non-trashed page that already contains the form shortcode (new or legacy).
+	 *
+	 * @return int Page ID or 0.
+	 */
+	private static function find_existing_page() {
+		$found = array();
+		foreach ( array( Form::SHORTCODE, Form::LEGACY_SHORTCODE ) as $shortcode ) {
+			$ids = get_posts(
+				array(
+					'post_type'      => 'page',
+					'post_status'    => array( 'publish', 'draft', 'private', 'pending' ),
+					's'              => '[' . $shortcode . ']',
+					'fields'         => 'ids',
+					'posts_per_page' => 5,
+					'orderby'        => 'ID',
+					'order'          => 'ASC',
+				)
+			);
+			foreach ( $ids as $id ) {
+				if ( has_shortcode( (string) get_post_field( 'post_content', $id ), $shortcode ) ) {
+					$found[] = (int) $id;
+				}
+			}
+		}
+		return $found ? min( $found ) : 0;
 	}
 }
