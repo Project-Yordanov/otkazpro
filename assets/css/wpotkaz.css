@@ -1,4 +1,4 @@
-/* OtkazPro – withdrawal form. Neutral, inherits theme font; accent via --py-otkaz-accent only. */
+/* WPOtkaz – withdrawal form. Neutral, inherits theme font; accent via --py-otkaz-accent only. */
 .py-otkaz{--py-otkaz-line:#d6d6d6;--py-otkaz-muted:#5c5c5c;--py-otkaz-soft:#f6f6f6;--py-otkaz-err:#b3261e;--py-otkaz-warn:#8a4b00;--py-otkaz-ok:#1d6b35;max-width:720px;margin:0 auto 2em;font:inherit;color:inherit;line-height:1.5}
 .py-otkaz *,.py-otkaz *::before,.py-otkaz *::after{box-sizing:border-box}
 .py-otkaz .screen-reader-text{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(1px,1px,1px,1px);white-space:nowrap}
@@ -91,6 +91,6 @@
 .py-otkaz__statement{margin:0 0 1.5em;padding:12px 16px;border-left:3px solid var(--py-otkaz-line);background:var(--py-otkaz-soft);font-style:normal}
 /* My account */
 .py-otkaz-account{margin:2em 0}
-.woocommerce-orders-table .button.otkazpro{white-space:normal}
+.woocommerce-orders-table .button.wpotkaz{white-space:normal}
 @media print{.py-otkaz__steps,.py-otkaz__actions{display:none}}
 @media (prefers-reduced-motion:reduce){.py-otkaz *{transition:none!important}}

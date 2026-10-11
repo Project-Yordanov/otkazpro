@@ -16,22 +16,22 @@ if ( PHP_SAPI !== 'cli' ) {
 $root = dirname( __DIR__ );
 
 // 1. CSS → .min.css.
-$css = file_get_contents( $root . '/assets/css/otkazpro.css' );
+$css = file_get_contents( $root . '/assets/css/wpotkaz.css' );
 $css = preg_replace( '#/\*.*?\*/#s', '', $css );
 $css = preg_replace( '/\s+/', ' ', $css );
 $css = preg_replace( '/\s*([{}:;,>])\s*/', '$1', $css );
 $css = str_replace( ';}', '}', trim( $css ) );
 // Restore spaces required inside media queries ("and (").
 $css = str_replace( 'and(', 'and (', $css );
-file_put_contents( $root . '/assets/css/otkazpro.min.css', $css );
+file_put_contents( $root . '/assets/css/wpotkaz.min.css', $css );
 printf( "CSS: %d bytes (gzip %d)\n", strlen( $css ), strlen( gzencode( $css, 9 ) ) );
 
 // 2. Translations.
 $version = '';
-if ( preg_match( '/^\s*\*\s*Version:\s*(\S+)/mi', file_get_contents( $root . '/otkazpro.php' ), $m ) ) {
+if ( preg_match( '/^\s*\*\s*Version:\s*(\S+)/mi', file_get_contents( $root . '/wpotkaz.php' ), $m ) ) {
 	$version = $m[1];
 }
-$tmp = sys_get_temp_dir() . '/otkazpro-strings.json';
+$tmp = sys_get_temp_dir() . '/wpotkaz-strings.json';
 passthru( escapeshellarg( PHP_BINARY ) . ' ' . escapeshellarg( __DIR__ . '/i18n/extract.php' ) . ' ' . escapeshellarg( $root ) . ' ' . escapeshellarg( $tmp ), $code );
 if ( $code ) {
 	exit( $code );

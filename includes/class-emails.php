@@ -64,7 +64,7 @@ class Emails {
 		$sent = (bool) $admin->trigger( $submission, $order );
 		$submission->update_email_status( '', $sent ? 'sent' : 'failed' );
 		if ( ! $sent ) {
-			wc_get_logger()->error( sprintf( 'Store notification for %s could not be sent.', $submission->number ), array( 'source' => 'otkazpro' ) );
+			wc_get_logger()->error( sprintf( 'Store notification for %s could not be sent.', $submission->number ), array( 'source' => 'wpotkaz' ) );
 		}
 	}
 
@@ -94,7 +94,7 @@ class Emails {
 		if ( ! $sent ) {
 			wc_get_logger()->error(
 				sprintf( 'Withdrawal confirmation %s could not be sent to %s (wp_mail returned false).', $submission->number, $submission->email ),
-				array( 'source' => 'otkazpro' )
+				array( 'source' => 'wpotkaz' )
 			);
 			/**
 			 * Fires when the customer confirmation email fails.
@@ -185,7 +185,7 @@ class Emails {
 
 		$url   = Form::order_url( $order, I18n::order_language( $order ) );
 		$label = Settings::text( 'text_start_button' );
-		$intro = __( 'You can withdraw from the contract within 14 days of receiving the goods, without giving a reason:', 'otkazpro' );
+		$intro = __( 'You can withdraw from the contract within 14 days of receiving the goods, without giving a reason:', 'wpotkaz' );
 
 		if ( $plain ) {
 			return "

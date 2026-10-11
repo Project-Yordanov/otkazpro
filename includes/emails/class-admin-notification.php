@@ -22,8 +22,8 @@ class Admin_Notification extends Base {
 	public function __construct() {
 		$this->id             = 'py_otkaz_admin_new';
 		$this->customer_email = false;
-		$this->title          = __( 'New withdrawal', 'otkazpro' );
-		$this->description    = __( 'Sent to the store when a customer submits a withdrawal statement. Recipients are set in WooCommerce → Settings → Withdrawal.', 'otkazpro' );
+		$this->title          = __( 'New withdrawal', 'wpotkaz' );
+		$this->description    = __( 'Sent to the store when a customer submits a withdrawal statement. Recipients are set in WooCommerce → Settings → Withdrawal.', 'wpotkaz' );
 		$this->template_html  = 'emails/admin-new-otkaz.php';
 		$this->template_plain = 'emails/plain/admin-new-otkaz.php';
 		$this->setup_base();
@@ -37,7 +37,7 @@ class Admin_Notification extends Base {
 	 * @return string
 	 */
 	public function get_default_subject() {
-		return __( '[{site_title}] New withdrawal {otkaz_number} – order #{order_number}', 'otkazpro' );
+		return __( '[{site_title}] New withdrawal {otkaz_number} – order #{order_number}', 'wpotkaz' );
 	}
 
 	/**
@@ -46,7 +46,7 @@ class Admin_Notification extends Base {
 	 * @return string
 	 */
 	public function get_default_heading() {
-		return __( 'New withdrawal from contract', 'otkazpro' );
+		return __( 'New withdrawal from contract', 'wpotkaz' );
 	}
 
 	/**
@@ -55,7 +55,7 @@ class Admin_Notification extends Base {
 	 * @return string
 	 */
 	public function get_default_additional_content() {
-		return __( 'Refund the payments received, including standard delivery costs, without undue delay and not later than 14 days from today. You may withhold the refund until you have received the goods back or proof of sending.', 'otkazpro' );
+		return __( 'Refund the payments received, including standard delivery costs, without undue delay and not later than 14 days from today. You may withhold the refund until you have received the goods back or proof of sending.', 'wpotkaz' );
 	}
 
 	/**

@@ -31,11 +31,11 @@ class Account {
 	 */
 	public static function orders_action( $actions, $order ) {
 		if ( $order instanceof \WC_Order && Order_Data::has_selectable_items( $order ) ) {
-			$actions['otkazpro'] = array(
+			$actions['wpotkaz'] = array(
 				'url'        => Form::order_url( $order, I18n::current_language() ),
 				'name'       => Settings::text( 'text_start_button' ),
 				/* translators: %s: order number */
-				'aria-label' => sprintf( __( 'Withdraw from the contract for order #%s', 'otkazpro' ), $order->get_order_number() ),
+				'aria-label' => sprintf( __( 'Withdraw from the contract for order #%s', 'wpotkaz' ), $order->get_order_number() ),
 			);
 		}
 		return $actions;
@@ -62,7 +62,7 @@ class Account {
 		Form::enqueue_assets();
 		?>
 		<section class="py-otkaz-account">
-			<h2><?php esc_html_e( 'Withdrawal from contract', 'otkazpro' ); ?></h2>
+			<h2><?php esc_html_e( 'Withdrawal from contract', 'wpotkaz' ); ?></h2>
 			<?php if ( $history ) : ?>
 				<ul>
 					<?php foreach ( $history as $entry ) : ?>
@@ -71,7 +71,7 @@ class Account {
 							echo esc_html(
 								sprintf(
 									/* translators: 1: statement number, 2: date */
-									__( 'Withdrawal %1$s submitted on %2$s', 'otkazpro' ),
+									__( 'Withdrawal %1$s submitted on %2$s', 'wpotkaz' ),
 									$entry['number'],
 									Util::format_gmt( $entry['date_gmt'], 'datetime' )
 								)
@@ -82,7 +82,7 @@ class Account {
 				</ul>
 			<?php endif; ?>
 			<?php if ( $selectable ) : ?>
-				<p><?php esc_html_e( 'You can withdraw from the contract online without giving a reason.', 'otkazpro' ); ?></p>
+				<p><?php esc_html_e( 'You can withdraw from the contract online without giving a reason.', 'wpotkaz' ); ?></p>
 				<p><a class="button py-otkaz-account__btn" href="<?php echo esc_url( Form::order_url( $order, I18n::current_language() ) ); ?>"><?php echo esc_html( Settings::text( 'text_start_button' ) ); ?></a></p>
 			<?php endif; ?>
 		</section>

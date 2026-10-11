@@ -286,7 +286,7 @@ class Submission {
 		$parts = array();
 		foreach ( $this->items as $item ) {
 			/* translators: 1: product name, 2: quantity */
-			$parts[] = sprintf( __( '%1$s × %2$d', 'otkazpro' ), $item['name'], (int) $item['qty'] );
+			$parts[] = sprintf( __( '%1$s × %2$d', 'wpotkaz' ), $item['name'], (int) $item['qty'] );
 		}
 		return implode( $sep, $parts );
 	}
@@ -311,7 +311,7 @@ class Submission {
 		$items = array();
 		foreach ( $vars['items'] as $item ) {
 			/* translators: 1: product name, 2: quantity */
-			$items[] = sprintf( __( '%1$s (%2$d pcs.)', 'otkazpro' ), $item['name'], (int) $item['qty'] );
+			$items[] = sprintf( __( '%1$s (%2$d pcs.)', 'wpotkaz' ), $item['name'], (int) $item['qty'] );
 		}
 		/** @var \WC_Order $order */
 		$order        = $vars['order'];
@@ -387,10 +387,10 @@ class Submission {
 		}
 		$order = Verifier::get_order( $order_id );
 		if ( ! $order ) {
-			return new \WP_Error( 'py_otkaz_no_order', __( 'The order could not be found.', 'otkazpro' ) );
+			return new \WP_Error( 'py_otkaz_no_order', __( 'The order could not be found.', 'wpotkaz' ) );
 		}
 		if ( ! Order_Data::is_eligible_status( $order ) ) {
-			return new \WP_Error( 'py_otkaz_status', __( 'A withdrawal cannot be submitted online for this order in its current status. Please contact us.', 'otkazpro' ) );
+			return new \WP_Error( 'py_otkaz_status', __( 'A withdrawal cannot be submitted online for this order in its current status. Please contact us.', 'wpotkaz' ) );
 		}
 
 		$available = Order_Data::get_items( $order );
@@ -403,7 +403,7 @@ class Submission {
 			$field   = 'py_item_' . $item_id;
 
 			if ( ! isset( $available[ $item_id ] ) ) {
-				$fields['py_items'] = __( 'One of the selected products is not part of this order.', 'otkazpro' );
+				$fields['py_items'] = __( 'One of the selected products is not part of this order.', 'wpotkaz' );
 				continue;
 			}
 			$item = $available[ $item_id ];
@@ -411,15 +411,15 @@ class Submission {
 			if ( ! $item['selectable'] ) {
 				$fields[ $field ] = $item['excluded'] && $item['remaining'] > 0
 					/* translators: %s: product name */
-					? sprintf( __( '“%s” is not eligible for withdrawal.', 'otkazpro' ), $item['name'] )
+					? sprintf( __( '“%s” is not eligible for withdrawal.', 'wpotkaz' ), $item['name'] )
 					/* translators: %s: product name */
-					: sprintf( __( 'A withdrawal for “%s” has already been submitted.', 'otkazpro' ), $item['name'] );
+					: sprintf( __( 'A withdrawal for “%s” has already been submitted.', 'wpotkaz' ), $item['name'] );
 				continue;
 			}
 			if ( $qty < 1 || $qty > $item['remaining'] ) {
 				$fields[ $field ] = sprintf(
 					/* translators: 1: product name, 2: maximum quantity */
-					__( 'Enter a quantity between 1 and %2$d for “%1$s”.', 'otkazpro' ),
+					__( 'Enter a quantity between 1 and %2$d for “%1$s”.', 'wpotkaz' ),
 					$item['name'],
 					$item['remaining']
 				);
@@ -440,10 +440,10 @@ class Submission {
 		}
 
 		if ( ! $selected && ! $fields ) {
-			$fields['py_items'] = __( 'Select at least one product.', 'otkazpro' );
+			$fields['py_items'] = __( 'Select at least one product.', 'wpotkaz' );
 		}
 		if ( $fields ) {
-			$error = new \WP_Error( 'py_otkaz_validation', __( 'Please correct the highlighted fields.', 'otkazpro' ) );
+			$error = new \WP_Error( 'py_otkaz_validation', __( 'Please correct the highlighted fields.', 'wpotkaz' ) );
 			$error->add_data( array( 'fields' => $fields ) );
 			return $error;
 		}
@@ -500,8 +500,8 @@ class Submission {
 			}
 		}
 		if ( ! $inserted ) {
-			wc_get_logger()->error( 'Could not store withdrawal: ' . $wpdb->last_error, array( 'source' => 'otkazpro' ) );
-			return new \WP_Error( 'py_otkaz_db', __( 'Your withdrawal could not be saved due to a technical error. Please try again or contact us by email.', 'otkazpro' ) );
+			wc_get_logger()->error( 'Could not store withdrawal: ' . $wpdb->last_error, array( 'source' => 'wpotkaz' ) );
+			return new \WP_Error( 'py_otkaz_db', __( 'Your withdrawal could not be saved due to a technical error. Please try again or contact us by email.', 'wpotkaz' ) );
 		}
 
 		$row['id']  = (int) $wpdb->insert_id;
@@ -519,15 +519,15 @@ class Submission {
 
 		$note = sprintf(
 			/* translators: 1: statement number, 2: items */
-			__( 'Withdrawal %1$s submitted for: %2$s.', 'otkazpro' ),
+			__( 'Withdrawal %1$s submitted for: %2$s.', 'wpotkaz' ),
 			$submission->number,
 			$submission->items_summary()
 		);
 		if ( $submission->has_excluded ) {
-			$note .= ' ' . __( 'Includes products marked as excluded from withdrawal.', 'otkazpro' );
+			$note .= ' ' . __( 'Includes products marked as excluded from withdrawal.', 'wpotkaz' );
 		}
 		if ( false === $within ) {
-			$note .= ' ' . __( 'Submitted after the indicative deadline.', 'otkazpro' );
+			$note .= ' ' . __( 'Submitted after the indicative deadline.', 'wpotkaz' );
 		}
 
 		if ( Settings::enabled( 'custom_status' ) && Order_Status::STATUS !== $order->get_status() ) {

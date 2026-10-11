@@ -3,12 +3,12 @@
  * Self-hosted updates from GitHub Releases (public or private repo, no external library).
  *
  * Configure in wp-config.php:
- *   define( 'PY_OTKAZ_UPDATE_REPO', 'owner/otkazpro' );
+ *   define( 'PY_OTKAZ_UPDATE_REPO', 'owner/wpotkaz' );
  *   define( 'PY_OTKAZ_GITHUB_TOKEN', 'github_pat_…' ); // only for private repos (read-only "Contents" permission).
  * or set Updater::DEFAULT_REPO below once the repository exists.
  *
- * Release convention: tag "v1.2.3" (or "1.2.3") with an attached asset "otkazpro.zip"
- * whose root folder is "otkazpro/". Without the asset the source zipball is used.
+ * Release convention: tag "v1.2.3" (or "1.2.3") with an attached asset "wpotkaz.zip"
+ * whose root folder is "wpotkaz/". Without the asset the source zipball is used.
  *
  * @package PY\Otkaz
  */
@@ -22,8 +22,8 @@ defined( 'ABSPATH' ) || exit;
  */
 class Updater {
 
-	const DEFAULT_REPO = 'Project-Yordanov/otkazpro';
-	const SLUG         = 'otkazpro';
+	const DEFAULT_REPO = 'Project-Yordanov/wpotkaz';
+	const SLUG         = 'wpotkaz';
 	const CACHE_KEY    = 'py_otkaz_release';
 
 	/**
@@ -70,7 +70,7 @@ class Updater {
 	private static function headers( $accept = 'application/vnd.github+json' ) {
 		$headers = array(
 			'Accept'               => $accept,
-			'User-Agent'           => 'otkazpro/' . PY_OTKAZ_VERSION . '; ' . home_url(),
+			'User-Agent'           => 'wpotkaz/' . PY_OTKAZ_VERSION . '; ' . home_url(),
 			'X-GitHub-Api-Version' => '2022-11-28',
 		);
 		if ( self::token() ) {
@@ -190,7 +190,7 @@ class Updater {
 			return $result;
 		}
 		return (object) array(
-			'name'          => 'OtkazPro – Бутон за отказ от договор',
+			'name'          => 'WPOtkaz – Бутон за отказ от договор',
 			'slug'          => self::SLUG,
 			'version'       => $release['version'],
 			'author'        => 'Project Yordanov',

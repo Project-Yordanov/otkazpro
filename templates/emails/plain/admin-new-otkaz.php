@@ -2,7 +2,7 @@
 /**
  * Store notification – new withdrawal (plain text).
  *
- * Override: yourtheme/woocommerce/otkazpro/emails/plain/admin-new-otkaz.php
+ * Override: yourtheme/woocommerce/wpotkaz/emails/plain/admin-new-otkaz.php
  *
  * @package PY\Otkaz
  *
@@ -19,10 +19,10 @@ echo esc_html( wp_strip_all_tags( $email_heading ) ) . "\n";
 echo "=================================================================\n\n";
 
 /* translators: 1: customer name, 2: order number */
-echo esc_html( sprintf( __( '%1$s submitted a withdrawal from the contract for order #%2$s.', 'otkazpro' ), $submission->name, $submission->order_number ) ) . "\n\n";
+echo esc_html( sprintf( __( '%1$s submitted a withdrawal from the contract for order #%2$s.', 'wpotkaz' ), $submission->name, $submission->order_number ) ) . "\n\n";
 
 if ( $submission->has_excluded ) {
-	echo esc_html__( 'The statement includes products marked as having no right of withdrawal. Review the request and reply to the customer.', 'otkazpro' ) . "\n\n";
+	echo esc_html__( 'The statement includes products marked as having no right of withdrawal. Review the request and reply to the customer.', 'wpotkaz' ) . "\n\n";
 }
 
 wc_get_template(
@@ -32,14 +32,14 @@ wc_get_template(
 		'order'         => $order,
 		'sent_to_admin' => true,
 	),
-	'woocommerce/otkazpro/',
+	'woocommerce/wpotkaz/',
 	PY_OTKAZ_DIR . 'templates/'
 );
 
-echo "\n" . esc_html__( 'Open the order', 'otkazpro' ) . ': ' . esc_url_raw( $order->get_edit_order_url() ) . "\n";
+echo "\n" . esc_html__( 'Open the order', 'wpotkaz' ) . ': ' . esc_url_raw( $order->get_edit_order_url() ) . "\n";
 
 if ( 'sent' !== $submission->email_status ) {
-	echo "\n" . esc_html__( 'The confirmation email to the customer could not be sent. Use “Resend” in WooCommerce → Withdrawals.', 'otkazpro' ) . "\n";
+	echo "\n" . esc_html__( 'The confirmation email to the customer could not be sent. Use “Resend” in WooCommerce → Withdrawals.', 'wpotkaz' ) . "\n";
 }
 
 if ( $additional_content ) {

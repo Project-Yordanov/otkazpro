@@ -1,5 +1,5 @@
 /**
- * OtkazPro – progressive enhancement for the withdrawal form (no dependencies).
+ * WPOtkaz – progressive enhancement for the withdrawal form (no dependencies).
  * The form works fully without JavaScript; this only improves feedback.
  */
 (function () {

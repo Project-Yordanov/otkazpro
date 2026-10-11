@@ -14,7 +14,7 @@ defined( 'ABSPATH' ) || exit;
  */
 class I18n {
 
-	const CONTEXT = 'otkazpro';
+	const CONTEXT = 'wpotkaz';
 
 	/**
 	 * Hooks.

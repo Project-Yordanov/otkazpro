@@ -33,8 +33,8 @@ class Privacy {
 	 * @return array
 	 */
 	public static function register_exporter( $exporters ) {
-		$exporters['otkazpro'] = array(
-			'exporter_friendly_name' => __( 'Withdrawals from contract', 'otkazpro' ),
+		$exporters['wpotkaz'] = array(
+			'exporter_friendly_name' => __( 'Withdrawals from contract', 'wpotkaz' ),
 			'callback'               => array( __CLASS__, 'export' ),
 		);
 		return $exporters;
@@ -47,8 +47,8 @@ class Privacy {
 	 * @return array
 	 */
 	public static function register_eraser( $erasers ) {
-		$erasers['otkazpro'] = array(
-			'eraser_friendly_name' => __( 'Withdrawals from contract', 'otkazpro' ),
+		$erasers['wpotkaz'] = array(
+			'eraser_friendly_name' => __( 'Withdrawals from contract', 'wpotkaz' ),
 			'callback'             => array( __CLASS__, 'erase' ),
 		);
 		return $erasers;
@@ -73,44 +73,44 @@ class Privacy {
 		$data = array();
 		foreach ( $result['items'] as $s ) {
 			$data[] = array(
-				'group_id'    => 'otkazpro',
-				'group_label' => __( 'Withdrawals from contract', 'otkazpro' ),
+				'group_id'    => 'wpotkaz',
+				'group_label' => __( 'Withdrawals from contract', 'wpotkaz' ),
 				'item_id'     => 'py-otkaz-' . $s->id,
 				'data'        => array(
 					array(
-						'name'  => __( 'Statement number', 'otkazpro' ),
+						'name'  => __( 'Statement number', 'wpotkaz' ),
 						'value' => $s->number,
 					),
 					array(
-						'name'  => __( 'Submitted on', 'otkazpro' ),
+						'name'  => __( 'Submitted on', 'wpotkaz' ),
 						'value' => Util::format_gmt( $s->created_gmt, 'datetime' ),
 					),
 					array(
-						'name'  => __( 'Order', 'otkazpro' ),
+						'name'  => __( 'Order', 'wpotkaz' ),
 						'value' => '#' . $s->order_number,
 					),
 					array(
-						'name'  => __( 'Name', 'otkazpro' ),
+						'name'  => __( 'Name', 'wpotkaz' ),
 						'value' => $s->name,
 					),
 					array(
-						'name'  => __( 'Email', 'otkazpro' ),
+						'name'  => __( 'Email', 'wpotkaz' ),
 						'value' => $s->email,
 					),
 					array(
-						'name'  => __( 'Products', 'otkazpro' ),
+						'name'  => __( 'Products', 'wpotkaz' ),
 						'value' => $s->items_summary(),
 					),
 					array(
-						'name'  => __( 'Text of the statement', 'otkazpro' ),
+						'name'  => __( 'Text of the statement', 'wpotkaz' ),
 						'value' => $s->statement,
 					),
 					array(
-						'name'  => __( 'IP address', 'otkazpro' ),
+						'name'  => __( 'IP address', 'wpotkaz' ),
 						'value' => $s->ip_address,
 					),
 					array(
-						'name'  => __( 'User agent', 'otkazpro' ),
+						'name'  => __( 'User agent', 'wpotkaz' ),
 						'value' => $s->user_agent,
 					),
 				),
@@ -174,7 +174,7 @@ class Privacy {
 			'messages'       => $count ? array(
 				sprintf(
 					/* translators: %d: years */
-					__( 'Withdrawal statements are retained as evidence of a legal act for the configured retention period (%d years) and then deleted automatically.', 'otkazpro' ),
+					__( 'Withdrawal statements are retained as evidence of a legal act for the configured retention period (%d years) and then deleted automatically.', 'wpotkaz' ),
 					(int) Settings::get( 'retention_years' )
 				),
 			) : array(),
@@ -189,12 +189,12 @@ class Privacy {
 		if ( ! function_exists( 'wp_add_privacy_policy_content' ) ) {
 			return;
 		}
-		$content = '<p>' . __( 'When you withdraw from a contract through our online form, we process your name, email address, order number, the selected products, the date and time of submission, your IP address and browser user agent. We use this data to process your withdrawal, to send you a confirmation on a durable medium and as evidence of the submission (legal obligation and legitimate interest, Art. 6(1)(c) and (f) GDPR).', 'otkazpro' ) . '</p>';
+		$content = '<p>' . __( 'When you withdraw from a contract through our online form, we process your name, email address, order number, the selected products, the date and time of submission, your IP address and browser user agent. We use this data to process your withdrawal, to send you a confirmation on a durable medium and as evidence of the submission (legal obligation and legitimate interest, Art. 6(1)(c) and (f) GDPR).', 'wpotkaz' ) . '</p>';
 		$content .= '<p>' . sprintf(
 			/* translators: %d: years */
-			__( 'Withdrawal records are kept for %d years and then deleted automatically.', 'otkazpro' ),
+			__( 'Withdrawal records are kept for %d years and then deleted automatically.', 'wpotkaz' ),
 			(int) Settings::get( 'retention_years' )
 		) . '</p>';
-		wp_add_privacy_policy_content( 'OtkazPro', wp_kses_post( $content ) );
+		wp_add_privacy_policy_content( 'WPOtkaz', wp_kses_post( $content ) );
 	}
 }

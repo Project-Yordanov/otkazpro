@@ -1,6 +1,6 @@
 <?php
 /**
- * Front-end withdrawal form ([otkazpro]).
+ * Front-end withdrawal form ([wpotkaz]).
  *
  * @package PY\Otkaz
  */
@@ -14,8 +14,12 @@ defined( 'ABSPATH' ) || exit;
  */
 class Form {
 
-	const SHORTCODE        = 'otkazpro';
-	const LEGACY_SHORTCODE = 'py_otkaz_form'; // Kept as an alias.
+	const SHORTCODE = 'wpotkaz';
+
+	/**
+	 * Earlier shortcode names, kept as aliases.
+	 */
+	const LEGACY_SHORTCODES = array( 'otkazpro', 'py_otkaz_form' );
 	const HONEYPOT  = 'py_website';
 
 	/**
@@ -37,11 +41,36 @@ class Form {
 	 * Hooks.
 	 */
 	public static function init() {
-		add_shortcode( self::SHORTCODE, array( __CLASS__, 'shortcode' ) );
-		add_shortcode( self::LEGACY_SHORTCODE, array( __CLASS__, 'shortcode' ) );
+		foreach ( self::shortcodes() as $tag ) {
+			add_shortcode( $tag, array( __CLASS__, 'shortcode' ) );
+		}
 		add_action( 'template_redirect', array( __CLASS__, 'template_redirect' ), 5 );
 		add_action( 'wp_enqueue_scripts', array( __CLASS__, 'enqueue' ) );
 		add_filter( 'wp_robots', array( __CLASS__, 'robots' ) );
+	}
+
+	/**
+	 * Current + legacy shortcode tags.
+	 *
+	 * @return string[]
+	 */
+	public static function shortcodes() {
+		return array_merge( array( self::SHORTCODE ), self::LEGACY_SHORTCODES );
+	}
+
+	/**
+	 * Does the content contain the form (any shortcode name)?
+	 *
+	 * @param string $content Content.
+	 * @return bool
+	 */
+	public static function has_form_shortcode( $content ) {
+		foreach ( self::shortcodes() as $tag ) {
+			if ( has_shortcode( $content, $tag ) ) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/* ---------------------------------------------------------------------
@@ -118,7 +147,7 @@ class Form {
 			return true;
 		}
 		$post = get_post();
-		return $post && ( has_shortcode( (string) $post->post_content, self::SHORTCODE ) || has_shortcode( (string) $post->post_content, self::LEGACY_SHORTCODE ) );
+		return $post && self::has_form_shortcode( (string) $post->post_content );
 	}
 
 	/**
@@ -156,7 +185,7 @@ class Form {
 				header( 'X-Robots-Tag: noindex, nofollow' );
 			}
 		}
-		do_action( 'litespeed_control_set_nocache', 'otkazpro form' );
+		do_action( 'litespeed_control_set_nocache', 'wpotkaz form' );
 	}
 
 	/**
@@ -235,7 +264,7 @@ class Form {
 	 * @return string
 	 */
 	private static function generic_not_found() {
-		return __( 'We could not find an order with these details. Check the order number and use the email address the order was placed with.', 'otkazpro' );
+		return __( 'We could not find an order with these details. Check the order number and use the email address the order was placed with.', 'wpotkaz' );
 	}
 
 	/**
@@ -254,7 +283,7 @@ class Form {
 		);
 
 		if ( Verifier::is_rate_limited() ) {
-			self::error( __( 'Too many unsuccessful attempts. Please try again in 15 minutes or contact us.', 'otkazpro' ) );
+			self::error( __( 'Too many unsuccessful attempts. Please try again in 15 minutes or contact us.', 'wpotkaz' ) );
 			return;
 		}
 		if ( self::is_bot() ) {
@@ -265,15 +294,15 @@ class Form {
 		// phpcs:ignore WordPress.Security.NonceVerification.Missing
 		$nonce = isset( $_POST['_py_otkaz_nonce'] ) ? sanitize_key( wp_unslash( $_POST['_py_otkaz_nonce'] ) ) : '';
 		if ( ! wp_verify_nonce( $nonce, 'py_otkaz_lookup' ) ) {
-			self::error( __( 'The page was open for too long. Please submit the form again.', 'otkazpro' ) );
+			self::error( __( 'The page was open for too long. Please submit the form again.', 'wpotkaz' ) );
 			return;
 		}
 
 		if ( '' === $number ) {
-			self::$state['fields']['py_order_number'] = __( 'Enter the order number.', 'otkazpro' );
+			self::$state['fields']['py_order_number'] = __( 'Enter the order number.', 'wpotkaz' );
 		}
 		if ( '' === $email || ! is_email( $email ) ) {
-			self::$state['fields']['py_email'] = __( 'Enter a valid email address, e.g. name@example.com.', 'otkazpro' );
+			self::$state['fields']['py_email'] = __( 'Enter a valid email address, e.g. name@example.com.', 'wpotkaz' );
 		}
 
 		/**
@@ -317,7 +346,7 @@ class Form {
 		if ( ! Verifier::can_access( $order, $key ) ) {
 			Verifier::register_failure();
 			self::$state['view'] = 'lookup';
-			self::error( __( 'This link is invalid or has expired. Please find your order using its number and email.', 'otkazpro' ) );
+			self::error( __( 'This link is invalid or has expired. Please find your order using its number and email.', 'wpotkaz' ) );
 			return;
 		}
 
@@ -365,21 +394,21 @@ class Form {
 		}
 
 		if ( self::is_bot() ) {
-			self::error( __( 'Your withdrawal could not be submitted. Please try again.', 'otkazpro' ) );
+			self::error( __( 'Your withdrawal could not be submitted. Please try again.', 'wpotkaz' ) );
 			return;
 		}
 		if ( ! wp_verify_nonce( $nonce, 'py_otkaz_submit_' . $order->get_id() ) ) {
-			self::error( __( 'The page was open for too long. Please review the details and confirm again.', 'otkazpro' ) );
+			self::error( __( 'The page was open for too long. Please review the details and confirm again.', 'wpotkaz' ) );
 			return;
 		}
 
 		if ( '' === $name ) {
-			self::$state['fields']['py_name'] = __( 'Enter your name.', 'otkazpro' );
+			self::$state['fields']['py_name'] = __( 'Enter your name.', 'wpotkaz' );
 		} elseif ( mb_strlen( $name ) > 200 ) {
-			self::$state['fields']['py_name'] = __( 'The name is too long.', 'otkazpro' );
+			self::$state['fields']['py_name'] = __( 'The name is too long.', 'wpotkaz' );
 		}
 		if ( '' === $email || ! is_email( $email ) ) {
-			self::$state['fields']['py_email'] = __( 'Enter a valid email address, e.g. name@example.com.', 'otkazpro' );
+			self::$state['fields']['py_email'] = __( 'Enter a valid email address, e.g. name@example.com.', 'wpotkaz' );
 		}
 		if ( mb_strlen( $reason ) > 2000 ) {
 			$reason = mb_substr( $reason, 0, 2000 );
@@ -492,7 +521,7 @@ class Form {
 				$view                      = 'success';
 				self::$state['submission'] = $submission;
 			} else {
-				self::$state['notice'] = __( 'Your withdrawal has already been submitted. The confirmation was sent to your email.', 'otkazpro' );
+				self::$state['notice'] = __( 'Your withdrawal has already been submitted. The confirmation was sent to your email.', 'wpotkaz' );
 				$view                  = 'lookup';
 			}
 		}
@@ -513,7 +542,7 @@ class Form {
 					$order = null;
 					$view  = 'lookup';
 					if ( ! self::$state['errors'] ) {
-						self::error( __( 'This link is invalid or has expired. Please find your order using its number and email.', 'otkazpro' ) );
+						self::error( __( 'This link is invalid or has expired. Please find your order using its number and email.', 'wpotkaz' ) );
 					}
 				}
 			} else {
@@ -551,7 +580,7 @@ class Form {
 		 * @param array  $args Args.
 		 * @param string $view lookup|order|success.
 		 */
-		$args = apply_filters( 'otkazpro_args', $args, $view );
+		$args = apply_filters( 'py_otkaz_form_args', $args, $view );
 
 		return self::template( 'form-' . $view . '.php', $args );
 	}
@@ -665,14 +694,14 @@ class Form {
 	}
 
 	/**
-	 * Render a template (overridable in theme/woocommerce/otkazpro/).
+	 * Render a template (overridable in theme/woocommerce/wpotkaz/).
 	 *
 	 * @param string $name Template file.
 	 * @param array  $args Args.
 	 * @return string
 	 */
 	public static function template( $name, $args ) {
-		return wc_get_template_html( $name, $args, 'woocommerce/otkazpro/', PY_OTKAZ_DIR . 'templates/' );
+		return wc_get_template_html( $name, $args, 'woocommerce/wpotkaz/', PY_OTKAZ_DIR . 'templates/' );
 	}
 
 	/* ---------------------------------------------------------------------
@@ -692,19 +721,19 @@ class Form {
 	 * Register + enqueue CSS/JS with the accent variables.
 	 */
 	public static function enqueue_assets() {
-		if ( wp_style_is( 'otkazpro', 'enqueued' ) ) {
+		if ( wp_style_is( 'wpotkaz', 'enqueued' ) ) {
 			return;
 		}
 		$suffix = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
-		$css    = file_exists( PY_OTKAZ_DIR . 'assets/css/otkazpro' . $suffix . '.css' ) ? $suffix : '';
-		$js     = file_exists( PY_OTKAZ_DIR . 'assets/js/otkazpro' . $suffix . '.js' ) ? $suffix : '';
+		$css    = file_exists( PY_OTKAZ_DIR . 'assets/css/wpotkaz' . $suffix . '.css' ) ? $suffix : '';
+		$js     = file_exists( PY_OTKAZ_DIR . 'assets/js/wpotkaz' . $suffix . '.js' ) ? $suffix : '';
 
-		wp_enqueue_style( 'otkazpro', PY_OTKAZ_URL . 'assets/css/otkazpro' . $css . '.css', array(), PY_OTKAZ_VERSION );
-		wp_add_inline_style( 'otkazpro', self::inline_css() );
+		wp_enqueue_style( 'wpotkaz', PY_OTKAZ_URL . 'assets/css/wpotkaz' . $css . '.css', array(), PY_OTKAZ_VERSION );
+		wp_add_inline_style( 'wpotkaz', self::inline_css() );
 
 		wp_enqueue_script(
-			'otkazpro',
-			PY_OTKAZ_URL . 'assets/js/otkazpro' . $js . '.js',
+			'wpotkaz',
+			PY_OTKAZ_URL . 'assets/js/wpotkaz' . $js . '.js',
 			array(),
 			PY_OTKAZ_VERSION,
 			array(
@@ -713,13 +742,13 @@ class Form {
 			)
 		);
 		wp_localize_script(
-			'otkazpro',
+			'wpotkaz',
 			'pyOtkaz',
 			array(
-				'sending'   => __( 'Sending…', 'otkazpro' ),
-				'selectOne' => __( 'Select at least one product to continue.', 'otkazpro' ),
+				'sending'   => __( 'Sending…', 'wpotkaz' ),
+				'selectOne' => __( 'Select at least one product to continue.', 'wpotkaz' ),
 				/* translators: 1: number of products, 2: number of pieces */
-				'selected'  => __( 'Selected: %1$s products, %2$s pcs.', 'otkazpro' ),
+				'selected'  => __( 'Selected: %1$s products, %2$s pcs.', 'wpotkaz' ),
 			)
 		);
 	}

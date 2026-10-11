@@ -14,7 +14,7 @@ defined( 'ABSPATH' ) || exit;
  */
 class Settings {
 
-	const TAB    = 'otkazpro';
+	const TAB    = 'wpotkaz';
 	const PREFIX = 'py_otkaz_';
 
 	/**
@@ -76,10 +76,10 @@ class Settings {
 			self::$defaults = array_merge(
 				self::base_defaults(),
 				array(
-					'text_intro'          => __( 'You can withdraw from a distance contract within 14 days without giving any reason. Find your order, choose the products and confirm – you will receive a confirmation by email straight away.', 'otkazpro' ),
-					'text_start_button'   => __( 'Withdraw from the contract here', 'otkazpro' ),
-					'text_confirm_button' => __( 'Confirm withdrawal', 'otkazpro' ),
-					'text_statement'      => __( 'I hereby give notice that I withdraw from the contract for the following goods: {items}, order No. {order_number}, submitted on {date} at {time}.', 'otkazpro' ),
+					'text_intro'          => __( 'You can withdraw from a distance contract within 14 days without giving any reason. Find your order, choose the products and confirm – you will receive a confirmation by email straight away.', 'wpotkaz' ),
+					'text_start_button'   => __( 'Withdraw from the contract here', 'wpotkaz' ),
+					'text_confirm_button' => __( 'Confirm withdrawal', 'wpotkaz' ),
+					'text_statement'      => __( 'I hereby give notice that I withdraw from the contract for the following goods: {items}, order No. {order_number}, submitted on {date} at {time}.', 'wpotkaz' ),
 				)
 			);
 		}
@@ -177,7 +177,7 @@ class Settings {
 	 * @return array
 	 */
 	public static function add_tab( $tabs ) {
-		$tabs[ self::TAB ] = __( 'Withdrawal', 'otkazpro' );
+		$tabs[ self::TAB ] = __( 'Withdrawal', 'wpotkaz' );
 		return $tabs;
 	}
 
@@ -235,9 +235,9 @@ class Settings {
 			<td class="forminp">
 				<?php if ( $url ) : ?>
 					<input type="text" readonly class="regular-input" style="width:100%;max-width:520px" value="<?php echo esc_attr( $url ); ?>" onfocus="this.select()" />
-					<p class="description"><?php esc_html_e( 'Add this link to the footer / menu with the text “Withdraw from the contract here”. Customers can use it without logging in.', 'otkazpro' ); ?></p>
+					<p class="description"><?php esc_html_e( 'Add this link to the footer / menu with the text “Withdraw from the contract here”. Customers can use it without logging in.', 'wpotkaz' ); ?></p>
 				<?php else : ?>
-					<p class="description"><?php esc_html_e( 'Choose the page that contains the [otkazpro] shortcode.', 'otkazpro' ); ?></p>
+					<p class="description"><?php esc_html_e( 'Choose the page that contains the [wpotkaz] shortcode.', 'wpotkaz' ); ?></p>
 				<?php endif; ?>
 			</td>
 		</tr>
@@ -255,48 +255,48 @@ class Settings {
 		unset( $statuses[ 'wc-' . Order_Status::STATUS ] );
 
 		$order_emails = array(
-			'customer_processing_order' => __( 'Processing order', 'otkazpro' ),
-			'customer_completed_order'  => __( 'Completed order', 'otkazpro' ),
-			'customer_on_hold_order'    => __( 'Order on-hold', 'otkazpro' ),
-			'customer_invoice'          => __( 'Order details / invoice', 'otkazpro' ),
+			'customer_processing_order' => __( 'Processing order', 'wpotkaz' ),
+			'customer_completed_order'  => __( 'Completed order', 'wpotkaz' ),
+			'customer_on_hold_order'    => __( 'Order on-hold', 'wpotkaz' ),
+			'customer_invoice'          => __( 'Order details / invoice', 'wpotkaz' ),
 		);
 
 		$fields = array(
 			// General.
 			array(
-				'title' => __( 'General', 'otkazpro' ),
+				'title' => __( 'General', 'wpotkaz' ),
 				'type'  => 'title',
-				'desc'  => __( 'Online withdrawal function under Art. 52a of the Consumer Protection Act. The function stays available for eligible orders at all times – the 14-day deadline is shown only to you in the admin.', 'otkazpro' ),
+				'desc'  => __( 'Online withdrawal function under Art. 52a of the Consumer Protection Act. The function stays available for eligible orders at all times – the 14-day deadline is shown only to you in the admin.', 'wpotkaz' ),
 				'id'    => 'py_otkaz_general',
 			),
 			array(
-				'title'    => __( 'Form page', 'otkazpro' ),
+				'title'    => __( 'Form page', 'wpotkaz' ),
 				'id'       => self::PREFIX . 'page_id',
 				'type'     => 'single_select_page',
 				'default'  => '',
 				'class'    => 'wc-enhanced-select-nostd',
 				'css'      => 'min-width:300px;',
-				'desc_tip' => __( 'Page containing the [otkazpro] shortcode. Created automatically on activation.', 'otkazpro' ),
+				'desc_tip' => __( 'Page containing the [wpotkaz] shortcode. Created automatically on activation.', 'wpotkaz' ),
 				'autoload' => true,
 			),
 			array(
-				'title'     => __( 'Form URL', 'otkazpro' ),
+				'title'     => __( 'Form URL', 'wpotkaz' ),
 				'type'      => 'py_otkaz_info',
 				'id'        => 'py_otkaz_info_url',
 				'is_option' => false,
 			),
 			array(
-				'title'    => __( 'Eligible order statuses', 'otkazpro' ),
+				'title'    => __( 'Eligible order statuses', 'wpotkaz' ),
 				'id'       => self::PREFIX . 'statuses',
 				'type'     => 'multiselect',
 				'class'    => 'wc-enhanced-select',
 				'css'      => 'min-width:300px;',
 				'options'  => $statuses,
 				'default'  => $d['statuses'],
-				'desc_tip' => __( 'Orders in these statuses can be withdrawn from. Do not add cancelled, refunded, failed or pending payment.', 'otkazpro' ),
+				'desc_tip' => __( 'Orders in these statuses can be withdrawn from. Do not add cancelled, refunded, failed or pending payment.', 'wpotkaz' ),
 			),
 			array(
-				'title'             => __( 'Withdrawal period (days)', 'otkazpro' ),
+				'title'             => __( 'Withdrawal period (days)', 'wpotkaz' ),
 				'id'                => self::PREFIX . 'deadline_days',
 				'type'              => 'number',
 				'default'           => $d['deadline_days'],
@@ -305,15 +305,15 @@ class Settings {
 					'min'  => 1,
 					'step' => 1,
 				),
-				'desc'              => __( 'Used only for the admin “in time / late” indicator (counted from the completed date). The form never closes automatically.', 'otkazpro' ),
+				'desc'              => __( 'Used only for the admin “in time / late” indicator (counted from the completed date). The form never closes automatically.', 'wpotkaz' ),
 			),
 			array(
-				'title'   => __( '“Withdrawal requested” status', 'otkazpro' ),
+				'title'   => __( '“Withdrawal requested” status', 'wpotkaz' ),
 				'id'      => self::PREFIX . 'custom_status',
 				'type'    => 'checkbox',
 				'default' => $d['custom_status'],
-				'desc'    => __( 'Move the order to a custom “Withdrawal requested” status after each submission.', 'otkazpro' ),
-				'desc_tip' => __( 'Off by default: changing the status may interfere with invoicing, ERP or courier integrations that depend on order status.', 'otkazpro' ),
+				'desc'    => __( 'Move the order to a custom “Withdrawal requested” status after each submission.', 'wpotkaz' ),
+				'desc_tip' => __( 'Off by default: changing the status may interfere with invoicing, ERP or courier integrations that depend on order status.', 'wpotkaz' ),
 			),
 			array(
 				'type' => 'sectionend',
@@ -322,55 +322,55 @@ class Settings {
 
 			// Texts.
 			array(
-				'title' => __( 'Texts', 'otkazpro' ),
+				'title' => __( 'Texts', 'wpotkaz' ),
 				'type'  => 'title',
-				'desc'  => __( 'With WPML / Polylang these texts can be translated in String Translation (domain “otkazpro”). Keep the legally required wording of the two buttons.', 'otkazpro' ),
+				'desc'  => __( 'With WPML / Polylang these texts can be translated in String Translation (domain “wpotkaz”). Keep the legally required wording of the two buttons.', 'wpotkaz' ),
 				'id'    => 'py_otkaz_texts',
 			),
 			array(
-				'title'   => __( 'Intro text', 'otkazpro' ),
+				'title'   => __( 'Intro text', 'wpotkaz' ),
 				'id'      => self::PREFIX . 'text_intro',
 				'type'    => 'textarea',
 				'css'     => 'min-width:420px;height:70px;',
 				'default' => $d['text_intro'],
 			),
 			array(
-				'title'   => __( 'Start button', 'otkazpro' ),
+				'title'   => __( 'Start button', 'wpotkaz' ),
 				'id'      => self::PREFIX . 'text_start_button',
 				'type'    => 'text',
 				'css'     => 'min-width:420px;',
 				'default' => $d['text_start_button'],
 			),
 			array(
-				'title'   => __( 'Confirmation button', 'otkazpro' ),
+				'title'   => __( 'Confirmation button', 'wpotkaz' ),
 				'id'      => self::PREFIX . 'text_confirm_button',
 				'type'    => 'text',
 				'css'     => 'min-width:420px;',
 				'default' => $d['text_confirm_button'],
 			),
 			array(
-				'title'   => __( 'Statement template', 'otkazpro' ),
+				'title'   => __( 'Statement template', 'wpotkaz' ),
 				'id'      => self::PREFIX . 'text_statement',
 				'type'    => 'textarea',
 				'css'     => 'min-width:420px;height:80px;',
 				'default' => $d['text_statement'],
-				'desc'    => __( 'Placeholders: {items}, {order_number}, {order_date}, {date}, {time}, {name}, {email}, {site_title}.', 'otkazpro' ),
+				'desc'    => __( 'Placeholders: {items}, {order_number}, {order_date}, {date}, {time}, {name}, {email}, {site_title}.', 'wpotkaz' ),
 			),
 			array(
-				'title'    => __( 'Return instructions', 'otkazpro' ),
+				'title'    => __( 'Return instructions', 'wpotkaz' ),
 				'id'       => self::PREFIX . 'text_return_instructions',
 				'type'     => 'textarea',
 				'css'      => 'min-width:420px;height:100px;',
 				'default'  => '',
-				'desc'     => __( 'Where and how to return the goods. Shown on the success screen and in the confirmation email. Basic HTML allowed.', 'otkazpro' ),
+				'desc'     => __( 'Where and how to return the goods. Shown on the success screen and in the confirmation email. Basic HTML allowed.', 'wpotkaz' ),
 			),
 			array(
-				'title'    => __( 'Optional “Reason” field', 'otkazpro' ),
+				'title'    => __( 'Optional “Reason” field', 'wpotkaz' ),
 				'id'       => self::PREFIX . 'reason_field',
 				'type'     => 'checkbox',
 				'default'  => $d['reason_field'],
-				'desc'     => __( 'Show an optional free-text reason field (never required).', 'otkazpro' ),
-				'desc_tip' => __( 'Off by default: the law does not provide for asking a reason. Enable only after legal review.', 'otkazpro' ),
+				'desc'     => __( 'Show an optional free-text reason field (never required).', 'wpotkaz' ),
+				'desc_tip' => __( 'Off by default: the law does not provide for asking a reason. Enable only after legal review.', 'wpotkaz' ),
 			),
 			array(
 				'type' => 'sectionend',
@@ -379,32 +379,32 @@ class Settings {
 
 			// Emails.
 			array(
-				'title' => __( 'Emails', 'otkazpro' ),
+				'title' => __( 'Emails', 'wpotkaz' ),
 				'type'  => 'title',
 				'desc'  => sprintf(
 					/* translators: %s: link to WooCommerce emails settings */
-					__( 'Subjects, headings and design of the two emails are edited in %s.', 'otkazpro' ),
-					'<a href="' . esc_url( admin_url( 'admin.php?page=wc-settings&tab=email' ) ) . '">' . esc_html__( 'WooCommerce → Settings → Emails', 'otkazpro' ) . '</a>'
+					__( 'Subjects, headings and design of the two emails are edited in %s.', 'wpotkaz' ),
+					'<a href="' . esc_url( admin_url( 'admin.php?page=wc-settings&tab=email' ) ) . '">' . esc_html__( 'WooCommerce → Settings → Emails', 'wpotkaz' ) . '</a>'
 				),
 				'id'    => 'py_otkaz_emails',
 			),
 			array(
-				'title'    => __( 'Store notification email(s)', 'otkazpro' ),
+				'title'    => __( 'Store notification email(s)', 'wpotkaz' ),
 				'id'       => self::PREFIX . 'notify_emails',
 				'type'     => 'text',
 				'css'      => 'min-width:420px;',
 				'default'  => $d['notify_emails'],
-				'desc_tip' => __( 'Comma-separated. Receives the “New withdrawal” notification.', 'otkazpro' ),
+				'desc_tip' => __( 'Comma-separated. Receives the “New withdrawal” notification.', 'wpotkaz' ),
 			),
 			array(
-				'title'   => __( 'Link in order emails', 'otkazpro' ),
+				'title'   => __( 'Link in order emails', 'wpotkaz' ),
 				'id'      => self::PREFIX . 'email_link_emails',
 				'type'    => 'multiselect',
 				'class'   => 'wc-enhanced-select',
 				'css'     => 'min-width:300px;',
 				'options' => $order_emails,
 				'default' => $d['email_link_emails'],
-				'desc'    => __( 'Adds a “Withdraw from the contract here” link (works without login) to these customer emails.', 'otkazpro' ),
+				'desc'    => __( 'Adds a “Withdraw from the contract here” link (works without login) to these customer emails.', 'wpotkaz' ),
 			),
 			array(
 				'type' => 'sectionend',
@@ -413,36 +413,36 @@ class Settings {
 
 			// Exclusions.
 			array(
-				'title' => __( 'Products without right of withdrawal', 'otkazpro' ),
+				'title' => __( 'Products without right of withdrawal', 'wpotkaz' ),
 				'type'  => 'title',
-				'desc'  => __( 'Mark products in the product / variation / category edit screens. Do not mark goods that lose the right only once unsealed (hygiene, cosmetics, sealed media).', 'otkazpro' ),
+				'desc'  => __( 'Mark products in the product / variation / category edit screens. Do not mark goods that lose the right only once unsealed (hygiene, cosmetics, sealed media).', 'wpotkaz' ),
 				'id'    => 'py_otkaz_exclusions',
 			),
 			array(
-				'title'   => __( 'Mode', 'otkazpro' ),
+				'title'   => __( 'Mode', 'wpotkaz' ),
 				'id'      => self::PREFIX . 'exclusion_mode',
 				'type'    => 'select',
 				'class'   => 'wc-enhanced-select',
 				'options' => array(
-					'soft'   => __( 'Soft – selectable with a warning, flagged for you', 'otkazpro' ),
-					'strict' => __( 'Strict – cannot be selected', 'otkazpro' ),
+					'soft'   => __( 'Soft – selectable with a warning, flagged for you', 'wpotkaz' ),
+					'strict' => __( 'Strict – cannot be selected', 'wpotkaz' ),
 				),
 				'default' => $d['exclusion_mode'],
 			),
 			array(
-				'title'    => __( 'Personalisation meta keys', 'otkazpro' ),
+				'title'    => __( 'Personalisation meta keys', 'wpotkaz' ),
 				'id'       => self::PREFIX . 'exclusion_meta_keys',
 				'type'     => 'textarea',
 				'css'      => 'min-width:420px;height:70px;',
 				'default'  => '',
-				'desc'     => __( 'One per line. An order item with a non-empty value for any of these meta keys (e.g. engraving text from an add-ons plugin) is treated as personalised.', 'otkazpro' ),
+				'desc'     => __( 'One per line. An order item with a non-empty value for any of these meta keys (e.g. engraving text from an add-ons plugin) is treated as personalised.', 'wpotkaz' ),
 			),
 			array(
-				'title'   => __( 'Storefront label', 'otkazpro' ),
+				'title'   => __( 'Storefront label', 'wpotkaz' ),
 				'id'      => self::PREFIX . 'exclusion_label',
 				'type'    => 'checkbox',
 				'default' => $d['exclusion_label'],
-				'desc'    => __( 'Show “No right of withdrawal” on the product page and next to the item in cart / checkout.', 'otkazpro' ),
+				'desc'    => __( 'Show “No right of withdrawal” on the product page and next to the item in cart / checkout.', 'wpotkaz' ),
 			),
 			array(
 				'type' => 'sectionend',
@@ -451,27 +451,27 @@ class Settings {
 
 			// Appearance.
 			array(
-				'title' => __( 'Appearance', 'otkazpro' ),
+				'title' => __( 'Appearance', 'wpotkaz' ),
 				'type'  => 'title',
-				'desc'  => __( 'The form inherits the theme font. The accent colour is used only for primary buttons, focus rings, checkboxes, links and the active step; button text colour is chosen automatically for contrast.', 'otkazpro' ),
+				'desc'  => __( 'The form inherits the theme font. The accent colour is used only for primary buttons, focus rings, checkboxes, links and the active step; button text colour is chosen automatically for contrast.', 'wpotkaz' ),
 				'id'    => 'py_otkaz_look',
 			),
 			array(
-				'title'   => __( 'Accent colour', 'otkazpro' ),
+				'title'   => __( 'Accent colour', 'wpotkaz' ),
 				'id'      => self::PREFIX . 'accent_color',
 				'type'    => 'color',
 				'css'     => 'width:6em;',
 				'default' => $d['accent_color'],
 			),
 			array(
-				'title'   => __( 'Corner radius', 'otkazpro' ),
+				'title'   => __( 'Corner radius', 'wpotkaz' ),
 				'id'      => self::PREFIX . 'radius',
 				'type'    => 'select',
 				'options' => array(
-					'0'   => __( 'Sharp (0)', 'otkazpro' ),
-					'4'   => __( 'Slight (4px)', 'otkazpro' ),
-					'8'   => __( 'Rounded (8px)', 'otkazpro' ),
-					'999' => __( 'Pill buttons', 'otkazpro' ),
+					'0'   => __( 'Sharp (0)', 'wpotkaz' ),
+					'4'   => __( 'Slight (4px)', 'wpotkaz' ),
+					'8'   => __( 'Rounded (8px)', 'wpotkaz' ),
+					'999' => __( 'Pill buttons', 'wpotkaz' ),
 				),
 				'default' => $d['radius'],
 			),
@@ -482,12 +482,12 @@ class Settings {
 
 			// Privacy.
 			array(
-				'title' => __( 'Data retention', 'otkazpro' ),
+				'title' => __( 'Data retention', 'wpotkaz' ),
 				'type'  => 'title',
 				'id'    => 'py_otkaz_privacy',
 			),
 			array(
-				'title'             => __( 'Keep records (years)', 'otkazpro' ),
+				'title'             => __( 'Keep records (years)', 'wpotkaz' ),
 				'id'                => self::PREFIX . 'retention_years',
 				'type'              => 'number',
 				'css'               => 'width:80px;',
@@ -496,14 +496,14 @@ class Settings {
 					'min'  => 0,
 					'step' => 1,
 				),
-				'desc'              => __( 'Withdrawal records (incl. IP and user agent as evidence) older than this are deleted automatically. 0 = keep forever.', 'otkazpro' ),
+				'desc'              => __( 'Withdrawal records (incl. IP and user agent as evidence) older than this are deleted automatically. 0 = keep forever.', 'wpotkaz' ),
 			),
 			array(
-				'title'   => __( 'Delete data on uninstall', 'otkazpro' ),
+				'title'   => __( 'Delete data on uninstall', 'wpotkaz' ),
 				'id'      => self::PREFIX . 'delete_data',
 				'type'    => 'checkbox',
 				'default' => $d['delete_data'],
-				'desc'    => __( 'Also delete all withdrawal records when the plugin is deleted. Off = records are kept as evidence.', 'otkazpro' ),
+				'desc'    => __( 'Also delete all withdrawal records when the plugin is deleted. Off = records are kept as evidence.', 'wpotkaz' ),
 			),
 			array(
 				'type' => 'sectionend',

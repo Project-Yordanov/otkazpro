@@ -2,7 +2,7 @@
 /**
  * Customer withdrawal confirmation (plain text).
  *
- * Override: yourtheme/woocommerce/otkazpro/emails/plain/customer-otkaz-confirmation.php
+ * Override: yourtheme/woocommerce/wpotkaz/emails/plain/customer-otkaz-confirmation.php
  *
  * @package PY\Otkaz
  *
@@ -20,9 +20,9 @@ echo esc_html( wp_strip_all_tags( $email_heading ) ) . "\n";
 echo "=================================================================\n\n";
 
 /* translators: %s: customer name */
-echo esc_html( sprintf( __( 'Hello %s,', 'otkazpro' ), $submission->name ) ) . "\n\n";
+echo esc_html( sprintf( __( 'Hello %s,', 'wpotkaz' ), $submission->name ) ) . "\n\n";
 /* translators: 1: date, 2: time */
-echo esc_html( sprintf( __( 'We confirm that we received your statement of withdrawal from the contract on %1$s at %2$s. Its content is below.', 'otkazpro' ), $submission->date(), $submission->time() ) ) . "\n\n";
+echo esc_html( sprintf( __( 'We confirm that we received your statement of withdrawal from the contract on %1$s at %2$s. Its content is below.', 'wpotkaz' ), $submission->date(), $submission->time() ) ) . "\n\n";
 
 wc_get_template(
 	'emails/plain/parts/otkaz-details.php',
@@ -31,12 +31,12 @@ wc_get_template(
 		'order'         => $order,
 		'sent_to_admin' => false,
 	),
-	'woocommerce/otkazpro/',
+	'woocommerce/wpotkaz/',
 	PY_OTKAZ_DIR . 'templates/'
 );
 
 if ( $return_instructions ) {
-	echo "\n" . esc_html( mb_strtoupper( __( 'How to return the goods', 'otkazpro' ) ) ) . "\n";
+	echo "\n" . esc_html( mb_strtoupper( __( 'How to return the goods', 'wpotkaz' ) ) ) . "\n";
 	echo esc_html( wp_strip_all_tags( wptexturize( $return_instructions ) ) ) . "\n";
 }
 

@@ -33,7 +33,7 @@ class Install {
 	 */
 	public static function activate() {
 		// Translations are needed for the default page title.
-		load_plugin_textdomain( 'otkazpro', false, dirname( PY_OTKAZ_BASENAME ) . '/languages' );
+		load_plugin_textdomain( 'wpotkaz', false, dirname( PY_OTKAZ_BASENAME ) . '/languages' );
 
 		self::create_tables();
 		self::maybe_create_page();
@@ -160,7 +160,7 @@ class Install {
 			array(
 				'post_type'      => 'page',
 				'post_status'    => 'publish',
-				'post_title'     => __( 'Withdrawal from contract', 'otkazpro' ),
+				'post_title'     => __( 'Withdrawal from contract', 'wpotkaz' ),
 				'post_name'      => self::PAGE_SLUG,
 				'post_content'   => self::shortcode_block(),
 				'comment_status' => 'closed',
@@ -187,7 +187,7 @@ class Install {
 		if ( ! $post || 'page' !== $post->post_type ) {
 			return false;
 		}
-		if ( ! has_shortcode( $post->post_content, Form::SHORTCODE ) && ! has_shortcode( $post->post_content, Form::LEGACY_SHORTCODE ) ) {
+		if ( ! Form::has_form_shortcode( $post->post_content ) ) {
 			$result = wp_update_post(
 				array(
 					'ID'           => $post->ID,
@@ -222,7 +222,7 @@ class Install {
 	 */
 	private static function find_existing_page() {
 		$found = array();
-		foreach ( array( Form::SHORTCODE, Form::LEGACY_SHORTCODE ) as $shortcode ) {
+		foreach ( Form::shortcodes() as $shortcode ) {
 			$ids = get_posts(
 				array(
 					'post_type'      => 'page',

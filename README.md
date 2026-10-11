@@ -1,4 +1,4 @@
-# OtkazPro – Бутон за отказ от договор
+# WPOtkaz – Бутон за отказ от договор
 
 WooCommerce плъгин за онлайн функцията за отказ от договор по **чл. 52а ЗЗП** (в сила от 24.09.2026, Директива (ЕС) 2023/2673). Добавя бутона „Откажете се от договора тук“, двустъпкова форма, частичен отказ, потвърждение на траен носител и регистър на изявленията.
 
@@ -16,10 +16,10 @@ WooCommerce плъгин за онлайн функцията за отказ о
 
 ## Инсталиране на клиентски сайт
 
-1. Качете `otkazpro.zip` от последния GitHub release (Плъгини → Добавяне → Качване) и активирайте.
-2. При активиране се създава страница **„Отказ от договор“** (`/otkaz-ot-dogovor/`) с `[otkazpro]` (старият `[py_otkaz_form]` продължава да работи като alias).
+1. Качете `wpotkaz.zip` от последния GitHub release (Плъгини → Добавяне → Качване) и активирайте.
+2. При активиране се създава страница **„Отказ от договор“** (`/otkaz-ot-dogovor/`) с `[wpotkaz]` (старите `[otkazpro]` и `[py_otkaz_form]` продължават да работят).
 3. **WooCommerce → Настройки → Отказ от договор:** акцентен цвят, радиус, имейл(и) на магазина, указания за връщане.
-4. Сменете старата форма за връщане (Forminator / WPForms / CF7) с `[otkazpro]` (старият `[py_otkaz_form]` продължава да работи като alias). Формата за **рекламации остава отделна**.
+4. Сменете старата форма за връщане (Forminator / WPForms / CF7) с `[wpotkaz]` (старите `[otkazpro]` и `[py_otkaz_form]` продължават да работят). Формата за **рекламации остава отделна**.
 5. Добавете във футъра / менюто линк „Откажете се от договора тук“ към URL-а, показан в настройките.
 6. Маркирайте изключените продукти / категории (виж по-долу).
 7. **SMTP проверка:** направете тестов отказ и проверете, че потвърждението стига до външна пощенска кутия.
@@ -67,8 +67,8 @@ WooCommerce плъгин за онлайн функцията за отказ о
 
 ## Многоезичност
 
-- Изходните низове са на английски, текст домейн `otkazpro`; включени са `languages/otkazpro.pot` и пълен **bg_BG** превод (`.po`, `.mo`, `.l10n.php`).
-- Текстовете от настройките се регистрират в WPML String Translation / Polylang (домейн `otkazpro`).
+- Изходните низове са на английски, текст домейн `wpotkaz`; включени са `languages/wpotkaz.pot` и пълен **bg_BG** превод (`.po`, `.mo`, `.l10n.php`).
+- Текстовете от настройките се регистрират в WPML String Translation / Polylang (домейн `wpotkaz`).
 - Имейлът до клиента се изпраща на езика на поръчката (WPML `wpml_language`), имейлът до магазина – на езика на сайта. Линковете водят към преведената страница на формата.
 
 ## Hooks
@@ -92,7 +92,7 @@ WooCommerce плъгин за онлайн функцията за отказ о
 
 ## Шаблони
 
-Override в темата: `wp-content/themes/<тема>/woocommerce/otkazpro/` – същата структура като `templates/` (`form-lookup.php`, `form-order.php`, `form-success.php`, `parts/*`, `emails/*`).
+Override в темата: `wp-content/themes/<тема>/woocommerce/wpotkaz/` – същата структура като `templates/` (`form-lookup.php`, `form-order.php`, `form-success.php`, `parts/*`, `emails/*`).
 
 ## Визия
 
@@ -100,9 +100,9 @@ Override в темата: `wp-content/themes/<тема>/woocommerce/otkazpro/` �
 
 ## Обновления (GitHub Releases)
 
-1. Repo: `Project-Yordanov/otkazpro` (**public**), вписано в `includes/class-updater.php` → `DEFAULT_REPO`. Сайтовете не се нуждаят от настройка или токен – изтеглят `otkazpro.zip` директно от публичния release. Ако repo-то някога стане private, всеки сайт ще има нужда от read-only токен: `define( 'PY_OTKAZ_GITHUB_TOKEN', 'github_pat_…' );` в `wp-config.php`.
-2. Вдигнете версията в `otkazpro.php` (хедър `Version` и `PY_OTKAZ_VERSION`), commit, `git tag v1.0.1 && git push --tags`.
-3. GitHub Action `.github/workflows/release.yml` проверява версията, lint-ва, build-ва и прикачва `otkazpro.zip` към release-а. Сайтовете виждат обновлението в Табло → Обновления (проверка на 6 ч).
+1. Repo: `Project-Yordanov/wpotkaz` (**public**), вписано в `includes/class-updater.php` → `DEFAULT_REPO`. Сайтовете не се нуждаят от настройка или токен – изтеглят `wpotkaz.zip` директно от публичния release. Ако repo-то някога стане private, всеки сайт ще има нужда от read-only токен: `define( 'PY_OTKAZ_GITHUB_TOKEN', 'github_pat_…' );` в `wp-config.php`.
+2. Вдигнете версията в `wpotkaz.php` (хедър `Version` и `PY_OTKAZ_VERSION`), commit, `git tag v1.0.1 && git push --tags`.
+3. GitHub Action `.github/workflows/release.yml` проверява версията, lint-ва, build-ва и прикачва `wpotkaz.zip` към release-а. Сайтовете виждат обновлението в Табло → Обновления (проверка на 6 ч).
 
 По избор в описанието на release-а: редове `Requires at least: 6.4`, `Requires PHP: 7.4`, `Tested up to: 7.1`.
 

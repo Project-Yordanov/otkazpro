@@ -36,13 +36,13 @@ class Order_Status {
 		register_post_status(
 			'wc-' . self::STATUS,
 			array(
-				'label'                     => _x( 'Withdrawal requested', 'Order status', 'otkazpro' ),
+				'label'                     => _x( 'Withdrawal requested', 'Order status', 'wpotkaz' ),
 				'public'                    => false,
 				'exclude_from_search'       => false,
 				'show_in_admin_all_list'    => true,
 				'show_in_admin_status_list' => true,
 				/* translators: %s: number of orders */
-				'label_count'               => _n_noop( 'Withdrawal requested <span class="count">(%s)</span>', 'Withdrawal requested <span class="count">(%s)</span>', 'otkazpro' ),
+				'label_count'               => _n_noop( 'Withdrawal requested <span class="count">(%s)</span>', 'Withdrawal requested <span class="count">(%s)</span>', 'wpotkaz' ),
 			)
 		);
 	}
@@ -54,7 +54,7 @@ class Order_Status {
 	 * @return array
 	 */
 	public static function add_status( $statuses ) {
-		$statuses[ 'wc-' . self::STATUS ] = _x( 'Withdrawal requested', 'Order status', 'otkazpro' );
+		$statuses[ 'wc-' . self::STATUS ] = _x( 'Withdrawal requested', 'Order status', 'wpotkaz' );
 		return $statuses;
 	}
 
