@@ -16,6 +16,7 @@ class Admin {
 
 	const PAGE = 'otkazpro';
 	const CAP  = 'manage_woocommerce';
+	const AGENCY_URL = 'https://projectyordanov.com/?utm_source=otkazpro&utm_medium=plugin&utm_campaign=wp-admin';
 
 	/**
 	 * Hooks.
@@ -24,6 +25,9 @@ class Admin {
 		add_action( 'admin_menu', array( __CLASS__, 'menu' ), 60 );
 		add_action( 'admin_post_py_otkaz_export', array( __CLASS__, 'export_csv' ) );
 		add_action( 'admin_post_py_otkaz_resend', array( __CLASS__, 'resend' ) );
+		add_action( 'admin_post_py_otkaz_page', array( __CLASS__, 'resolve_page_conflict' ) );
+		add_filter( 'plugin_row_meta', array( __CLASS__, 'row_meta' ), 10, 2 );
+		add_filter( 'admin_footer_text', array( __CLASS__, 'footer_credit' ), 20 );
 		add_action( 'admin_notices', array( __CLASS__, 'notices' ) );
 		add_action( 'admin_head', array( __CLASS__, 'admin_css' ) );
 
@@ -354,7 +358,7 @@ class Admin {
 	 * Admin notices.
 	 */
 	public static function notices() {
-		if ( get_transient( 'py_otkaz_activated' ) && current_user_can( self::CAP ) ) {
+		if ( get_transient( 'py_otkaz_activated' ) && current_user_can( self::CAP ) && ! get_option( Install::CONFLICT_OPTION ) ) {
 			delete_transient( 'py_otkaz_activated' );
 			printf(
 				'<div class="notice notice-success is-dismissible"><p>%s <a href="%s">%s</a></p></div>',
@@ -368,8 +372,18 @@ class Admin {
 		$msg = isset( $_GET['py_otkaz_msg'] ) ? sanitize_key( wp_unslash( $_GET['py_otkaz_msg'] ) ) : '';
 		if ( 'resent' === $msg ) {
 			echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__( 'The confirmation was sent to the customer.', 'otkazpro' ) . '</p></div>';
+		} elseif ( 'page_ok' === $msg ) {
+			echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__( 'The withdrawal form page is set up. Check it and add the link to your footer.', 'otkazpro' ) . '</p></div>';
+		} elseif ( 'page_failed' === $msg ) {
+			echo '<div class="notice notice-error is-dismissible"><p>' . esc_html__( 'The page could not be updated. Add [otkazpro] to the page manually and select it in the settings.', 'otkazpro' ) . '</p></div>';
 		} elseif ( 'resend_failed' === $msg ) {
 			echo '<div class="notice notice-error is-dismissible"><p>' . esc_html__( 'The email could not be sent. Check your SMTP settings and WooCommerce → Status → Logs (source “otkazpro”).', 'otkazpro' ) . '</p></div>';
+		}
+
+		$conflict = (int) get_option( Install::CONFLICT_OPTION );
+		if ( $conflict && current_user_can( self::CAP ) && current_user_can( 'edit_pages' ) ) {
+			self::conflict_notice( $conflict );
+			return;
 		}
 
 		$page_id = (int) Settings::get( 'page_id' );
@@ -380,6 +394,109 @@ class Admin {
 				echo '<div class="notice notice-warning"><p>' . esc_html__( 'The withdrawal form page is missing or not published. Customers cannot exercise their right of withdrawal online.', 'otkazpro' ) . '</p></div>';
 			}
 		}
+	}
+
+	/**
+	 * "A page with this slug already exists" notice with two choices.
+	 *
+	 * @param int $page_id Existing page ID.
+	 */
+	private static function conflict_notice( $page_id ) {
+		$post = get_post( $page_id );
+		if ( ! $post ) {
+			delete_option( Install::CONFLICT_OPTION );
+			return;
+		}
+		$url = static function ( $choice ) use ( $page_id ) {
+			return wp_nonce_url( add_query_arg( array( 'action' => 'py_otkaz_page', 'choice' => $choice, 'page_id' => $page_id ), admin_url( 'admin-post.php' ) ), 'py_otkaz_page' );
+		};
+		?>
+		<div class="notice notice-warning">
+			<p><strong><?php esc_html_e( 'OtkazPro: a page “Withdrawal from contract” already exists', 'otkazpro' ); ?></strong></p>
+			<p>
+				<?php
+				echo wp_kses_post(
+					sprintf(
+						/* translators: 1: page title with link, 2: page status */
+						__( 'The page %1$s (%2$s) uses the address that OtkazPro needs, so no new page was created and nothing was changed. Choose how to continue:', 'otkazpro' ),
+						'<a href="' . esc_url( get_permalink( $post ) ) . '" target="_blank" rel="noopener">' . esc_html( get_the_title( $post ) ) . '</a>',
+						esc_html( get_post_status_object( $post->post_status ) ? get_post_status_object( $post->post_status )->label : $post->post_status )
+					)
+				);
+				?>
+			</p>
+			<p>
+				<a class="button button-primary" href="<?php echo esc_url( $url( 'use' ) ); ?>"><?php esc_html_e( 'Use this page – add the form at the end', 'otkazpro' ); ?></a>
+				<a class="button" href="<?php echo esc_url( $url( 'new' ) ); ?>"><?php esc_html_e( 'Create a separate page', 'otkazpro' ); ?></a>
+				<a class="button-link" style="margin-left:8px" href="<?php echo esc_url( get_edit_post_link( $post ) ); ?>"><?php esc_html_e( 'Edit the page manually', 'otkazpro' ); ?></a>
+			</p>
+			<p class="description"><?php esc_html_e( 'The existing content is kept. If the page contains an old returns form (Contact Form 7, WPForms, Forminator), remove it afterwards so customers see only one form. A complaints form stays separate.', 'otkazpro' ); ?></p>
+		</div>
+		<?php
+	}
+
+	/**
+	 * Handle the page conflict choice.
+	 */
+	public static function resolve_page_conflict() {
+		check_admin_referer( 'py_otkaz_page' );
+		if ( ! current_user_can( self::CAP ) || ! current_user_can( 'edit_pages' ) ) {
+			wp_die( esc_html__( 'You do not have permission to do this.', 'otkazpro' ) );
+		}
+		$choice  = isset( $_GET['choice'] ) ? sanitize_key( wp_unslash( $_GET['choice'] ) ) : '';
+		$page_id = isset( $_GET['page_id'] ) ? absint( $_GET['page_id'] ) : 0;
+		$ok      = false;
+		if ( 'use' === $choice ) {
+			$ok = Install::use_existing_page( $page_id );
+		} elseif ( 'new' === $choice ) {
+			$ok = (bool) Install::create_page();
+		}
+		wp_safe_redirect( add_query_arg( 'py_otkaz_msg', $ok ? 'page_ok' : 'page_failed', Settings::url() ) );
+		exit;
+	}
+
+	/**
+	 * Discreet developer link on the Plugins screen.
+	 *
+	 * @param array  $meta Row meta.
+	 * @param string $file Plugin file.
+	 * @return array
+	 */
+	public static function row_meta( $meta, $file ) {
+		if ( PY_OTKAZ_BASENAME === $file ) {
+			$meta[] = sprintf(
+				/* translators: %s: agency name with link */
+				esc_html__( 'Developed by %s', 'otkazpro' ),
+				'<a href="' . esc_url( self::AGENCY_URL ) . '" target="_blank" rel="noopener">Project Yordanov</a>'
+			);
+		}
+		return $meta;
+	}
+
+	/**
+	 * Discreet credit in the admin footer, only on OtkazPro screens.
+	 *
+	 * @param string $text Footer text.
+	 * @return string
+	 */
+	public static function footer_credit( $text ) {
+		$screen = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
+		if ( ! $screen ) {
+			return $text;
+		}
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$tab  = isset( $_GET['tab'] ) ? sanitize_key( wp_unslash( $_GET['tab'] ) ) : '';
+		$ours = 'woocommerce_page_' . self::PAGE === $screen->id || ( 'woocommerce_page_wc-settings' === $screen->id && Settings::TAB === $tab );
+		if ( ! $ours ) {
+			return $text;
+		}
+		return sprintf(
+			/* translators: 1: plugin name, 2: version, 3: agency name with link */
+			esc_html__( '%1$s %2$s · developed by %3$s', 'otkazpro' ),
+			'OtkazPro',
+			esc_html( PY_OTKAZ_VERSION ),
+			'<a href="' . esc_url( self::AGENCY_URL ) . '" target="_blank" rel="noopener">Project Yordanov</a>'
+		);
 	}
 
 	/**

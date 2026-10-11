@@ -17,6 +17,8 @@ class Install {
 	const DB_VERSION        = '1.0.0';
 	const DB_VERSION_OPTION = 'py_otkaz_db_version';
 	const CRON_HOOK         = 'py_otkaz_daily_cleanup';
+	const PAGE_SLUG         = 'otkaz-ot-dogovor';
+	const CONFLICT_OPTION   = 'py_otkaz_page_conflict';
 
 	/**
 	 * Hooks.
@@ -137,21 +139,80 @@ class Install {
 			return;
 		}
 
+		// A page with our slug already exists (e.g. an old returns form): never overwrite or
+		// duplicate it silently – let the merchant decide in the admin.
+		$slug_page = get_page_by_path( self::PAGE_SLUG, OBJECT, 'page' );
+		if ( $slug_page && 'trash' !== $slug_page->post_status ) {
+			update_option( self::CONFLICT_OPTION, (int) $slug_page->ID, false );
+			return;
+		}
+
+		self::create_page();
+	}
+
+	/**
+	 * Create a new form page and select it in the settings.
+	 *
+	 * @return int Page ID or 0.
+	 */
+	public static function create_page() {
 		$page_id = wp_insert_post(
 			array(
 				'post_type'      => 'page',
 				'post_status'    => 'publish',
 				'post_title'     => __( 'Withdrawal from contract', 'otkazpro' ),
-				'post_name'      => 'otkaz-ot-dogovor',
-				'post_content'   => '<!-- wp:shortcode -->[' . Form::SHORTCODE . ']<!-- /wp:shortcode -->',
+				'post_name'      => self::PAGE_SLUG,
+				'post_content'   => self::shortcode_block(),
 				'comment_status' => 'closed',
 				'ping_status'    => 'closed',
 			)
 		);
 
-		if ( $page_id && ! is_wp_error( $page_id ) ) {
-			update_option( Settings::PREFIX . 'page_id', (int) $page_id );
+		if ( ! $page_id || is_wp_error( $page_id ) ) {
+			return 0;
 		}
+		update_option( Settings::PREFIX . 'page_id', (int) $page_id );
+		delete_option( self::CONFLICT_OPTION );
+		return (int) $page_id;
+	}
+
+	/**
+	 * Add the form at the end of an existing page (content is kept) and select it.
+	 *
+	 * @param int $page_id Page ID.
+	 * @return bool
+	 */
+	public static function use_existing_page( $page_id ) {
+		$post = get_post( $page_id );
+		if ( ! $post || 'page' !== $post->post_type ) {
+			return false;
+		}
+		if ( ! has_shortcode( $post->post_content, Form::SHORTCODE ) && ! has_shortcode( $post->post_content, Form::LEGACY_SHORTCODE ) ) {
+			$result = wp_update_post(
+				array(
+					'ID'           => $post->ID,
+					'post_content' => rtrim( $post->post_content ) . "
+
+" . self::shortcode_block(),
+				),
+				true
+			);
+			if ( is_wp_error( $result ) ) {
+				return false;
+			}
+		}
+		update_option( Settings::PREFIX . 'page_id', (int) $post->ID );
+		delete_option( self::CONFLICT_OPTION );
+		return true;
+	}
+
+	/**
+	 * Shortcode block markup.
+	 *
+	 * @return string
+	 */
+	private static function shortcode_block() {
+		return '<!-- wp:shortcode -->[' . Form::SHORTCODE . ']<!-- /wp:shortcode -->';
 	}
 
 	/**
