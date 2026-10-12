@@ -49,7 +49,8 @@ class Cache_Check {
 		if ( '' === self::$marker ) {
 			self::$marker = wp_generate_password( 20, false );
 		}
-		return '<!-- ' . self::MARKER_KEY . self::$marker . ' -->';
+		// Comment + attribute: HTML minifiers may strip comments but keep attributes.
+		return '<!-- ' . self::MARKER_KEY . self::$marker . ' --><span hidden data-py-render="' . esc_attr( self::$marker ) . '"></span>';
 	}
 
 	/**
@@ -149,14 +150,24 @@ class Cache_Check {
 					'detected' => $detected,
 				);
 			}
-			if ( ! preg_match( '/' . preg_quote( self::MARKER_KEY, '/' ) . '([A-Za-z0-9]+)/', $body, $m ) ) {
+			if ( preg_match( '/data-py-render="([A-Za-z0-9]+)"/', $body, $m ) || preg_match( '/' . preg_quote( self::MARKER_KEY, '/' ) . '([A-Za-z0-9]+)/', $body, $m ) ) {
+				$markers[] = $m[1];
+				continue;
+			}
+			if ( false !== strpos( $body, 'data-py-otkaz' ) ) {
+				// The form is there but without a render marker: an old cached copy
+				// (made before the marker existed) – i.e. the page is served from cache.
 				return array(
-					'status'   => 'error',
-					'error'    => __( 'The form was not found on the page (is the shortcode on the selected page?).', 'wpotkaz' ),
-					'detected' => $detected,
+					'status'   => 'cached',
+					'detected' => array_values( array_unique( $detected ) ),
+					'error'    => '',
 				);
 			}
-			$markers[] = $m[1];
+			return array(
+				'status'   => 'error',
+				'error'    => __( 'The form was not found on the page (is the shortcode on the selected page?).', 'wpotkaz' ),
+				'detected' => $detected,
+			);
 		}
 		return array(
 			'status'   => $markers[0] === $markers[1] ? 'cached' : 'ok',
