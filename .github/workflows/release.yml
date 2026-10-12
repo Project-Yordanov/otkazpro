@@ -1,5 +1,9 @@
-# Builds wpotkaz.zip and attaches it to the GitHub release when a tag v*.*.* is pushed.
-# Client sites pick the release up through the built-in updater (see README → Updates).
+# OtkazPro release: on tag vX.Y.Z
+# - checks that the tag matches the plugin version and the readme Stable tag,
+# - lints PHP, builds CSS + translations, packs otkazpro.zip (only files allowed by .distignore),
+# - publishes a GitHub *pre-release* with the zip (pre-release so that old WPOtkaz installs,
+#   which look at the "latest" release, are not offered OtkazPro),
+# - deploys to WordPress.org SVN when the repository secrets SVN_USERNAME / SVN_PASSWORD exist.
 name: Release
 
 on:
@@ -13,6 +17,9 @@ permissions:
 jobs:
   release:
     runs-on: ubuntu-latest
+    env:
+      SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
+      SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
     steps:
       - uses: actions/checkout@v4
 
@@ -20,13 +27,14 @@ jobs:
         with:
           php-version: '8.2'
 
-      - name: Check version matches tag
+      - name: Check versions match the tag
         run: |
           TAG="${GITHUB_REF_NAME#v}"
-          HEADER=$(grep -m1 -E '^\s*\*\s*Version:' wpotkaz.php | awk '{print $3}')
-          CONST=$(grep -m1 "PY_OTKAZ_VERSION'" wpotkaz.php | sed -E "s/.*'([0-9.]+)'.*/\1/")
-          echo "tag=$TAG header=$HEADER const=$CONST"
-          test "$TAG" = "$HEADER" && test "$TAG" = "$CONST"
+          HEADER=$(grep -m1 -E '^\s*\*\s*Version:' otkazpro.php | awk '{print $3}')
+          CONST=$(grep -m1 "PY_OTKAZ_VERSION'" otkazpro.php | sed -E "s/.*'([0-9.]+)'.*/\1/")
+          STABLE=$(grep -m1 -i '^Stable tag:' readme.txt | awk '{print $3}')
+          echo "tag=$TAG header=$HEADER const=$CONST stable=$STABLE"
+          test "$TAG" = "$HEADER" && test "$TAG" = "$CONST" && test "$TAG" = "$STABLE"
 
       - name: Lint PHP
         run: find . -name '*.php' -not -path './.git/*' -print0 | xargs -0 -n1 php -l
@@ -36,15 +44,20 @@ jobs:
 
       - name: Package
         run: |
-          mkdir -p dist/wpotkaz
-          git archive HEAD | tar -x -C dist/wpotkaz
-          # Built artefacts may be newer than the committed ones.
-          cp assets/css/wpotkaz.min.css dist/wpotkaz/assets/css/
-          cp languages/* dist/wpotkaz/languages/
-          cd dist && zip -rq wpotkaz.zip wpotkaz
+          mkdir -p dist/otkazpro
+          rsync -a --exclude-from=.distignore ./ dist/otkazpro/
+          cd dist && zip -rq otkazpro.zip otkazpro
 
-      - name: Publish release
+      - name: GitHub pre-release
         uses: softprops/action-gh-release@v2
         with:
-          files: dist/wpotkaz.zip
+          files: dist/otkazpro.zip
+          prerelease: true
           generate_release_notes: true
+
+      - name: Deploy to WordPress.org
+        if: ${{ env.SVN_USERNAME != '' }}
+        uses: 10up/action-wordpress-plugin-deploy@stable
+        env:
+          SLUG: otkazpro
+          BUILD_DIR: dist/otkazpro

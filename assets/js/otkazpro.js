@@ -1,11 +1,11 @@
 /**
- * WPOtkaz – progressive enhancement for the withdrawal form (no dependencies).
+ * OtkazPro – progressive enhancement for the withdrawal form (no dependencies).
  * The form works fully without JavaScript; this only improves feedback.
  */
 (function () {
 	'use strict';
 
-	var i18n = window.wpotkazL10n || {};
+	var i18n = window.otkazproL10n || {};
 
 	function each(list, fn) {
 		Array.prototype.forEach.call(list, fn);
@@ -16,18 +16,18 @@
 	}
 
 	function initSubmitForm(form) {
-		var checks = form.querySelectorAll('[data-wpotkaz-check]');
-		var button = form.querySelector('[data-wpotkaz-submit]');
-		var status = form.querySelector('[data-wpotkaz-status]');
-		var allWrap = form.querySelector('[data-wpotkaz-selectall-wrap]');
-		var all = form.querySelector('[data-wpotkaz-selectall]');
+		var checks = form.querySelectorAll('[data-otkazpro-check]');
+		var button = form.querySelector('[data-otkazpro-submit]');
+		var status = form.querySelector('[data-otkazpro-status]');
+		var allWrap = form.querySelector('[data-otkazpro-selectall-wrap]');
+		var all = form.querySelector('[data-otkazpro-selectall]');
 
 		function update() {
 			var count = 0;
 			var pcs = 0;
 			each(checks, function (cb) {
-				var row = cb.closest('[data-wpotkaz-item]');
-				var qty = row ? row.querySelector('[data-wpotkaz-qty]') : null;
+				var row = cb.closest('[data-otkazpro-item]');
+				var qty = row ? row.querySelector('[data-otkazpro-qty]') : null;
 				if (qty && qty.type === 'number') {
 					qty.disabled = !cb.checked;
 				}
@@ -54,7 +54,7 @@
 		each(checks, function (cb) {
 			cb.addEventListener('change', update);
 		});
-		each(form.querySelectorAll('[data-wpotkaz-qty]'), function (q) {
+		each(form.querySelectorAll('[data-otkazpro-qty]'), function (q) {
 			q.addEventListener('input', update);
 		});
 
@@ -69,7 +69,7 @@
 		}
 
 		form.addEventListener('submit', function (e) {
-			if (form.getAttribute('data-wpotkaz-busy')) {
+			if (form.getAttribute('data-otkazpro-busy')) {
 				e.preventDefault();
 				return;
 			}
@@ -77,10 +77,10 @@
 				e.preventDefault();
 				return;
 			}
-			form.setAttribute('data-wpotkaz-busy', '1');
+			form.setAttribute('data-otkazpro-busy', '1');
 			if (button) {
 				button.setAttribute('aria-busy', 'true');
-				button.setAttribute('data-wpotkaz-label', button.textContent);
+				button.setAttribute('data-otkazpro-label', button.textContent);
 				button.textContent = i18n.sending || button.textContent;
 			}
 		});
@@ -91,11 +91,11 @@
 	function initLookupForm(form) {
 		var button = form.querySelector('button[type=submit]');
 		form.addEventListener('submit', function (e) {
-			if (form.getAttribute('data-wpotkaz-busy')) {
+			if (form.getAttribute('data-otkazpro-busy')) {
 				e.preventDefault();
 				return;
 			}
-			form.setAttribute('data-wpotkaz-busy', '1');
+			form.setAttribute('data-otkazpro-busy', '1');
 			if (button) {
 				button.setAttribute('aria-busy', 'true');
 			}
@@ -103,11 +103,11 @@
 	}
 
 	function init() {
-		each(document.querySelectorAll('[data-wpotkaz-otkaz]'), function (root) {
-			each(root.querySelectorAll('form[data-wpotkaz-form="submit"]'), initSubmitForm);
-			each(root.querySelectorAll('form[data-wpotkaz-form="lookup"]'), initLookupForm);
+		each(document.querySelectorAll('[data-otkazpro]'), function (root) {
+			each(root.querySelectorAll('form[data-otkazpro-form="submit"]'), initSubmitForm);
+			each(root.querySelectorAll('form[data-otkazpro-form="lookup"]'), initLookupForm);
 
-			var focus = root.querySelector('[data-wpotkaz-focus]');
+			var focus = root.querySelector('[data-otkazpro-focus]');
 			if (focus) {
 				// Page builders may keep the content hidden while an entrance animation runs.
 				var tries = 0;
@@ -120,7 +120,7 @@
 				tryFocus();
 			}
 
-			each(root.querySelectorAll('[data-wpotkaz-print]'), function (btn) {
+			each(root.querySelectorAll('[data-otkazpro-print]'), function (btn) {
 				btn.hidden = false;
 				btn.addEventListener('click', function () {
 					window.print();
@@ -133,12 +133,12 @@
 			if (!e.persisted) {
 				return;
 			}
-			each(document.querySelectorAll('[data-wpotkaz-otkaz] form[data-wpotkaz-busy]'), function (form) {
-				form.removeAttribute('data-wpotkaz-busy');
+			each(document.querySelectorAll('[data-otkazpro] form[data-otkazpro-busy]'), function (form) {
+				form.removeAttribute('data-otkazpro-busy');
 				each(form.querySelectorAll('[aria-busy]'), function (b) {
 					b.removeAttribute('aria-busy');
-					if (b.getAttribute('data-wpotkaz-label')) {
-						b.textContent = b.getAttribute('data-wpotkaz-label');
+					if (b.getAttribute('data-otkazpro-label')) {
+						b.textContent = b.getAttribute('data-otkazpro-label');
 					}
 				});
 			});

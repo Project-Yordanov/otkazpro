@@ -19,6 +19,12 @@ class Install {
 	const CRON_HOOK         = 'py_otkaz_daily_cleanup';
 	const PAGE_SLUG         = 'otkaz-ot-dogovor';
 	const CONFLICT_OPTION   = 'py_otkaz_page_conflict';
+	const BACKUP_OPTION     = 'otkazpro_settings_backup'; // Outside the py_otkaz_ prefix on purpose.
+
+	/**
+	 * Earlier editions of the plugin (same data, different folder / name).
+	 */
+	const OLD_EDITIONS = array( 'wpotkaz/wpotkaz.php', 'wpotkaz-main/wpotkaz.php', 'otkazpro-main/otkazpro.php', 'py-otkaz/py-otkaz.php' );
 
 	/**
 	 * Hooks.
@@ -26,6 +32,9 @@ class Install {
 	public static function init() {
 		add_action( 'init', array( __CLASS__, 'maybe_upgrade' ), 5 );
 		add_action( 'init', array( __CLASS__, 'ensure_cron' ), 20 );
+		add_action( 'admin_init', array( __CLASS__, 'restore_settings_if_wiped' ), 1 );
+		add_action( 'admin_init', array( __CLASS__, 'maybe_take_over' ), 2 );
+		add_action( self::CRON_HOOK, array( __CLASS__, 'backup_settings' ) );
 	}
 
 	/**
@@ -33,15 +42,84 @@ class Install {
 	 */
 	public static function activate() {
 		// Translations are needed for the default page title.
-		load_plugin_textdomain( 'wpotkaz', false, dirname( PY_OTKAZ_BASENAME ) . '/languages' );
+		load_plugin_textdomain( 'otkazpro', false, dirname( PY_OTKAZ_BASENAME ) . '/languages' ); // phpcs:ignore PluginCheck.CodeAnalysis.DiscouragedFunctions.load_plugin_textdomainFound -- bundled bg_BG translation for the page title.
 
+		self::take_over_old_editions();
+		self::restore_settings_if_wiped();
 		self::create_tables();
 		self::maybe_create_page();
 		self::ensure_cron();
+		self::backup_settings();
 		update_option( self::DB_VERSION_OPTION, self::DB_VERSION, false );
 		update_option( 'py_otkaz_version', PY_OTKAZ_VERSION, false );
 		set_transient( 'py_otkaz_activated', 1, MINUTE_IN_SECONDS * 5 );
 		Cache_Check::schedule_soon();
+	}
+
+	/**
+	 * Deactivate earlier editions (WPOtkaz from GitHub) – OtkazPro uses the same settings and data.
+	 */
+	public static function maybe_take_over() {
+		if ( current_user_can( 'activate_plugins' ) ) {
+			self::take_over_old_editions();
+		}
+	}
+
+	/**
+	 * Deactivate earlier editions that are still active.
+	 */
+	private static function take_over_old_editions() {
+		require_once ABSPATH . 'wp-admin/includes/plugin.php';
+		$taken = array();
+		foreach ( self::OLD_EDITIONS as $old ) {
+			if ( $old !== PY_OTKAZ_BASENAME && is_plugin_active( $old ) ) {
+				deactivate_plugins( $old, true );
+				$taken[] = $old;
+			}
+		}
+		if ( $taken ) {
+			set_transient( 'py_otkaz_took_over', $taken, DAY_IN_SECONDS );
+			self::backup_settings();
+		}
+	}
+
+	/**
+	 * Keep a copy of all settings under a different option name.
+	 */
+	public static function backup_settings() {
+		global $wpdb;
+		// Never overwrite a good backup with wiped settings.
+		if ( null === get_option( Settings::PREFIX . 'page_id', null ) ) {
+			return;
+		}
+		$rows = $wpdb->get_results( "SELECT option_name, option_value FROM {$wpdb->options} WHERE option_name LIKE 'py\\_otkaz\\_%'", ARRAY_A ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		$data = array();
+		foreach ( (array) $rows as $row ) {
+			$data[ $row['option_name'] ] = maybe_unserialize( $row['option_value'] );
+		}
+		if ( $data ) {
+			update_option( self::BACKUP_OPTION, $data, false );
+		}
+	}
+
+	/**
+	 * Uninstalling an older edition (before 1.3.1) deletes the shared py_otkaz_ settings –
+	 * restore them from the backup.
+	 */
+	public static function restore_settings_if_wiped() {
+		if ( null !== get_option( Settings::PREFIX . 'page_id', null ) ) {
+			return;
+		}
+		$backup = get_option( self::BACKUP_OPTION );
+		if ( ! is_array( $backup ) || ! $backup ) {
+			return;
+		}
+		foreach ( $backup as $name => $value ) {
+			if ( 0 === strpos( $name, Settings::PREFIX ) && null === get_option( $name, null ) ) {
+				add_option( $name, $value, '', false );
+			}
+		}
+		set_transient( 'py_otkaz_settings_restored', 1, DAY_IN_SECONDS );
 	}
 
 	/**
@@ -64,6 +142,7 @@ class Install {
 		if ( get_option( 'py_otkaz_version' ) !== PY_OTKAZ_VERSION ) {
 			update_option( 'py_otkaz_version', PY_OTKAZ_VERSION, false );
 			Cache_Check::schedule_soon();
+			self::backup_settings();
 		}
 	}
 
@@ -168,7 +247,7 @@ class Install {
 			array(
 				'post_type'      => 'page',
 				'post_status'    => 'publish',
-				'post_title'     => __( 'Withdrawal from contract', 'wpotkaz' ),
+				'post_title'     => __( 'Withdrawal from contract', 'otkazpro' ),
 				'post_name'      => self::PAGE_SLUG,
 				'post_content'   => self::shortcode_block(),
 				'comment_status' => 'closed',

@@ -20,8 +20,8 @@ class Customer_Confirmation extends Base {
 	public function __construct() {
 		$this->id             = 'py_otkaz_customer_confirmation';
 		$this->customer_email = true;
-		$this->title          = __( 'Withdrawal confirmation', 'wpotkaz' );
-		$this->description    = __( 'Sent to the customer immediately after a withdrawal statement is submitted (confirmation on a durable medium). Required by law, therefore it cannot be disabled.', 'wpotkaz' );
+		$this->title          = __( 'Withdrawal confirmation', 'otkazpro' );
+		$this->description    = __( 'Sent to the customer immediately after a withdrawal statement is submitted (confirmation on a durable medium). Required by law, therefore it cannot be disabled.', 'otkazpro' );
 		$this->template_html  = 'emails/customer-otkaz-confirmation.php';
 		$this->template_plain = 'emails/plain/customer-otkaz-confirmation.php';
 		$this->setup_base();
@@ -35,7 +35,7 @@ class Customer_Confirmation extends Base {
 	 * @return string
 	 */
 	public function get_default_subject() {
-		return __( 'Confirmation of your withdrawal {otkaz_number} – order #{order_number}', 'wpotkaz' );
+		return __( 'Confirmation of your withdrawal {otkaz_number} – order #{order_number}', 'otkazpro' );
 	}
 
 	/**
@@ -44,7 +44,7 @@ class Customer_Confirmation extends Base {
 	 * @return string
 	 */
 	public function get_default_heading() {
-		return __( 'We have received your withdrawal', 'wpotkaz' );
+		return __( 'We have received your withdrawal', 'otkazpro' );
 	}
 
 	/**
@@ -53,7 +53,7 @@ class Customer_Confirmation extends Base {
 	 * @return string
 	 */
 	public function get_default_additional_content() {
-		return __( 'Please keep this email – it is your confirmation of the withdrawal.', 'wpotkaz' );
+		return __( 'Please keep this email – it is your confirmation of the withdrawal.', 'otkazpro' );
 	}
 
 	/**

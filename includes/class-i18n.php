@@ -14,7 +14,7 @@ defined( 'ABSPATH' ) || exit;
  */
 class I18n {
 
-	const CONTEXT = 'wpotkaz';
+	const CONTEXT = 'otkazpro';
 
 	/**
 	 * Hooks.
@@ -39,7 +39,7 @@ class I18n {
 	public static function register_strings() {
 		foreach ( self::translatable_keys() as $key ) {
 			if ( Settings::is_stored( $key ) ) {
-				do_action( 'wpml_register_single_string', self::CONTEXT, $key, (string) Settings::get( $key ) );
+				do_action( 'wpml_register_single_string', self::CONTEXT, $key, (string) Settings::get( $key ) ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- third-party / core hook.
 			}
 		}
 	}
@@ -71,7 +71,7 @@ class I18n {
 			return $value;
 		}
 		if ( has_filter( 'wpml_translate_single_string' ) ) {
-			return (string) apply_filters( 'wpml_translate_single_string', $value, self::CONTEXT, $key, $lang );
+			return (string) apply_filters( 'wpml_translate_single_string', $value, self::CONTEXT, $key, $lang ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- third-party / core hook.
 		}
 		if ( $lang && function_exists( 'pll_translate_string' ) ) {
 			return (string) pll_translate_string( $value, $lang );
@@ -92,7 +92,7 @@ class I18n {
 		if ( ! self::is_multilingual() ) {
 			return '';
 		}
-		$lang = apply_filters( 'wpml_current_language', null );
+		$lang = apply_filters( 'wpml_current_language', null ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- third-party / core hook.
 		if ( ! $lang && function_exists( 'pll_current_language' ) ) {
 			$lang = pll_current_language();
 		}
@@ -133,7 +133,7 @@ class I18n {
 		if ( ! $lang || ! self::is_multilingual() ) {
 			return '';
 		}
-		$languages = apply_filters( 'wpml_active_languages', null, array( 'skip_missing' => 0 ) );
+		$languages = apply_filters( 'wpml_active_languages', null, array( 'skip_missing' => 0 ) ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- third-party / core hook.
 		if ( is_array( $languages ) && isset( $languages[ $lang ]['default_locale'] ) ) {
 			return (string) $languages[ $lang ]['default_locale'];
 		}
@@ -165,7 +165,7 @@ class I18n {
 
 		if ( $lang && self::is_multilingual() && has_action( 'wpml_switch_language' ) ) {
 			$state['wpml_prev'] = self::current_language();
-			do_action( 'wpml_switch_language', $lang );
+			do_action( 'wpml_switch_language', $lang ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- third-party / core hook.
 		}
 
 		$locale = self::locale_for( $lang );
@@ -187,7 +187,7 @@ class I18n {
 			restore_previous_locale();
 		}
 		if ( ! empty( $state['wpml_prev'] ) ) {
-			do_action( 'wpml_switch_language', $state['wpml_prev'] );
+			do_action( 'wpml_switch_language', $state['wpml_prev'] ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- third-party / core hook.
 		}
 	}
 }

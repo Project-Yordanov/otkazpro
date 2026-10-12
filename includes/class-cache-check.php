@@ -21,7 +21,7 @@ class Cache_Check {
 
 	const OPTION     = 'py_otkaz_cache_check';
 	const ONCE_HOOK  = 'py_otkaz_cache_check_once';
-	const MARKER_KEY = 'wpotkaz-render:';
+	const MARKER_KEY = 'otkazpro-render:';
 
 	/**
 	 * Marker of the current request (one per page view).
@@ -36,7 +36,7 @@ class Cache_Check {
 	public static function init() {
 		add_action( Install::CRON_HOOK, array( __CLASS__, 'run' ), 20 );
 		add_action( self::ONCE_HOOK, array( __CLASS__, 'run' ) );
-		add_action( 'admin_post_wpotkaz_cache_check', array( __CLASS__, 'handle_button' ) );
+		add_action( 'admin_post_otkazpro_cache_check', array( __CLASS__, 'handle_button' ) );
 		add_filter( 'site_status_tests', array( __CLASS__, 'register_site_health' ) );
 	}
 
@@ -50,7 +50,7 @@ class Cache_Check {
 			self::$marker = wp_generate_password( 20, false );
 		}
 		// Comment + attribute: HTML minifiers may strip comments but keep attributes.
-		return '<!-- ' . self::MARKER_KEY . self::$marker . ' --><span hidden data-wpotkaz-render="' . esc_attr( self::$marker ) . '"></span>';
+		return '<!-- ' . self::MARKER_KEY . self::$marker . ' --><span hidden data-otkazpro-render="' . esc_attr( self::$marker ) . '"></span>';
 	}
 
 	/**
@@ -88,14 +88,14 @@ class Cache_Check {
 				'bare'     => 'error',
 				'query'    => 'error',
 				'detected' => array(),
-				'error'    => __( 'The form page is missing or not published.', 'wpotkaz' ),
+				'error'    => __( 'The form page is missing or not published.', 'otkazpro' ),
 			);
 			update_option( self::OPTION, $result, false );
 			return $result;
 		}
 
 		$bare  = self::probe( $url );
-		$query = self::probe( add_query_arg( 'wpotkaz_done', 'cachecheck', $url ) );
+		$query = self::probe( add_query_arg( 'otkazpro_done', 'cachecheck', $url ) );
 
 		$detected = array_merge( $bare['detected'], $query['detected'] );
 		if ( 'cached' === $bare['status'] || 'cached' === $query['status'] ) {
@@ -146,15 +146,15 @@ class Cache_Check {
 				return array(
 					'status'   => 'error',
 					/* translators: %d: HTTP status code */
-					'error'    => sprintf( __( 'The form page returned HTTP %d to the check (firewall or bot protection?).', 'wpotkaz' ), $code ),
+					'error'    => sprintf( __( 'The form page returned HTTP %d to the check (firewall or bot protection?).', 'otkazpro' ), $code ),
 					'detected' => $detected,
 				);
 			}
-			if ( preg_match( '/data-wpotkaz-render="([A-Za-z0-9]+)"/', $body, $m ) || preg_match( '/' . preg_quote( self::MARKER_KEY, '/' ) . '([A-Za-z0-9]+)/', $body, $m ) ) {
+			if ( preg_match( '/data-otkazpro-render="([A-Za-z0-9]+)"/', $body, $m ) || preg_match( '/' . preg_quote( self::MARKER_KEY, '/' ) . '([A-Za-z0-9]+)/', $body, $m ) ) {
 				$markers[] = $m[1];
 				continue;
 			}
-			if ( false !== strpos( $body, 'data-wpotkaz-otkaz' ) ) {
+			if ( preg_match( '/data-(otkazpro|wpotkaz-otkaz|py-otkaz)[\s=>"]/', $body ) ) {
 				// The form is there but without a render marker: an old cached copy
 				// (made before the marker existed) – i.e. the page is served from cache.
 				return array(
@@ -165,7 +165,7 @@ class Cache_Check {
 			}
 			return array(
 				'status'   => 'error',
-				'error'    => __( 'The form was not found on the page (is the shortcode on the selected page?).', 'wpotkaz' ),
+				'error'    => __( 'The form was not found on the page (is the shortcode on the selected page?).', 'otkazpro' ),
 				'detected' => $detected,
 			);
 		}
@@ -186,7 +186,7 @@ class Cache_Check {
 		$args = array(
 			'timeout'     => 20,
 			'redirection' => 3,
-			'sslverify'   => apply_filters( 'https_local_ssl_verify', false ),
+			'sslverify'   => apply_filters( 'https_local_ssl_verify', false ), // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- third-party / core hook.
 			'headers'     => array(
 				// A regular visitor – some caches skip bots.
 				'User-Agent'      => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36',
@@ -300,28 +300,28 @@ class Cache_Check {
 	public static function describe( $r ) {
 		$level = self::level( $r );
 		if ( ! $r ) {
-			return esc_html__( 'The cache check has not run yet.', 'wpotkaz' );
+			return esc_html__( 'The cache check has not run yet.', 'otkazpro' );
 		}
-		$names = $r['detected'] ? implode( ', ', $r['detected'] ) : __( 'a page cache (plugin, hosting or CDN)', 'wpotkaz' );
+		$names = $r['detected'] ? implode( ', ', $r['detected'] ) : __( 'a page cache (plugin, hosting or CDN)', 'otkazpro' );
 		$path  = $r['url'] ? (string) wp_parse_url( $r['url'], PHP_URL_PATH ) : '/otkaz-ot-dogovor/';
 		if ( $r['url'] && ( '/' === $path || '' === $path ) ) {
 			$path = $r['url']; // Plain permalinks (?page_id=…): show the full address.
 		}
 		$fix   = sprintf(
 			/* translators: 1: cache names, 2: page path */
-			__( 'Exclude %2$s and everything after it from caching in %1$s (for Cloudflare: a Cache Rule “Bypass cache” for this path), purge the cache and run the check again.', 'wpotkaz' ),
+			__( 'Exclude %2$s and everything after it from caching in %1$s (for Cloudflare: a Cache Rule “Bypass cache” for this path), purge the cache and run the check again.', 'otkazpro' ),
 			$names,
 			$path
 		);
 		switch ( $level ) {
 			case 'critical':
-				return '<strong>' . esc_html__( 'Pages with a query string are served from cache: a customer’s order page could be shown to other visitors.', 'wpotkaz' ) . '</strong> ' . esc_html( $fix );
+				return '<strong>' . esc_html__( 'Pages with a query string are served from cache: a customer’s order page could be shown to other visitors.', 'otkazpro' ) . '</strong> ' . esc_html( $fix );
 			case 'recommended':
-				return esc_html__( 'The form page is served from cache. The form keeps working, but excluding it is recommended.', 'wpotkaz' ) . ' ' . esc_html( $fix );
+				return esc_html__( 'The form page is served from cache. The form keeps working, but excluding it is recommended.', 'otkazpro' ) . ' ' . esc_html( $fix );
 			case 'good':
-				return esc_html__( 'The form page is not cached.', 'wpotkaz' );
+				return esc_html__( 'The form page is not cached.', 'otkazpro' );
 			default:
-				return esc_html__( 'The check could not be completed:', 'wpotkaz' ) . ' ' . esc_html( $r['error'] );
+				return esc_html__( 'The check could not be completed:', 'otkazpro' ) . ' ' . esc_html( $r['error'] );
 		}
 	}
 
@@ -329,12 +329,12 @@ class Cache_Check {
 	 * "Check cache" button.
 	 */
 	public static function handle_button() {
-		check_admin_referer( 'wpotkaz_cache_check' );
+		check_admin_referer( 'otkazpro_cache_check' );
 		if ( ! current_user_can( 'manage_woocommerce' ) ) {
-			wp_die( esc_html__( 'You do not have permission to do this.', 'wpotkaz' ) );
+			wp_die( esc_html__( 'You do not have permission to do this.', 'otkazpro' ) );
 		}
 		self::run();
-		wp_safe_redirect( add_query_arg( 'wpotkaz_msg', 'cache_checked', Settings::url() ) );
+		wp_safe_redirect( add_query_arg( 'otkazpro_msg', 'cache_checked', Settings::url() ) );
 		exit;
 	}
 
@@ -344,7 +344,7 @@ class Cache_Check {
 	 * @return string
 	 */
 	public static function button_url() {
-		return wp_nonce_url( admin_url( 'admin-post.php?action=wpotkaz_cache_check' ), 'wpotkaz_cache_check' );
+		return wp_nonce_url( admin_url( 'admin-post.php?action=otkazpro_cache_check' ), 'otkazpro_cache_check' );
 	}
 
 	/**
@@ -354,8 +354,8 @@ class Cache_Check {
 	 * @return array
 	 */
 	public static function register_site_health( $tests ) {
-		$tests['direct']['wpotkaz_cache'] = array(
-			'label' => __( 'WPOtkaz: withdrawal form is not cached', 'wpotkaz' ),
+		$tests['direct']['otkazpro_cache'] = array(
+			'label' => __( 'OtkazPro: withdrawal form is not cached', 'otkazpro' ),
 			'test'  => array( __CLASS__, 'site_health_result' ),
 		);
 		return $tests;
@@ -371,20 +371,20 @@ class Cache_Check {
 		$level  = self::level( $r );
 		$status = in_array( $level, array( 'good', 'recommended', 'critical' ), true ) ? $level : 'recommended';
 		$labels = array(
-			'good'        => __( 'The withdrawal form page is not cached', 'wpotkaz' ),
-			'recommended' => __( 'The withdrawal form page is cached or could not be checked', 'wpotkaz' ),
-			'critical'    => __( 'Customer order pages of the withdrawal form are cached', 'wpotkaz' ),
+			'good'        => __( 'The withdrawal form page is not cached', 'otkazpro' ),
+			'recommended' => __( 'The withdrawal form page is cached or could not be checked', 'otkazpro' ),
+			'critical'    => __( 'Customer order pages of the withdrawal form are cached', 'otkazpro' ),
 		);
 		return array(
 			'label'       => $labels[ $status ],
 			'status'      => $status,
 			'badge'       => array(
-				'label' => 'WPOtkaz',
+				'label' => 'OtkazPro',
 				'color' => 'critical' === $status ? 'red' : ( 'good' === $status ? 'blue' : 'orange' ),
 			),
 			'description' => '<p>' . self::describe( $r ) . '</p>',
-			'actions'     => sprintf( '<p><a href="%s">%s</a></p>', esc_url( Settings::url() ), esc_html__( 'Open WPOtkaz settings', 'wpotkaz' ) ),
-			'test'        => 'wpotkaz_cache',
+			'actions'     => sprintf( '<p><a href="%s">%s</a></p>', esc_url( Settings::url() ), esc_html__( 'Open OtkazPro settings', 'otkazpro' ) ),
+			'test'        => 'otkazpro_cache',
 		);
 	}
 }

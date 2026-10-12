@@ -64,7 +64,7 @@ class Emails {
 		$sent = (bool) $admin->trigger( $submission, $order );
 		$submission->update_email_status( '', $sent ? 'sent' : 'failed' );
 		if ( ! $sent ) {
-			wc_get_logger()->error( sprintf( 'Store notification for %s could not be sent.', $submission->number ), array( 'source' => 'wpotkaz' ) );
+			wc_get_logger()->error( sprintf( 'Store notification for %s could not be sent.', $submission->number ), array( 'source' => 'otkazpro' ) );
 		}
 	}
 
@@ -94,7 +94,7 @@ class Emails {
 		if ( ! $sent ) {
 			wc_get_logger()->error(
 				sprintf( 'Withdrawal confirmation %s could not be sent to %s (wp_mail returned false).', $submission->number, $submission->email ),
-				array( 'source' => 'wpotkaz' )
+				array( 'source' => 'otkazpro' )
 			);
 			/**
 			 * Fires when the customer confirmation email fails.
@@ -144,7 +144,7 @@ class Emails {
 		$plain   = 'plain' === $email->get_email_type();
 		$message = $params[2];
 		$url     = Form::order_url( $order, I18n::order_language( $order ) );
-		if ( false !== strpos( $message, 'wpotkaz-email-link' ) || false !== strpos( $message, esc_url( $url ) ) || false !== strpos( $message, $url ) ) {
+		if ( preg_match( '/(otkazpro|wpotkaz|py-otkaz)-email-link/', $message ) || false !== strpos( $message, esc_url( $url ) ) || false !== strpos( $message, $url ) ) {
 			return $params;
 		}
 		$block = self::link_block( $order, $email, $plain );
@@ -185,7 +185,7 @@ class Emails {
 
 		$url   = Form::order_url( $order, I18n::order_language( $order ) );
 		$label = Settings::text( 'text_start_button' );
-		$intro = __( 'You can withdraw from the contract within 14 days of receiving the goods, without giving a reason:', 'wpotkaz' );
+		$intro = __( 'You can withdraw from the contract within 14 days of receiving the goods, without giving a reason:', 'otkazpro' );
 
 		if ( $plain ) {
 			return "
@@ -196,7 +196,7 @@ class Emails {
 		}
 
 		return sprintf(
-			'<div class="wpotkaz-email-link" style="margin:0 0 24px;padding:12px 16px;border:1px solid #e5e5e5;border-radius:4px;"><p style="margin:0 0 6px;">%1$s</p><p style="margin:0;"><a href="%2$s" style="font-weight:600;text-decoration:underline;">%3$s</a></p></div>',
+			'<div class="otkazpro-email-link" style="margin:0 0 24px;padding:12px 16px;border:1px solid #e5e5e5;border-radius:4px;"><p style="margin:0 0 6px;">%1$s</p><p style="margin:0;"><a href="%2$s" style="font-weight:600;text-decoration:underline;">%3$s</a></p></div>',
 			esc_html( $intro ),
 			esc_url( $url ),
 			esc_html( $label )

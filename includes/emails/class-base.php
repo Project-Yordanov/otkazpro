@@ -1,6 +1,6 @@
 <?php
 /**
- * Shared base for WPOtkaz emails.
+ * Shared base for OtkazPro emails.
  *
  * @package PY\Otkaz
  */
@@ -76,12 +76,12 @@ abstract class Base extends \WC_Email {
 	}
 
 	/**
-	 * HTML content (theme override path: woocommerce/wpotkaz/emails/...).
+	 * HTML content (theme override path: woocommerce/otkazpro/emails/...).
 	 *
 	 * @return string
 	 */
 	public function get_content_html() {
-		return wc_get_template_html( $this->template_html, $this->template_args( false ), 'woocommerce/wpotkaz/', $this->template_base );
+		return wc_get_template_html( $this->template_html, $this->template_args( false ), 'woocommerce/otkazpro/', $this->template_base );
 	}
 
 	/**
@@ -90,7 +90,7 @@ abstract class Base extends \WC_Email {
 	 * @return string
 	 */
 	public function get_content_plain() {
-		return wc_get_template_html( $this->template_plain, $this->template_args( true ), 'woocommerce/wpotkaz/', $this->template_base );
+		return wc_get_template_html( $this->template_plain, $this->template_args( true ), 'woocommerce/otkazpro/', $this->template_base );
 	}
 
 	/**

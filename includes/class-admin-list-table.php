@@ -61,13 +61,13 @@ class Admin_List_Table extends \WP_List_Table {
 	 */
 	public function get_columns() {
 		return array(
-			'number'   => __( 'Number', 'wpotkaz' ),
-			'date'     => __( 'Date', 'wpotkaz' ),
-			'order'    => __( 'Order', 'wpotkaz' ),
-			'customer' => __( 'Customer', 'wpotkaz' ),
-			'items'    => __( 'Products', 'wpotkaz' ),
-			'deadline' => __( 'Deadline', 'wpotkaz' ),
-			'email'    => __( 'Confirmation', 'wpotkaz' ),
+			'number'   => __( 'Number', 'otkazpro' ),
+			'date'     => __( 'Date', 'otkazpro' ),
+			'order'    => __( 'Order', 'otkazpro' ),
+			'customer' => __( 'Customer', 'otkazpro' ),
+			'items'    => __( 'Products', 'otkazpro' ),
+			'deadline' => __( 'Deadline', 'otkazpro' ),
+			'email'    => __( 'Confirmation', 'otkazpro' ),
 		);
 	}
 
@@ -112,7 +112,7 @@ class Admin_List_Table extends \WP_List_Table {
 	 * Empty state.
 	 */
 	public function no_items() {
-		esc_html_e( 'No withdrawals yet.', 'wpotkaz' );
+		esc_html_e( 'No withdrawals yet.', 'otkazpro' );
 	}
 
 	/**
@@ -127,29 +127,29 @@ class Admin_List_Table extends \WP_List_Table {
 		$f = self::filters_from_request();
 		?>
 		<div class="alignleft actions">
-			<label class="screen-reader-text" for="wpotkaz-deadline"><?php esc_html_e( 'Deadline', 'wpotkaz' ); ?></label>
-			<select name="deadline" id="wpotkaz-deadline">
-				<option value=""><?php esc_html_e( 'Any deadline', 'wpotkaz' ); ?></option>
-				<option value="in" <?php selected( $f['deadline'], 'in' ); ?>><?php esc_html_e( 'In time', 'wpotkaz' ); ?></option>
-				<option value="late" <?php selected( $f['deadline'], 'late' ); ?>><?php esc_html_e( 'After the deadline', 'wpotkaz' ); ?></option>
-				<option value="open" <?php selected( $f['deadline'], 'open' ); ?>><?php esc_html_e( 'Not started', 'wpotkaz' ); ?></option>
+			<label class="screen-reader-text" for="otkazpro-deadline"><?php esc_html_e( 'Deadline', 'otkazpro' ); ?></label>
+			<select name="deadline" id="otkazpro-deadline">
+				<option value=""><?php esc_html_e( 'Any deadline', 'otkazpro' ); ?></option>
+				<option value="in" <?php selected( $f['deadline'], 'in' ); ?>><?php esc_html_e( 'In time', 'otkazpro' ); ?></option>
+				<option value="late" <?php selected( $f['deadline'], 'late' ); ?>><?php esc_html_e( 'After the deadline', 'otkazpro' ); ?></option>
+				<option value="open" <?php selected( $f['deadline'], 'open' ); ?>><?php esc_html_e( 'Not started', 'otkazpro' ); ?></option>
 			</select>
-			<label class="screen-reader-text" for="wpotkaz-email-status"><?php esc_html_e( 'Confirmation', 'wpotkaz' ); ?></label>
-			<select name="email_status" id="wpotkaz-email-status">
-				<option value=""><?php esc_html_e( 'Any email status', 'wpotkaz' ); ?></option>
-				<option value="sent" <?php selected( $f['email_status'], 'sent' ); ?>><?php esc_html_e( 'Sent', 'wpotkaz' ); ?></option>
-				<option value="failed" <?php selected( $f['email_status'], 'failed' ); ?>><?php esc_html_e( 'Email not sent', 'wpotkaz' ); ?></option>
+			<label class="screen-reader-text" for="otkazpro-email-status"><?php esc_html_e( 'Confirmation', 'otkazpro' ); ?></label>
+			<select name="email_status" id="otkazpro-email-status">
+				<option value=""><?php esc_html_e( 'Any email status', 'otkazpro' ); ?></option>
+				<option value="sent" <?php selected( $f['email_status'], 'sent' ); ?>><?php esc_html_e( 'Sent', 'otkazpro' ); ?></option>
+				<option value="failed" <?php selected( $f['email_status'], 'failed' ); ?>><?php esc_html_e( 'Email not sent', 'otkazpro' ); ?></option>
 			</select>
-			<label for="wpotkaz-from"><?php esc_html_e( 'From', 'wpotkaz' ); ?></label>
-			<input type="date" id="wpotkaz-from" name="date_from" value="<?php echo esc_attr( $f['date_from'] ); ?>" />
-			<label for="wpotkaz-to"><?php esc_html_e( 'To', 'wpotkaz' ); ?></label>
-			<input type="date" id="wpotkaz-to" name="date_to" value="<?php echo esc_attr( $f['date_to'] ); ?>" />
-			<?php submit_button( __( 'Filter', 'wpotkaz' ), '', 'filter_action', false ); ?>
+			<label for="otkazpro-from"><?php esc_html_e( 'From', 'otkazpro' ); ?></label>
+			<input type="date" id="otkazpro-from" name="date_from" value="<?php echo esc_attr( $f['date_from'] ); ?>" />
+			<label for="otkazpro-to"><?php esc_html_e( 'To', 'otkazpro' ); ?></label>
+			<input type="date" id="otkazpro-to" name="date_to" value="<?php echo esc_attr( $f['date_to'] ); ?>" />
+			<?php submit_button( __( 'Filter', 'otkazpro' ), '', 'filter_action', false ); ?>
 			<?php
 			$export = wp_nonce_url(
 				add_query_arg(
 					array_merge(
-						array( 'action' => 'wpotkaz_export' ),
+						array( 'action' => 'otkazpro_export' ),
 						array_filter(
 							array(
 								's'            => $f['search'],
@@ -162,10 +162,10 @@ class Admin_List_Table extends \WP_List_Table {
 					),
 					admin_url( 'admin-post.php' )
 				),
-				'wpotkaz_export'
+				'otkazpro_export'
 			);
 			?>
-			<a class="button" href="<?php echo esc_url( $export ); ?>"><?php esc_html_e( 'Export CSV', 'wpotkaz' ); ?></a>
+			<a class="button" href="<?php echo esc_url( $export ); ?>"><?php esc_html_e( 'Export CSV', 'otkazpro' ); ?></a>
 		</div>
 		<?php
 	}
@@ -179,7 +179,7 @@ class Admin_List_Table extends \WP_List_Table {
 	protected function column_number( $s ) {
 		$out = '<strong><a href="' . esc_url( Admin::url( array( 'view' => $s->id ) ) ) . '">' . esc_html( $s->number ) . '</a></strong>';
 		if ( $s->has_excluded ) {
-			$out .= '<br /><mark class="wpotkaz-badge wpotkaz-badge--warn">' . esc_html__( 'Excluded product', 'wpotkaz' ) . '</mark>';
+			$out .= '<br /><mark class="otkazpro-badge otkazpro-badge--warn">' . esc_html__( 'Excluded product', 'otkazpro' ) . '</mark>';
 		}
 		return $out;
 	}

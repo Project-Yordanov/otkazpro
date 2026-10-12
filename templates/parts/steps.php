@@ -2,7 +2,7 @@
 /**
  * Step indicator.
  *
- * Override: yourtheme/woocommerce/wpotkaz/parts/steps.php
+ * Override: yourtheme/woocommerce/otkazpro/parts/steps.php
  *
  * @package PY\Otkaz
  *
@@ -11,27 +11,29 @@
 
 defined( 'ABSPATH' ) || exit;
 
-$py_steps = array(
-	1 => __( 'Find order', 'wpotkaz' ),
-	2 => __( 'Select & confirm', 'wpotkaz' ),
-	3 => __( 'Done', 'wpotkaz' ),
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- template: variables are local to the including function (wc_get_template).
+
+$otkazpro_steps = array(
+	1 => __( 'Find order', 'otkazpro' ),
+	2 => __( 'Select & confirm', 'otkazpro' ),
+	3 => __( 'Done', 'otkazpro' ),
 );
 ?>
-<ol class="wpotkaz__steps">
-	<?php foreach ( $py_steps as $py_n => $py_label ) : ?>
+<ol class="otkazpro__steps">
+	<?php foreach ( $otkazpro_steps as $otkazpro_n => $otkazpro_label ) : ?>
 		<?php
-		$py_class = $py_n < $current ? 'is-done' : ( $py_n === $current ? 'is-active' : '' );
+		$otkazpro_class = $otkazpro_n < $current ? 'is-done' : ( $otkazpro_n === $current ? 'is-active' : '' );
 		?>
-		<li class="wpotkaz__step <?php echo esc_attr( $py_class ); ?>"<?php echo $py_n === $current ? ' aria-current="step"' : ''; ?>>
-			<span class="wpotkaz__step-num" aria-hidden="true"><?php echo esc_html( (string) $py_n ); ?></span>
-			<span class="wpotkaz__step-label">
+		<li class="otkazpro__step <?php echo esc_attr( $otkazpro_class ); ?>"<?php echo $otkazpro_n === $current ? ' aria-current="step"' : ''; ?>>
+			<span class="otkazpro__step-num" aria-hidden="true"><?php echo esc_html( (string) $otkazpro_n ); ?></span>
+			<span class="otkazpro__step-label">
 				<span class="screen-reader-text">
 					<?php
 					/* translators: 1: step number, 2: total steps */
-					echo esc_html( sprintf( __( 'Step %1$d of %2$d:', 'wpotkaz' ), $py_n, count( $py_steps ) ) );
+					echo esc_html( sprintf( __( 'Step %1$d of %2$d:', 'otkazpro' ), $otkazpro_n, count( $otkazpro_steps ) ) );
 					?>
 				</span>
-				<?php echo esc_html( $py_label ); ?>
+				<?php echo esc_html( $otkazpro_label ); ?>
 			</span>
 		</li>
 	<?php endforeach; ?>

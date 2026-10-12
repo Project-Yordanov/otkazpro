@@ -65,7 +65,7 @@ $esc = function ( $s ) {
 $date = gmdate( 'Y-m-d H:iO' );
 
 $header = function ( $lang ) use ( $version, $date ) {
-	$h  = "Project-Id-Version: WPOtkaz $version\n";
+	$h  = "Project-Id-Version: OtkazPro $version\n";
 	$h .= "Report-Msgid-Bugs-To: \n";
 	$h .= "POT-Creation-Date: $date\n";
 	$h .= 'PO-Revision-Date: ' . ( $lang ? $date : 'YEAR-MO-DA HO:MI+ZONE' ) . "\n";
@@ -76,7 +76,7 @@ $header = function ( $lang ) use ( $version, $date ) {
 	}
 	$h .= "MIME-Version: 1.0\nContent-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: 8bit\n";
 	$h .= 'Plural-Forms: ' . ( $lang ? 'nplurals=2; plural=(n != 1);' : 'nplurals=INTEGER; plural=EXPRESSION;' ) . "\n";
-	$h .= "X-Domain: wpotkaz\n";
+	$h .= "X-Domain: otkazpro\n";
 	return $h;
 };
 
@@ -113,8 +113,8 @@ $po = function ( $lang ) use ( $strings, $bg, $esc, $header ) {
 	return $out;
 };
 
-$write( "$outdir/wpotkaz.pot", $po( '' ) );
-$write( "$outdir/wpotkaz-bg_BG.po", $po( 'bg_BG' ) );
+$write( "$outdir/otkazpro.pot", $po( '' ) );
+$write( "$outdir/otkazpro-bg_BG.po", $po( 'bg_BG' ) );
 
 // .mo
 $entries = array( '' => $header( 'bg_BG' ) );
@@ -148,7 +148,7 @@ foreach ( $offs as $o ) {
 	$mo .= pack( 'ii', $o[2], $val_start + $o[3] );
 }
 $mo .= $ids . $strs;
-$write( "$outdir/wpotkaz-bg_BG.mo", $mo );
+$write( "$outdir/otkazpro-bg_BG.mo", $mo );
 
 // .l10n.php (WordPress 6.5+ performant translations).
 $messages = array();
@@ -162,14 +162,14 @@ foreach ( $entries as $id => $str ) {
 }
 $php  = "<?php\nreturn " . var_export(
 	array(
-		'project-id-version' => "WPOtkaz $version",
-		'domain'             => 'wpotkaz',
+		'project-id-version' => "OtkazPro $version",
+		'domain'             => 'otkazpro',
 		'language'           => 'bg_BG',
 		'plural-forms'       => 'nplurals=2; plural=(n != 1);',
 		'messages'           => $messages,
 	),
 	true
 ) . ";\n";
-$write( "$outdir/wpotkaz-bg_BG.l10n.php", $php );
+$write( "$outdir/otkazpro-bg_BG.l10n.php", $php );
 
 echo count( $strings ) . " strings OK → pot, po, mo, l10n.php\n";

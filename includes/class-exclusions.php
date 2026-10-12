@@ -60,9 +60,9 @@ class Exclusions {
 	 */
 	public static function reasons() {
 		return array(
-			'personalized' => __( 'Made to the consumer’s specifications or personalised', 'wpotkaz' ),
-			'perishable'   => __( 'Liable to deteriorate or expire rapidly', 'wpotkaz' ),
-			'other'        => __( 'Other (specify)', 'wpotkaz' ),
+			'personalized' => __( 'Made to the consumer’s specifications or personalised', 'otkazpro' ),
+			'perishable'   => __( 'Liable to deteriorate or expire rapidly', 'otkazpro' ),
+			'other'        => __( 'Other (specify)', 'otkazpro' ),
 		);
 	}
 
@@ -75,10 +75,10 @@ class Exclusions {
 	 */
 	public static function reason_label( $reason, $text = '' ) {
 		if ( 'other' === $reason ) {
-			return $text ? $text : __( 'Excluded from the right of withdrawal', 'wpotkaz' );
+			return $text ? $text : __( 'Excluded from the right of withdrawal', 'otkazpro' );
 		}
 		$reasons = self::reasons();
-		return isset( $reasons[ $reason ] ) ? $reasons[ $reason ] : __( 'Excluded from the right of withdrawal', 'wpotkaz' );
+		return isset( $reasons[ $reason ] ) ? $reasons[ $reason ] : __( 'Excluded from the right of withdrawal', 'otkazpro' );
 	}
 
 	/**
@@ -87,7 +87,7 @@ class Exclusions {
 	 * @return string
 	 */
 	private static function help_text() {
-		return __( 'Do not mark goods that lose the right of withdrawal only once unsealed (hygiene products, cosmetics, sealed audio/video/software) – they remain withdrawable while sealed.', 'wpotkaz' );
+		return __( 'Do not mark goods that lose the right of withdrawal only once unsealed (hygiene products, cosmetics, sealed audio/video/software) – they remain withdrawable while sealed.', 'otkazpro' );
 	}
 
 	/* ---------------------------------------------------------------------
@@ -236,16 +236,16 @@ class Exclusions {
 		global $product_object;
 		$product = $product_object instanceof \WC_Product ? $product_object : null;
 
-		echo '<div class="options_group wpotkaz-product-fields">';
+		echo '<div class="options_group otkazpro-product-fields">';
 		woocommerce_wp_select(
 			array(
 				'id'          => self::META_FLAG,
-				'label'       => __( 'Right of withdrawal', 'wpotkaz' ),
+				'label'       => __( 'Right of withdrawal', 'otkazpro' ),
 				'value'       => $product ? (string) $product->get_meta( self::META_FLAG ) : '',
 				'options'     => array(
-					''    => __( 'Inherit from category', 'wpotkaz' ),
-					'yes' => __( 'No right of withdrawal', 'wpotkaz' ),
-					'no'  => __( 'Has right of withdrawal (override category)', 'wpotkaz' ),
+					''    => __( 'Inherit from category', 'otkazpro' ),
+					'yes' => __( 'No right of withdrawal', 'otkazpro' ),
+					'no'  => __( 'Has right of withdrawal (override category)', 'otkazpro' ),
 				),
 				'desc_tip'    => true,
 				'description' => self::help_text(),
@@ -254,7 +254,7 @@ class Exclusions {
 		woocommerce_wp_select(
 			array(
 				'id'      => self::META_REASON,
-				'label'   => __( 'Reason', 'wpotkaz' ),
+				'label'   => __( 'Reason', 'otkazpro' ),
 				'value'   => $product ? (string) $product->get_meta( self::META_REASON ) : '',
 				'options' => self::reasons(),
 			)
@@ -262,9 +262,9 @@ class Exclusions {
 		woocommerce_wp_text_input(
 			array(
 				'id'          => self::META_TEXT,
-				'label'       => __( 'Reason text', 'wpotkaz' ),
+				'label'       => __( 'Reason text', 'otkazpro' ),
 				'value'       => $product ? (string) $product->get_meta( self::META_TEXT ) : '',
-				'description' => __( 'Only for “Other”. Shown to the customer.', 'wpotkaz' ),
+				'description' => __( 'Only for “Other”. Shown to the customer.', 'otkazpro' ),
 				'desc_tip'    => true,
 			)
 		);
@@ -325,17 +325,17 @@ class Exclusions {
 		if ( ! $product ) {
 			return;
 		}
-		echo '<div class="wpotkaz-variation-fields form-row form-row-full">';
+		echo '<div class="otkazpro-variation-fields form-row form-row-full">';
 		woocommerce_wp_select(
 			array(
 				'id'            => self::META_FLAG . '_' . $loop,
 				'name'          => self::META_FLAG . '[' . $loop . ']',
-				'label'         => __( 'Right of withdrawal', 'wpotkaz' ),
+				'label'         => __( 'Right of withdrawal', 'otkazpro' ),
 				'value'         => (string) $product->get_meta( self::META_FLAG ),
 				'options'       => array(
-					''    => __( 'Same as parent product', 'wpotkaz' ),
-					'yes' => __( 'No right of withdrawal', 'wpotkaz' ),
-					'no'  => __( 'Has right of withdrawal', 'wpotkaz' ),
+					''    => __( 'Same as parent product', 'otkazpro' ),
+					'yes' => __( 'No right of withdrawal', 'otkazpro' ),
+					'no'  => __( 'Has right of withdrawal', 'otkazpro' ),
 				),
 				'wrapper_class' => 'form-row form-row-first',
 			)
@@ -344,7 +344,7 @@ class Exclusions {
 			array(
 				'id'            => self::META_REASON . '_' . $loop,
 				'name'          => self::META_REASON . '[' . $loop . ']',
-				'label'         => __( 'Reason', 'wpotkaz' ),
+				'label'         => __( 'Reason', 'otkazpro' ),
 				'value'         => (string) $product->get_meta( self::META_REASON ),
 				'options'       => self::reasons(),
 				'wrapper_class' => 'form-row form-row-last',
@@ -354,7 +354,7 @@ class Exclusions {
 			array(
 				'id'            => self::META_TEXT . '_' . $loop,
 				'name'          => self::META_TEXT . '[' . $loop . ']',
-				'label'         => __( 'Reason text (for “Other”)', 'wpotkaz' ),
+				'label'         => __( 'Reason text (for “Other”)', 'otkazpro' ),
 				'value'         => (string) $product->get_meta( self::META_TEXT ),
 				'wrapper_class' => 'form-row form-row-full',
 			)
@@ -394,11 +394,11 @@ class Exclusions {
 		wp_nonce_field( 'py_otkaz_term', 'py_otkaz_term_nonce' );
 		?>
 		<div class="form-field">
-			<label for="py_otkaz_excluded"><input type="checkbox" name="py_otkaz_excluded" id="py_otkaz_excluded" value="yes" /> <?php esc_html_e( 'No right of withdrawal for products in this category', 'wpotkaz' ); ?></label>
+			<label for="py_otkaz_excluded"><input type="checkbox" name="py_otkaz_excluded" id="py_otkaz_excluded" value="yes" /> <?php esc_html_e( 'No right of withdrawal for products in this category', 'otkazpro' ); ?></label>
 			<p class="description"><?php echo esc_html( self::help_text() ); ?></p>
 		</div>
 		<div class="form-field">
-			<label for="py_otkaz_reason"><?php esc_html_e( 'Reason', 'wpotkaz' ); ?></label>
+			<label for="py_otkaz_reason"><?php esc_html_e( 'Reason', 'otkazpro' ); ?></label>
 			<select name="py_otkaz_reason" id="py_otkaz_reason">
 				<?php foreach ( self::reasons() as $key => $label ) : ?>
 					<option value="<?php echo esc_attr( $key ); ?>"><?php echo esc_html( $label ); ?></option>
@@ -406,7 +406,7 @@ class Exclusions {
 			</select>
 		</div>
 		<div class="form-field">
-			<label for="py_otkaz_reason_text"><?php esc_html_e( 'Reason text (for “Other”)', 'wpotkaz' ); ?></label>
+			<label for="py_otkaz_reason_text"><?php esc_html_e( 'Reason text (for “Other”)', 'otkazpro' ); ?></label>
 			<input type="text" name="py_otkaz_reason_text" id="py_otkaz_reason_text" value="" />
 		</div>
 		<?php
@@ -423,15 +423,15 @@ class Exclusions {
 		$text   = get_term_meta( $term->term_id, self::TERM_TEXT, true );
 		?>
 		<tr class="form-field">
-			<th scope="row"><?php esc_html_e( 'Right of withdrawal', 'wpotkaz' ); ?></th>
+			<th scope="row"><?php esc_html_e( 'Right of withdrawal', 'otkazpro' ); ?></th>
 			<td>
 				<?php wp_nonce_field( 'py_otkaz_term', 'py_otkaz_term_nonce' ); ?>
-				<label for="py_otkaz_excluded"><input type="checkbox" name="py_otkaz_excluded" id="py_otkaz_excluded" value="yes" <?php checked( 'yes', $flag ); ?> /> <?php esc_html_e( 'No right of withdrawal for products in this category', 'wpotkaz' ); ?></label>
+				<label for="py_otkaz_excluded"><input type="checkbox" name="py_otkaz_excluded" id="py_otkaz_excluded" value="yes" <?php checked( 'yes', $flag ); ?> /> <?php esc_html_e( 'No right of withdrawal for products in this category', 'otkazpro' ); ?></label>
 				<p class="description"><?php echo esc_html( self::help_text() ); ?></p>
 			</td>
 		</tr>
 		<tr class="form-field">
-			<th scope="row"><label for="py_otkaz_reason"><?php esc_html_e( 'Reason', 'wpotkaz' ); ?></label></th>
+			<th scope="row"><label for="py_otkaz_reason"><?php esc_html_e( 'Reason', 'otkazpro' ); ?></label></th>
 			<td>
 				<select name="py_otkaz_reason" id="py_otkaz_reason">
 					<?php foreach ( self::reasons() as $key => $label ) : ?>
@@ -441,7 +441,7 @@ class Exclusions {
 			</td>
 		</tr>
 		<tr class="form-field">
-			<th scope="row"><label for="py_otkaz_reason_text"><?php esc_html_e( 'Reason text (for “Other”)', 'wpotkaz' ); ?></label></th>
+			<th scope="row"><label for="py_otkaz_reason_text"><?php esc_html_e( 'Reason text (for “Other”)', 'otkazpro' ); ?></label></th>
 			<td><input type="text" name="py_otkaz_reason_text" id="py_otkaz_reason_text" value="<?php echo esc_attr( $text ); ?>" /></td>
 		</tr>
 		<?php
@@ -483,8 +483,8 @@ class Exclusions {
 	 */
 	public static function label_html( $exclusion ) {
 		return sprintf(
-			'<p class="wpotkaz-label"><strong>%1$s</strong> <span>%2$s</span></p>',
-			esc_html__( 'No right of withdrawal', 'wpotkaz' ),
+			'<p class="otkazpro-label"><strong>%1$s</strong> <span>%2$s</span></p>',
+			esc_html__( 'No right of withdrawal', 'otkazpro' ),
 			esc_html( '(' . $exclusion['label'] . ')' )
 		);
 	}
@@ -553,9 +553,9 @@ class Exclusions {
 		$exclusion = $product ? self::for_product( $product ) : false;
 		if ( $exclusion ) {
 			$item_data[] = array(
-				'key'     => __( 'Right of withdrawal', 'wpotkaz' ),
-				'value'   => __( 'No right of withdrawal', 'wpotkaz' ) . ' (' . $exclusion['label'] . ')',
-				'display' => esc_html__( 'No right of withdrawal', 'wpotkaz' ) . ' (' . esc_html( $exclusion['label'] ) . ')',
+				'key'     => __( 'Right of withdrawal', 'otkazpro' ),
+				'value'   => __( 'No right of withdrawal', 'otkazpro' ) . ' (' . $exclusion['label'] . ')',
+				'display' => esc_html__( 'No right of withdrawal', 'otkazpro' ) . ' (' . esc_html( $exclusion['label'] ) . ')',
 			);
 		}
 		return $item_data;
@@ -568,8 +568,8 @@ class Exclusions {
 		if ( ! function_exists( 'is_product' ) || ! is_product() ) {
 			return;
 		}
-		wp_register_style( 'wpotkaz-label', false, array(), PY_OTKAZ_VERSION );
-		wp_enqueue_style( 'wpotkaz-label' );
-		wp_add_inline_style( 'wpotkaz-label', '.wpotkaz-label{margin:.75em 0;padding:.5em .75em;border-left:3px solid currentColor;font-size:.9em;line-height:1.4}' );
+		wp_register_style( 'otkazpro-label', false, array(), PY_OTKAZ_VERSION );
+		wp_enqueue_style( 'otkazpro-label' );
+		wp_add_inline_style( 'otkazpro-label', '.otkazpro-label{margin:.75em 0;padding:.5em .75em;border-left:3px solid currentColor;font-size:.9em;line-height:1.4}' );
 	}
 }

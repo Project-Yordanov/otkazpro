@@ -100,7 +100,7 @@ class Submission {
 	public static function get( $id ) {
 		global $wpdb;
 		$table = Install::table();
-		$row   = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$table} WHERE id = %d", $id ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery
+		$row   = $wpdb->get_row( $wpdb->prepare( 'SELECT * FROM %i WHERE id = %d', $table, $id ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 		return $row ? self::from_row( $row ) : null;
 	}
 
@@ -192,21 +192,17 @@ class Submission {
 		$sql_where = implode( ' AND ', $where );
 
 		$per_page = (int) $args['per_page'];
-		$limit    = '';
-		if ( $per_page > 0 ) {
-			$offset = max( 0, ( (int) $args['page'] - 1 ) * $per_page );
-			$limit  = $wpdb->prepare( ' LIMIT %d OFFSET %d', $per_page, $offset );
-		}
+		$offset   = max( 0, ( (int) $args['page'] - 1 ) * max( 1, $per_page ) );
+		$base     = array_merge( array( $table ), $params );
 
-		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.PreparedSQL.NotPrepared,WordPress.DB.DirectDatabaseQuery
-		$count_sql = "SELECT COUNT(*) FROM {$table} WHERE {$sql_where}";
-		$rows_sql  = "SELECT * FROM {$table} WHERE {$sql_where} ORDER BY {$orderby} {$order}, id {$order}";
-		if ( $params ) {
-			$count_sql = $wpdb->prepare( $count_sql, $params );
-			$rows_sql  = $wpdb->prepare( $rows_sql, $params );
+		// $sql_where contains only placeholders; $orderby / $order are whitelisted above.
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery
+		$total = (int) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM %i WHERE {$sql_where}", $base ) );
+		if ( $per_page > 0 ) {
+			$rows = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM %i WHERE {$sql_where} ORDER BY %i {$order}, id {$order} LIMIT %d OFFSET %d", array_merge( $base, array( $orderby, $per_page, $offset ) ) ) );
+		} else {
+			$rows = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM %i WHERE {$sql_where} ORDER BY %i {$order}, id {$order}", array_merge( $base, array( $orderby ) ) ) );
 		}
-		$total = (int) $wpdb->get_var( $count_sql );
-		$rows  = $wpdb->get_results( $rows_sql . $limit );
 		// phpcs:enable
 
 		return array(
@@ -223,7 +219,7 @@ class Submission {
 	public static function count_failed() {
 		global $wpdb;
 		$table = Install::table();
-		return (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$table} WHERE email_status = 'failed'" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery
+		return (int) $wpdb->get_var( $wpdb->prepare( 'SELECT COUNT(*) FROM %i WHERE email_status = %s', $table, 'failed' ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 	}
 
 	/**
@@ -286,7 +282,7 @@ class Submission {
 		$parts = array();
 		foreach ( $this->items as $item ) {
 			/* translators: 1: product name, 2: quantity */
-			$parts[] = sprintf( __( '%1$s × %2$d', 'wpotkaz' ), $item['name'], (int) $item['qty'] );
+			$parts[] = sprintf( __( '%1$s × %2$d', 'otkazpro' ), $item['name'], (int) $item['qty'] );
 		}
 		return implode( $sep, $parts );
 	}
@@ -311,7 +307,7 @@ class Submission {
 		$items = array();
 		foreach ( $vars['items'] as $item ) {
 			/* translators: 1: product name, 2: quantity */
-			$items[] = sprintf( __( '%1$s (%2$d pcs.)', 'wpotkaz' ), $item['name'], (int) $item['qty'] );
+			$items[] = sprintf( __( '%1$s (%2$d pcs.)', 'otkazpro' ), $item['name'], (int) $item['qty'] );
 		}
 		/** @var \WC_Order $order */
 		$order        = $vars['order'];
@@ -387,10 +383,10 @@ class Submission {
 		}
 		$order = Verifier::get_order( $order_id );
 		if ( ! $order ) {
-			return new \WP_Error( 'py_otkaz_no_order', __( 'The order could not be found.', 'wpotkaz' ) );
+			return new \WP_Error( 'py_otkaz_no_order', __( 'The order could not be found.', 'otkazpro' ) );
 		}
 		if ( ! Order_Data::is_eligible_status( $order ) ) {
-			return new \WP_Error( 'py_otkaz_status', __( 'A withdrawal cannot be submitted online for this order in its current status. Please contact us.', 'wpotkaz' ) );
+			return new \WP_Error( 'py_otkaz_status', __( 'A withdrawal cannot be submitted online for this order in its current status. Please contact us.', 'otkazpro' ) );
 		}
 
 		$available = Order_Data::get_items( $order );
@@ -400,10 +396,10 @@ class Submission {
 		foreach ( (array) $data['items'] as $item_id => $qty ) {
 			$item_id = absint( $item_id );
 			$qty     = (int) $qty;
-			$field   = 'wpotkaz_item_' . $item_id;
+			$field   = 'otkazpro_item_' . $item_id;
 
 			if ( ! isset( $available[ $item_id ] ) ) {
-				$fields['wpotkaz_items'] = __( 'One of the selected products is not part of this order.', 'wpotkaz' );
+				$fields['otkazpro_items'] = __( 'One of the selected products is not part of this order.', 'otkazpro' );
 				continue;
 			}
 			$item = $available[ $item_id ];
@@ -411,15 +407,15 @@ class Submission {
 			if ( ! $item['selectable'] ) {
 				$fields[ $field ] = $item['excluded'] && $item['remaining'] > 0
 					/* translators: %s: product name */
-					? sprintf( __( '“%s” is not eligible for withdrawal.', 'wpotkaz' ), $item['name'] )
+					? sprintf( __( '“%s” is not eligible for withdrawal.', 'otkazpro' ), $item['name'] )
 					/* translators: %s: product name */
-					: sprintf( __( 'A withdrawal for “%s” has already been submitted.', 'wpotkaz' ), $item['name'] );
+					: sprintf( __( 'A withdrawal for “%s” has already been submitted.', 'otkazpro' ), $item['name'] );
 				continue;
 			}
 			if ( $qty < 1 || $qty > $item['remaining'] ) {
 				$fields[ $field ] = sprintf(
 					/* translators: 1: product name, 2: maximum quantity */
-					__( 'Enter a quantity between 1 and %2$d for “%1$s”.', 'wpotkaz' ),
+					__( 'Enter a quantity between 1 and %2$d for “%1$s”.', 'otkazpro' ),
 					$item['name'],
 					$item['remaining']
 				);
@@ -440,10 +436,10 @@ class Submission {
 		}
 
 		if ( ! $selected && ! $fields ) {
-			$fields['wpotkaz_items'] = __( 'Select at least one product.', 'wpotkaz' );
+			$fields['otkazpro_items'] = __( 'Select at least one product.', 'otkazpro' );
 		}
 		if ( $fields ) {
-			$error = new \WP_Error( 'py_otkaz_validation', __( 'Please correct the highlighted fields.', 'wpotkaz' ) );
+			$error = new \WP_Error( 'py_otkaz_validation', __( 'Please correct the highlighted fields.', 'otkazpro' ) );
 			$error->add_data( array( 'fields' => $fields ) );
 			return $error;
 		}
@@ -500,8 +496,8 @@ class Submission {
 			}
 		}
 		if ( ! $inserted ) {
-			wc_get_logger()->error( 'Could not store withdrawal: ' . $wpdb->last_error, array( 'source' => 'wpotkaz' ) );
-			return new \WP_Error( 'py_otkaz_db', __( 'Your withdrawal could not be saved due to a technical error. Please try again or contact us by email.', 'wpotkaz' ) );
+			wc_get_logger()->error( 'Could not store withdrawal: ' . $wpdb->last_error, array( 'source' => 'otkazpro' ) );
+			return new \WP_Error( 'py_otkaz_db', __( 'Your withdrawal could not be saved due to a technical error. Please try again or contact us by email.', 'otkazpro' ) );
 		}
 
 		$row['id']  = (int) $wpdb->insert_id;
@@ -519,15 +515,15 @@ class Submission {
 
 		$note = sprintf(
 			/* translators: 1: statement number, 2: items */
-			__( 'Withdrawal %1$s submitted for: %2$s.', 'wpotkaz' ),
+			__( 'Withdrawal %1$s submitted for: %2$s.', 'otkazpro' ),
 			$submission->number,
 			$submission->items_summary()
 		);
 		if ( $submission->has_excluded ) {
-			$note .= ' ' . __( 'Includes products marked as excluded from withdrawal.', 'wpotkaz' );
+			$note .= ' ' . __( 'Includes products marked as excluded from withdrawal.', 'otkazpro' );
 		}
 		if ( false === $within ) {
-			$note .= ' ' . __( 'Submitted after the indicative deadline.', 'wpotkaz' );
+			$note .= ' ' . __( 'Submitted after the indicative deadline.', 'otkazpro' );
 		}
 
 		if ( Settings::enabled( 'custom_status' ) && Order_Status::STATUS !== $order->get_status() ) {
@@ -551,6 +547,6 @@ class Submission {
 		}
 		$cutoff = gmdate( 'Y-m-d H:i:s', strtotime( '-' . $years . ' years' ) );
 		$table  = Install::table();
-		$wpdb->query( $wpdb->prepare( "DELETE FROM {$table} WHERE created_gmt < %s LIMIT 1000", $cutoff ) ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.DirectDatabaseQuery
+		$wpdb->query( $wpdb->prepare( 'DELETE FROM %i WHERE created_gmt < %s LIMIT 1000', $table, $cutoff ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 	}
 }

@@ -59,7 +59,6 @@ final class Plugin {
 		Account::init();
 		Privacy::init();
 		Cache_Check::init();
-		Updater::init();
 
 		if ( is_admin() ) {
 			Admin::init();
@@ -68,7 +67,7 @@ final class Plugin {
 		add_filter( 'plugin_action_links_' . PY_OTKAZ_BASENAME, array( $this, 'action_links' ) );
 
 		/**
-		 * Fires when WPOtkaz is fully loaded.
+		 * Fires when OtkazPro is fully loaded.
 		 */
 		do_action( 'py_otkaz_loaded' );
 	}
@@ -82,8 +81,8 @@ final class Plugin {
 	public function action_links( $links ) {
 		array_unshift(
 			$links,
-			sprintf( '<a href="%s">%s</a>', esc_url( Settings::url() ), esc_html__( 'Settings', 'wpotkaz' ) ),
-			sprintf( '<a href="%s">%s</a>', esc_url( Admin::url() ), esc_html__( 'Withdrawals', 'wpotkaz' ) )
+			sprintf( '<a href="%s">%s</a>', esc_url( Settings::url() ), esc_html__( 'Settings', 'otkazpro' ) ),
+			sprintf( '<a href="%s">%s</a>', esc_url( Admin::url() ), esc_html__( 'Withdrawals', 'otkazpro' ) )
 		);
 		return $links;
 	}

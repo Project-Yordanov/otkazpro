@@ -1,6 +1,6 @@
 <?php
 /**
- * Front-end withdrawal form ([wpotkaz]).
+ * Front-end withdrawal form ([otkazpro]).
  *
  * @package PY\Otkaz
  */
@@ -14,13 +14,13 @@ defined( 'ABSPATH' ) || exit;
  */
 class Form {
 
-	const SHORTCODE = 'wpotkaz';
+	const SHORTCODE = 'otkazpro';
 
 	/**
 	 * Earlier shortcode names, kept as aliases.
 	 */
-	const LEGACY_SHORTCODES = array( 'otkazpro', 'py_otkaz_form' );
-	const HONEYPOT  = 'wpotkaz_website';
+	const LEGACY_SHORTCODES = array( 'wpotkaz', 'py_otkaz_form' );
+	const HONEYPOT  = 'otkazpro_website';
 
 	/**
 	 * Request state shared between template_redirect and shortcode render.
@@ -51,34 +51,38 @@ class Form {
 	}
 
 	/**
-	 * Before 1.3 the URL / form fields were called py_* (e.g. ?py_order=…&py_key=…).
+	 * Earlier editions used other URL / form field names (e.g. ?py_order=…&py_key=…).
 	 * Links in emails already sent and cached copies of the old form must keep working.
 	 */
 	public static function map_legacy_request() {
+		// Earlier editions used py_* (≤ 1.2) and wpotkaz_* (WPOtkaz 1.3) names.
 		$map = array(
-			'py_order'        => 'wpotkaz_order',
-			'py_key'          => 'wpotkaz_key',
-			'py_done'         => 'wpotkaz_done',
-			'py_src'          => 'wpotkaz_src',
-			'py_otkaz_action' => 'wpotkaz_action',
-			'_py_otkaz_nonce' => '_wpotkaz_nonce',
-			'py_order_number' => 'wpotkaz_order_number',
-			'py_email'        => 'wpotkaz_email',
-			'py_name'         => 'wpotkaz_name',
-			'py_token'        => 'wpotkaz_token',
-			'py_items'        => 'wpotkaz_items',
-			'py_reason'       => 'wpotkaz_reason',
-			'py_website'      => 'wpotkaz_website',
+			'otkazpro'              => array( 'wpotkaz' ),
+			'otkazpro_order'        => array( 'py_order', 'wpotkaz_order' ),
+			'otkazpro_key'          => array( 'py_key', 'wpotkaz_key' ),
+			'otkazpro_done'         => array( 'py_done', 'wpotkaz_done' ),
+			'otkazpro_src'          => array( 'py_src', 'wpotkaz_src' ),
+			'otkazpro_action'       => array( 'py_otkaz_action', 'wpotkaz_action' ),
+			'_otkazpro_nonce'       => array( '_py_otkaz_nonce', '_wpotkaz_nonce' ),
+			'otkazpro_order_number' => array( 'py_order_number', 'wpotkaz_order_number' ),
+			'otkazpro_email'        => array( 'py_email', 'wpotkaz_email' ),
+			'otkazpro_name'         => array( 'py_name', 'wpotkaz_name' ),
+			'otkazpro_token'        => array( 'py_token', 'wpotkaz_token' ),
+			'otkazpro_items'        => array( 'py_items', 'wpotkaz_items' ),
+			'otkazpro_reason'       => array( 'py_reason', 'wpotkaz_reason' ),
+			'otkazpro_website'      => array( 'py_website', 'wpotkaz_website' ),
 		);
-		// phpcs:disable WordPress.Security.NonceVerification
-		foreach ( $map as $old => $new ) {
-			if ( isset( $_GET[ $old ] ) && ! isset( $_GET[ $new ] ) ) {
-				$_GET[ $new ]     = $_GET[ $old ]; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
-				$_REQUEST[ $new ] = $_GET[ $old ]; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
-			}
-			if ( isset( $_POST[ $old ] ) && ! isset( $_POST[ $new ] ) ) {
-				$_POST[ $new ]    = $_POST[ $old ]; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
-				$_REQUEST[ $new ] = $_POST[ $old ]; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
+		// phpcs:disable WordPress.Security.NonceVerification, WordPress.Security.ValidatedSanitizedInput
+		foreach ( $map as $new => $olds ) {
+			foreach ( $olds as $old ) {
+				if ( isset( $_GET[ $old ] ) && ! isset( $_GET[ $new ] ) ) {
+					$_GET[ $new ]     = $_GET[ $old ];
+					$_REQUEST[ $new ] = $_GET[ $old ];
+				}
+				if ( isset( $_POST[ $old ] ) && ! isset( $_POST[ $new ] ) ) {
+					$_POST[ $new ]    = $_POST[ $old ];
+					$_REQUEST[ $new ] = $_POST[ $old ];
+				}
 			}
 		}
 		// phpcs:enable
@@ -121,7 +125,7 @@ class Form {
 	public static function page_url( $lang = '' ) {
 		$page_id = (int) Settings::get( 'page_id' );
 		if ( $page_id && $lang && I18n::is_multilingual() ) {
-			$translated = (int) apply_filters( 'wpml_object_id', $page_id, 'page', true, $lang );
+			$translated = (int) apply_filters( 'wpml_object_id', $page_id, 'page', true, $lang ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- third-party / core hook.
 			if ( ( ! $translated || $translated === $page_id ) && function_exists( 'pll_get_post' ) ) {
 				$translated = (int) pll_get_post( $page_id, $lang );
 			}
@@ -158,7 +162,7 @@ class Form {
 	 * @return string
 	 */
 	public static function fallback_url() {
-		return add_query_arg( 'wpotkaz', '1', home_url( '/' ) );
+		return add_query_arg( 'otkazpro', '1', home_url( '/' ) );
 	}
 
 	/**
@@ -168,7 +172,7 @@ class Form {
 	 */
 	public static function is_fallback_request() {
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		return ! is_admin() && isset( $_GET['wpotkaz'] );
+		return ! is_admin() && isset( $_GET['otkazpro'] );
 	}
 
 	/**
@@ -197,8 +201,8 @@ class Form {
 	public static function order_url( $order, $lang = '' ) {
 		return add_query_arg(
 			array(
-				'wpotkaz_order' => $order->get_id(),
-				'wpotkaz_key'   => $order->get_order_key(),
+				'otkazpro_order' => $order->get_id(),
+				'otkazpro_key'   => $order->get_order_key(),
 			),
 			self::page_url( $lang )
 		);
@@ -235,7 +239,7 @@ class Form {
 			return true;
 		}
 		if ( $page_id && I18n::is_multilingual() ) {
-			$translated = (int) apply_filters( 'wpml_object_id', $page_id, 'page', false );
+			$translated = (int) apply_filters( 'wpml_object_id', $page_id, 'page', false ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- third-party / core hook.
 			if ( $translated && is_page( $translated ) ) {
 				return true;
 			}
@@ -251,7 +255,7 @@ class Form {
 	 */
 	private static function has_private_params() {
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		return isset( $_GET['wpotkaz_order'] ) || isset( $_GET['wpotkaz_key'] ) || isset( $_GET['wpotkaz_done'] ) || isset( $_GET['wpotkaz'] );
+		return isset( $_GET['otkazpro_order'] ) || isset( $_GET['otkazpro_key'] ) || isset( $_GET['otkazpro_done'] ) || isset( $_GET['otkazpro'] );
 	}
 
 	/**
@@ -276,15 +280,15 @@ class Form {
 	 */
 	private static function render_fallback_page() {
 		status_header( 200 );
-		$title = __( 'Withdrawal from contract', 'wpotkaz' );
+		$title = __( 'Withdrawal from contract', 'otkazpro' );
 		add_filter(
 			'pre_get_document_title',
 			static function () use ( $title ) {
 				return $title . ' – ' . wp_specialchars_decode( get_bloginfo( 'name' ), ENT_QUOTES );
 			}
 		);
-		$main = '<main id="main" class="wpotkaz-fallback" style="max-width:760px;margin:40px auto;padding:0 16px">'
-			. '<h1 class="wpotkaz-fallback__title">' . esc_html( $title ) . '</h1>'
+		$main = '<main id="main" class="otkazpro-fallback" style="max-width:760px;margin:40px auto;padding:0 16px">'
+			. '<h1 class="otkazpro-fallback__title">' . esc_html( $title ) . '</h1>'
 			. self::shortcode()
 			. '</main>';
 
@@ -302,7 +306,7 @@ class Form {
 <meta name="viewport" content="width=device-width, initial-scale=1">
 			<?php wp_head(); ?>
 </head>
-<body <?php body_class( 'wpotkaz-fallback-page' ); ?>>
+<body <?php body_class( 'otkazpro-fallback-page' ); ?>>
 			<?php wp_body_open(); ?>
 <div class="wp-site-blocks">
 			<?php
@@ -325,7 +329,7 @@ class Form {
 	 */
 	private static function no_cache() {
 		if ( ! defined( 'DONOTCACHEPAGE' ) ) {
-			define( 'DONOTCACHEPAGE', true );
+			define( 'DONOTCACHEPAGE', true ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound -- standard page-cache constant.
 		}
 		if ( ! headers_sent() ) {
 			nocache_headers();
@@ -341,7 +345,7 @@ class Form {
 			header( 'X-LiteSpeed-Cache-Control: no-cache' );
 		}
 		// Cache plugins that do not honour DONOTCACHEPAGE / no-store.
-		do_action( 'litespeed_control_set_nocache', 'wpotkaz form' );
+		do_action( 'litespeed_control_set_nocache', 'otkazpro form' ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- third-party / core hook.
 		add_filter( 'flying_press_is_cacheable', '__return_false', 999 );
 		add_filter( 'rocket_override_donotcachepage', '__return_false', 999 );
 		/**
@@ -378,11 +382,11 @@ class Form {
 
 		$method = isset( $_SERVER['REQUEST_METHOD'] ) ? strtoupper( sanitize_key( wp_unslash( $_SERVER['REQUEST_METHOD'] ) ) ) : 'GET';
 		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- nonce is verified in the handlers.
-		if ( 'POST' !== $method || empty( $_POST['wpotkaz_action'] ) ) {
+		if ( 'POST' !== $method || empty( $_POST['otkazpro_action'] ) ) {
 			return;
 		}
 		// phpcs:ignore WordPress.Security.NonceVerification.Missing
-		$action = sanitize_key( wp_unslash( $_POST['wpotkaz_action'] ) );
+		$action = sanitize_key( wp_unslash( $_POST['otkazpro_action'] ) );
 
 		if ( 'lookup' === $action ) {
 			self::handle_lookup( $can_redirect );
@@ -435,7 +439,7 @@ class Form {
 	 * @return string
 	 */
 	private static function generic_not_found() {
-		return __( 'We could not find an order with these details. Check the order number and use the email address the order was placed with.', 'wpotkaz' );
+		return __( 'We could not find an order with these details. Check the order number and use the email address the order was placed with.', 'otkazpro' );
 	}
 
 	/**
@@ -444,17 +448,17 @@ class Form {
 	 * @param bool $can_redirect Can redirect.
 	 */
 	private static function handle_lookup( $can_redirect ) {
-		$number = self::post( 'wpotkaz_order_number' );
-		$email  = sanitize_email( self::post( 'wpotkaz_email' ) );
+		$number = self::post( 'otkazpro_order_number' );
+		$email  = sanitize_email( self::post( 'otkazpro_email' ) );
 
 		self::$state['view']   = 'lookup';
 		self::$state['values'] = array(
 			'order_number' => $number,
-			'email'        => self::post( 'wpotkaz_email' ),
+			'email'        => self::post( 'otkazpro_email' ),
 		);
 
 		if ( Verifier::is_rate_limited() ) {
-			self::error( __( 'Too many unsuccessful attempts. Please try again in 15 minutes or contact us.', 'wpotkaz' ) );
+			self::error( __( 'Too many unsuccessful attempts. Please try again in 15 minutes or contact us.', 'otkazpro' ) );
 			return;
 		}
 		if ( self::is_bot() ) {
@@ -463,20 +467,20 @@ class Form {
 			return;
 		}
 		// phpcs:ignore WordPress.Security.NonceVerification.Missing
-		$nonce = isset( $_POST['_wpotkaz_nonce'] ) ? sanitize_key( wp_unslash( $_POST['_wpotkaz_nonce'] ) ) : '';
+		$nonce = isset( $_POST['_otkazpro_nonce'] ) ? sanitize_key( wp_unslash( $_POST['_otkazpro_nonce'] ) ) : '';
 		// Guests: no nonce. Page caches that ignore DONOTCACHEPAGE would otherwise serve a
 		// stale nonce and block every lookup (= obstructing the withdrawal). A cross-site
 		// lookup changes nothing; rate limiting + honeypot protect against enumeration.
 		if ( is_user_logged_in() && ! wp_verify_nonce( $nonce, 'py_otkaz_lookup' ) ) {
-			self::error( __( 'The page was open for too long. Please submit the form again.', 'wpotkaz' ) );
+			self::error( __( 'The page was open for too long. Please submit the form again.', 'otkazpro' ) );
 			return;
 		}
 
 		if ( '' === $number ) {
-			self::$state['fields']['wpotkaz_order_number'] = __( 'Enter the order number.', 'wpotkaz' );
+			self::$state['fields']['otkazpro_order_number'] = __( 'Enter the order number.', 'otkazpro' );
 		}
 		if ( '' === $email || ! is_email( $email ) ) {
-			self::$state['fields']['wpotkaz_email'] = __( 'Enter a valid email address, e.g. name@example.com.', 'wpotkaz' );
+			self::$state['fields']['otkazpro_email'] = __( 'Enter a valid email address, e.g. name@example.com.', 'otkazpro' );
 		}
 
 		/**
@@ -501,7 +505,7 @@ class Form {
 			return;
 		}
 
-		$url = add_query_arg( 'wpotkaz_src', 'lookup', self::order_url( $order, I18n::current_language() ) );
+		$url = add_query_arg( 'otkazpro_src', 'lookup', self::order_url( $order, I18n::current_language() ) );
 		self::redirect( $url, $can_redirect );
 	}
 
@@ -511,8 +515,8 @@ class Form {
 	 * @param bool $can_redirect Can redirect.
 	 */
 	private static function handle_submit( $can_redirect ) {
-		$order_id = absint( self::post( 'wpotkaz_order' ) );
-		$key      = self::post( 'wpotkaz_key' );
+		$order_id = absint( self::post( 'otkazpro_order' ) );
+		$key      = self::post( 'otkazpro_key' );
 		$order    = Verifier::get_order( $order_id );
 
 		self::$state['view'] = 'order';
@@ -520,12 +524,12 @@ class Form {
 		if ( ! Verifier::can_access( $order, $key ) ) {
 			Verifier::register_failure();
 			self::$state['view'] = 'lookup';
-			self::error( __( 'This link is invalid or has expired. Please find your order using its number and email.', 'wpotkaz' ) );
+			self::error( __( 'This link is invalid or has expired. Please find your order using its number and email.', 'otkazpro' ) );
 			return;
 		}
 
 		// phpcs:disable WordPress.Security.NonceVerification.Missing
-		$raw_items = isset( $_POST['wpotkaz_items'] ) && is_array( $_POST['wpotkaz_items'] ) ? wp_unslash( $_POST['wpotkaz_items'] ) : array(); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- sanitised below.
+		$raw_items = isset( $_POST['otkazpro_items'] ) && is_array( $_POST['otkazpro_items'] ) ? wp_unslash( $_POST['otkazpro_items'] ) : array(); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- sanitised below.
 		$items     = array();
 		$posted    = array();
 		foreach ( $raw_items as $item_id => $item ) {
@@ -543,17 +547,17 @@ class Form {
 				$items[ $item_id ] = $qty;
 			}
 		}
-		$reason = Settings::enabled( 'reason_field' ) && isset( $_POST['wpotkaz_reason'] ) ? sanitize_textarea_field( wp_unslash( $_POST['wpotkaz_reason'] ) ) : '';
-		$token  = self::post( 'wpotkaz_token' );
-		$nonce  = isset( $_POST['_wpotkaz_nonce'] ) ? sanitize_key( wp_unslash( $_POST['_wpotkaz_nonce'] ) ) : '';
+		$reason = Settings::enabled( 'reason_field' ) && isset( $_POST['otkazpro_reason'] ) ? sanitize_textarea_field( wp_unslash( $_POST['otkazpro_reason'] ) ) : '';
+		$token  = self::post( 'otkazpro_token' );
+		$nonce  = isset( $_POST['_otkazpro_nonce'] ) ? sanitize_key( wp_unslash( $_POST['_otkazpro_nonce'] ) ) : '';
 		// phpcs:enable
 
-		$name  = self::post( 'wpotkaz_name' );
-		$email = strtolower( sanitize_email( self::post( 'wpotkaz_email' ) ) );
+		$name  = self::post( 'otkazpro_name' );
+		$email = strtolower( sanitize_email( self::post( 'otkazpro_email' ) ) );
 
 		self::$state['values'] = array(
 			'name'   => $name,
-			'email'  => self::post( 'wpotkaz_email' ),
+			'email'  => self::post( 'otkazpro_email' ),
 			'items'  => $posted,
 			'reason' => $reason,
 		);
@@ -562,30 +566,30 @@ class Form {
 		if ( $token && preg_match( '/^[a-zA-Z0-9]{16,64}$/', $token ) ) {
 			$done = get_transient( 'py_otkaz_idem_' . $token );
 			if ( $done ) {
-				self::redirect( add_query_arg( 'wpotkaz_done', $done, self::current_page_url() ), $can_redirect, (string) $done );
+				self::redirect( add_query_arg( 'otkazpro_done', $done, self::current_page_url() ), $can_redirect, (string) $done );
 				return;
 			}
 		}
 
 		if ( self::is_bot() ) {
-			self::error( __( 'Your withdrawal could not be submitted. Please try again.', 'wpotkaz' ) );
+			self::error( __( 'Your withdrawal could not be submitted. Please try again.', 'otkazpro' ) );
 			return;
 		}
 		// The secret order key already proves the request comes from the order email / page,
 		// so it doubles as CSRF protection; the nonce is required only for owner access.
 		$has_key = '' !== $key && hash_equals( (string) $order->get_order_key(), $key );
 		if ( ! $has_key && ! wp_verify_nonce( $nonce, 'py_otkaz_submit_' . $order->get_id() ) ) {
-			self::error( __( 'The page was open for too long. Please review the details and confirm again.', 'wpotkaz' ) );
+			self::error( __( 'The page was open for too long. Please review the details and confirm again.', 'otkazpro' ) );
 			return;
 		}
 
 		if ( '' === $name ) {
-			self::$state['fields']['wpotkaz_name'] = __( 'Enter your name.', 'wpotkaz' );
+			self::$state['fields']['otkazpro_name'] = __( 'Enter your name.', 'otkazpro' );
 		} elseif ( mb_strlen( $name ) > 200 ) {
-			self::$state['fields']['wpotkaz_name'] = __( 'The name is too long.', 'wpotkaz' );
+			self::$state['fields']['otkazpro_name'] = __( 'The name is too long.', 'otkazpro' );
 		}
 		if ( '' === $email || ! is_email( $email ) ) {
-			self::$state['fields']['wpotkaz_email'] = __( 'Enter a valid email address, e.g. name@example.com.', 'wpotkaz' );
+			self::$state['fields']['otkazpro_email'] = __( 'Enter a valid email address, e.g. name@example.com.', 'otkazpro' );
 		}
 		if ( mb_strlen( $reason ) > 2000 ) {
 			$reason = mb_substr( $reason, 0, 2000 );
@@ -596,7 +600,7 @@ class Form {
 
 		$source = Verifier::is_owner( $order ) ? 'account' : 'link';
 		// phpcs:ignore WordPress.Security.NonceVerification.Missing
-		if ( isset( $_POST['wpotkaz_src'] ) && 'lookup' === $_POST['wpotkaz_src'] ) {
+		if ( isset( $_POST['otkazpro_src'] ) && 'lookup' === $_POST['otkazpro_src'] ) {
 			$source = 'lookup';
 		}
 
@@ -627,7 +631,7 @@ class Form {
 			set_transient( 'py_otkaz_idem_' . $token, $done, DAY_IN_SECONDS );
 		}
 		self::$state['submission'] = $result;
-		self::redirect( add_query_arg( 'wpotkaz_done', $done, self::current_page_url() ), $can_redirect, $done );
+		self::redirect( add_query_arg( 'otkazpro_done', $done, self::current_page_url() ), $can_redirect, $done );
 	}
 
 	/**
@@ -684,7 +688,7 @@ class Form {
 		}
 		self::enqueue_assets();
 		if ( ! defined( 'DONOTCACHEPAGE' ) ) {
-			define( 'DONOTCACHEPAGE', true );
+			define( 'DONOTCACHEPAGE', true ); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound -- standard page-cache constant.
 		}
 		if ( ! self::is_fallback_request() && is_page() && (int) get_option( 'py_otkaz_seen_page' ) !== (int) get_queried_object_id() ) {
 			update_option( 'py_otkaz_seen_page', (int) get_queried_object_id(), false );
@@ -695,13 +699,13 @@ class Form {
 		$args = array();
 
 		// phpcs:disable WordPress.Security.NonceVerification.Recommended
-		if ( ! $view && isset( $_GET['wpotkaz_done'] ) ) {
-			$submission = self::submission_from_token( sanitize_text_field( wp_unslash( $_GET['wpotkaz_done'] ) ) );
+		if ( ! $view && isset( $_GET['otkazpro_done'] ) ) {
+			$submission = self::submission_from_token( sanitize_text_field( wp_unslash( $_GET['otkazpro_done'] ) ) );
 			if ( $submission ) {
 				$view                      = 'success';
 				self::$state['submission'] = $submission;
 			} else {
-				self::$state['notice'] = __( 'Your withdrawal has already been submitted. The confirmation was sent to your email.', 'wpotkaz' );
+				self::$state['notice'] = __( 'Your withdrawal has already been submitted. The confirmation was sent to your email.', 'otkazpro' );
 				$view                  = 'lookup';
 			}
 		}
@@ -712,8 +716,8 @@ class Form {
 
 		$order = null;
 		if ( ! $view || 'order' === $view ) {
-			$order_id = isset( $_POST['wpotkaz_order'] ) ? absint( $_POST['wpotkaz_order'] ) : ( isset( $_GET['wpotkaz_order'] ) ? absint( $_GET['wpotkaz_order'] ) : 0 ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
-			$key      = isset( $_POST['wpotkaz_key'] ) ? sanitize_text_field( wp_unslash( $_POST['wpotkaz_key'] ) ) : ( isset( $_GET['wpotkaz_key'] ) ? sanitize_text_field( wp_unslash( $_GET['wpotkaz_key'] ) ) : '' ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+			$order_id = isset( $_POST['otkazpro_order'] ) ? absint( $_POST['otkazpro_order'] ) : ( isset( $_GET['otkazpro_order'] ) ? absint( $_GET['otkazpro_order'] ) : 0 ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+			$key      = isset( $_POST['otkazpro_key'] ) ? sanitize_text_field( wp_unslash( $_POST['otkazpro_key'] ) ) : ( isset( $_GET['otkazpro_key'] ) ? sanitize_text_field( wp_unslash( $_GET['otkazpro_key'] ) ) : '' ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
 			if ( $order_id ) {
 				$order = Verifier::get_order( $order_id );
 				if ( Verifier::can_access( $order, $key ) ) {
@@ -722,7 +726,7 @@ class Form {
 					$order = null;
 					$view  = 'lookup';
 					if ( ! self::$state['errors'] ) {
-						self::error( __( 'This link is invalid or has expired. Please find your order using its number and email.', 'wpotkaz' ) );
+						self::error( __( 'This link is invalid or has expired. Please find your order using its number and email.', 'otkazpro' ) );
 					}
 				}
 			} else {
@@ -840,7 +844,7 @@ class Form {
 		$name = trim( $order->get_billing_first_name() . ' ' . $order->get_billing_last_name() );
 
 		// phpcs:ignore WordPress.Security.NonceVerification
-		$src = isset( $_REQUEST['wpotkaz_src'] ) && 'lookup' === $_REQUEST['wpotkaz_src'] ? 'lookup' : '';
+		$src = isset( $_REQUEST['otkazpro_src'] ) && 'lookup' === $_REQUEST['otkazpro_src'] ? 'lookup' : '';
 
 		return array(
 			'order'          => $order,
@@ -875,14 +879,14 @@ class Form {
 	}
 
 	/**
-	 * Render a template (overridable in theme/woocommerce/wpotkaz/).
+	 * Render a template (overridable in theme/woocommerce/otkazpro/).
 	 *
 	 * @param string $name Template file.
 	 * @param array  $args Args.
 	 * @return string
 	 */
 	public static function template( $name, $args ) {
-		return wc_get_template_html( $name, $args, 'woocommerce/wpotkaz/', PY_OTKAZ_DIR . 'templates/' );
+		return wc_get_template_html( $name, $args, 'woocommerce/otkazpro/', PY_OTKAZ_DIR . 'templates/' );
 	}
 
 	/* ---------------------------------------------------------------------
@@ -902,19 +906,19 @@ class Form {
 	 * Register + enqueue CSS/JS with the accent variables.
 	 */
 	public static function enqueue_assets() {
-		if ( wp_style_is( 'wpotkaz', 'enqueued' ) ) {
+		if ( wp_style_is( 'otkazpro', 'enqueued' ) ) {
 			return;
 		}
 		$suffix = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
-		$css    = file_exists( PY_OTKAZ_DIR . 'assets/css/wpotkaz' . $suffix . '.css' ) ? $suffix : '';
-		$js     = file_exists( PY_OTKAZ_DIR . 'assets/js/wpotkaz' . $suffix . '.js' ) ? $suffix : '';
+		$css    = file_exists( PY_OTKAZ_DIR . 'assets/css/otkazpro' . $suffix . '.css' ) ? $suffix : '';
+		$js     = file_exists( PY_OTKAZ_DIR . 'assets/js/otkazpro' . $suffix . '.js' ) ? $suffix : '';
 
-		wp_enqueue_style( 'wpotkaz', PY_OTKAZ_URL . 'assets/css/wpotkaz' . $css . '.css', array(), PY_OTKAZ_VERSION );
-		wp_add_inline_style( 'wpotkaz', self::inline_css() );
+		wp_enqueue_style( 'otkazpro', PY_OTKAZ_URL . 'assets/css/otkazpro' . $css . '.css', array(), PY_OTKAZ_VERSION );
+		wp_add_inline_style( 'otkazpro', self::inline_css() );
 
 		wp_enqueue_script(
-			'wpotkaz',
-			PY_OTKAZ_URL . 'assets/js/wpotkaz' . $js . '.js',
+			'otkazpro',
+			PY_OTKAZ_URL . 'assets/js/otkazpro' . $js . '.js',
 			array(),
 			PY_OTKAZ_VERSION,
 			array(
@@ -923,13 +927,13 @@ class Form {
 			)
 		);
 		wp_localize_script(
-			'wpotkaz',
-			'wpotkazL10n',
+			'otkazpro',
+			'otkazproL10n',
 			array(
-				'sending'   => __( 'Sending…', 'wpotkaz' ),
-				'selectOne' => __( 'Select at least one product to continue.', 'wpotkaz' ),
+				'sending'   => __( 'Sending…', 'otkazpro' ),
+				'selectOne' => __( 'Select at least one product to continue.', 'otkazpro' ),
 				/* translators: 1: number of products, 2: number of pieces */
-				'selected'  => __( 'Selected: %1$s products, %2$s pcs.', 'wpotkaz' ),
+				'selected'  => __( 'Selected: %1$s products, %2$s pcs.', 'otkazpro' ),
 			)
 		);
 	}
@@ -946,7 +950,7 @@ class Form {
 		$radius = in_array( $radius, array( 0, 4, 8, 999 ), true ) ? $radius : 8;
 
 		return sprintf(
-			'.wpotkaz,.wpotkaz-account{--wpotkaz-accent:%1$s;--wpotkaz-accent-contrast:%2$s;--wpotkaz-ink:%3$s;--wpotkaz-radius:%4$dpx;--wpotkaz-btn-radius:%5$dpx}',
+			'.otkazpro,.otkazpro-account{--otkazpro-accent:%1$s;--otkazpro-accent-contrast:%2$s;--otkazpro-ink:%3$s;--otkazpro-radius:%4$dpx;--otkazpro-btn-radius:%5$dpx}',
 			$accent,
 			Util::text_on( $accent ),
 			Util::ink_on_white( $accent ),

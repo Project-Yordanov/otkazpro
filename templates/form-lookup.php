@@ -2,7 +2,7 @@
 /**
  * Step 1 – find the order (order number + email).
  *
- * Override: yourtheme/woocommerce/wpotkaz/form-lookup.php
+ * Override: yourtheme/woocommerce/otkazpro/form-lookup.php
  *
  * @package PY\Otkaz
  *
@@ -20,65 +20,67 @@
 
 defined( 'ABSPATH' ) || exit;
 
-$py_number = isset( $values['order_number'] ) ? $values['order_number'] : '';
-$wpotkaz_email  = isset( $values['email'] ) ? $values['email'] : '';
-$py_err    = static function ( $id ) use ( $fields ) {
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- template: variables are local to the including function (wc_get_template).
+
+$otkazpro_number = isset( $values['order_number'] ) ? $values['order_number'] : '';
+$otkazpro_email  = isset( $values['email'] ) ? $values['email'] : '';
+$otkazpro_err    = static function ( $id ) use ( $fields ) {
 	return isset( $fields[ $id ] ) ? $fields[ $id ] : '';
 };
 ?>
-<div class="wpotkaz" data-wpotkaz-otkaz>
-	<?php wc_get_template( 'parts/steps.php', array( 'current' => 1 ), 'woocommerce/wpotkaz/', PY_OTKAZ_DIR . 'templates/' ); ?>
+<div class="otkazpro" data-otkazpro>
+	<?php wc_get_template( 'parts/steps.php', array( 'current' => 1 ), 'woocommerce/otkazpro/', PY_OTKAZ_DIR . 'templates/' ); ?>
 
 	<?php if ( $intro ) : ?>
-		<div class="wpotkaz__intro"><?php echo wp_kses_post( wpautop( $intro ) ); ?></div>
+		<div class="otkazpro__intro"><?php echo wp_kses_post( wpautop( $intro ) ); ?></div>
 	<?php endif; ?>
 
-	<?php wc_get_template( 'parts/notices.php', compact( 'errors', 'fields', 'notice' ), 'woocommerce/wpotkaz/', PY_OTKAZ_DIR . 'templates/' ); ?>
+	<?php wc_get_template( 'parts/notices.php', compact( 'errors', 'fields', 'notice' ), 'woocommerce/otkazpro/', PY_OTKAZ_DIR . 'templates/' ); ?>
 
 	<?php if ( ! empty( $account_orders ) ) : ?>
-		<section class="wpotkaz__card" aria-labelledby="wpotkaz-account-title">
-			<h2 class="wpotkaz__h" id="wpotkaz-account-title"><?php esc_html_e( 'Your orders', 'wpotkaz' ); ?></h2>
-			<ul class="wpotkaz__orders">
-				<?php foreach ( $account_orders as $wpotkaz_order ) : ?>
+		<section class="otkazpro__card" aria-labelledby="otkazpro-account-title">
+			<h2 class="otkazpro__h" id="otkazpro-account-title"><?php esc_html_e( 'Your orders', 'otkazpro' ); ?></h2>
+			<ul class="otkazpro__orders">
+				<?php foreach ( $account_orders as $otkazpro_order ) : ?>
 					<li>
 						<span>
 							<?php
 							/* translators: 1: order number, 2: order date */
-							echo esc_html( sprintf( __( 'Order #%1$s from %2$s', 'wpotkaz' ), $wpotkaz_order->get_order_number(), wc_format_datetime( $wpotkaz_order->get_date_created() ) ) );
+							echo esc_html( sprintf( __( 'Order #%1$s from %2$s', 'otkazpro' ), $otkazpro_order->get_order_number(), wc_format_datetime( $otkazpro_order->get_date_created() ) ) );
 							?>
 						</span>
-						<a class="wpotkaz__link" href="<?php echo esc_url( \PY\Otkaz\Form::order_url( $wpotkaz_order, \PY\Otkaz\I18n::current_language() ) ); ?>"><?php esc_html_e( 'Choose', 'wpotkaz' ); ?><span class="screen-reader-text"> <?php echo esc_html( '#' . $wpotkaz_order->get_order_number() ); ?></span></a>
+						<a class="otkazpro__link" href="<?php echo esc_url( \PY\Otkaz\Form::order_url( $otkazpro_order, \PY\Otkaz\I18n::current_language() ) ); ?>"><?php esc_html_e( 'Choose', 'otkazpro' ); ?><span class="screen-reader-text"> <?php echo esc_html( '#' . $otkazpro_order->get_order_number() ); ?></span></a>
 					</li>
 				<?php endforeach; ?>
 			</ul>
-			<p class="wpotkaz__hint"><?php esc_html_e( 'Or find another order below.', 'wpotkaz' ); ?></p>
+			<p class="otkazpro__hint"><?php esc_html_e( 'Or find another order below.', 'otkazpro' ); ?></p>
 		</section>
 	<?php endif; ?>
 
-	<form class="wpotkaz__form" method="post" action="<?php echo esc_url( $form_action ); ?>" data-wpotkaz-form="lookup">
-		<h2 class="wpotkaz__h"><?php esc_html_e( 'Find your order', 'wpotkaz' ); ?></h2>
+	<form class="otkazpro__form" method="post" action="<?php echo esc_url( $form_action ); ?>" data-otkazpro-form="lookup">
+		<h2 class="otkazpro__h"><?php esc_html_e( 'Find your order', 'otkazpro' ); ?></h2>
 
-		<div class="wpotkaz__field<?php echo $py_err( 'wpotkaz_order_number' ) ? ' has-error' : ''; ?>">
-			<label for="wpotkaz_order_number"><?php esc_html_e( 'Order number', 'wpotkaz' ); ?></label>
-			<p class="wpotkaz__hint" id="wpotkaz_order_number_hint"><?php esc_html_e( 'You will find it in the order confirmation email, e.g. 12345.', 'wpotkaz' ); ?></p>
-			<?php if ( $py_err( 'wpotkaz_order_number' ) ) : ?>
-				<p class="wpotkaz__error" id="wpotkaz_order_number_error"><?php echo esc_html( $py_err( 'wpotkaz_order_number' ) ); ?></p>
+		<div class="otkazpro__field<?php echo $otkazpro_err( 'otkazpro_order_number' ) ? ' has-error' : ''; ?>">
+			<label for="otkazpro_order_number"><?php esc_html_e( 'Order number', 'otkazpro' ); ?></label>
+			<p class="otkazpro__hint" id="otkazpro_order_number_hint"><?php esc_html_e( 'You will find it in the order confirmation email, e.g. 12345.', 'otkazpro' ); ?></p>
+			<?php if ( $otkazpro_err( 'otkazpro_order_number' ) ) : ?>
+				<p class="otkazpro__error" id="otkazpro_order_number_error"><?php echo esc_html( $otkazpro_err( 'otkazpro_order_number' ) ); ?></p>
 			<?php endif; ?>
-			<input type="text" id="wpotkaz_order_number" name="wpotkaz_order_number" value="<?php echo esc_attr( $py_number ); ?>" required autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="64"
-				aria-describedby="wpotkaz_order_number_hint<?php echo $py_err( 'wpotkaz_order_number' ) ? ' wpotkaz_order_number_error' : ''; ?>"<?php echo $py_err( 'wpotkaz_order_number' ) ? ' aria-invalid="true"' : ''; ?> />
+			<input type="text" id="otkazpro_order_number" name="otkazpro_order_number" value="<?php echo esc_attr( $otkazpro_number ); ?>" required autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="64"
+				aria-describedby="otkazpro_order_number_hint<?php echo $otkazpro_err( 'otkazpro_order_number' ) ? ' otkazpro_order_number_error' : ''; ?>"<?php echo $otkazpro_err( 'otkazpro_order_number' ) ? ' aria-invalid="true"' : ''; ?> />
 		</div>
 
-		<div class="wpotkaz__field<?php echo $py_err( 'wpotkaz_email' ) ? ' has-error' : ''; ?>">
-			<label for="wpotkaz_email"><?php esc_html_e( 'Email used for the order', 'wpotkaz' ); ?></label>
-			<?php if ( $py_err( 'wpotkaz_email' ) ) : ?>
-				<p class="wpotkaz__error" id="wpotkaz_email_error"><?php echo esc_html( $py_err( 'wpotkaz_email' ) ); ?></p>
+		<div class="otkazpro__field<?php echo $otkazpro_err( 'otkazpro_email' ) ? ' has-error' : ''; ?>">
+			<label for="otkazpro_email"><?php esc_html_e( 'Email used for the order', 'otkazpro' ); ?></label>
+			<?php if ( $otkazpro_err( 'otkazpro_email' ) ) : ?>
+				<p class="otkazpro__error" id="otkazpro_email_error"><?php echo esc_html( $otkazpro_err( 'otkazpro_email' ) ); ?></p>
 			<?php endif; ?>
-			<input type="email" id="wpotkaz_email" name="wpotkaz_email" value="<?php echo esc_attr( $wpotkaz_email ); ?>" required autocomplete="email" inputmode="email" autocapitalize="off" spellcheck="false" maxlength="200"
-				<?php echo $py_err( 'wpotkaz_email' ) ? 'aria-describedby="wpotkaz_email_error" aria-invalid="true"' : ''; ?> />
+			<input type="email" id="otkazpro_email" name="otkazpro_email" value="<?php echo esc_attr( $otkazpro_email ); ?>" required autocomplete="email" inputmode="email" autocapitalize="off" spellcheck="false" maxlength="200"
+				<?php echo $otkazpro_err( 'otkazpro_email' ) ? 'aria-describedby="otkazpro_email_error" aria-invalid="true"' : ''; ?> />
 		</div>
 
-		<div class="wpotkaz__hp" aria-hidden="true">
-			<label for="<?php echo esc_attr( $honeypot ); ?>"><?php esc_html_e( 'Leave this field empty', 'wpotkaz' ); ?></label>
+		<div class="otkazpro__hp" aria-hidden="true">
+			<label for="<?php echo esc_attr( $honeypot ); ?>"><?php esc_html_e( 'Leave this field empty', 'otkazpro' ); ?></label>
 			<input type="text" id="<?php echo esc_attr( $honeypot ); ?>" name="<?php echo esc_attr( $honeypot ); ?>" value="" tabindex="-1" autocomplete="off" />
 		</div>
 
@@ -89,15 +91,15 @@ $py_err    = static function ( $id ) use ( $fields ) {
 		do_action( 'py_otkaz_lookup_form_fields' );
 		?>
 
-		<input type="hidden" name="wpotkaz_action" value="lookup" />
-		<?php wp_nonce_field( 'py_otkaz_lookup', '_wpotkaz_nonce', false ); ?>
+		<input type="hidden" name="otkazpro_action" value="lookup" />
+		<?php wp_nonce_field( 'py_otkaz_lookup', '_otkazpro_nonce', false ); ?>
 
-		<div class="wpotkaz__actions">
-			<button type="submit" class="wpotkaz__btn"<?php echo $rate_limited ? ' disabled' : ''; ?>><?php echo esc_html( $start_label ); ?></button>
+		<div class="otkazpro__actions">
+			<button type="submit" class="otkazpro__btn"<?php echo $rate_limited ? ' disabled' : ''; ?>><?php echo esc_html( $start_label ); ?></button>
 		</div>
 
-		<p class="wpotkaz__small">
-			<?php esc_html_e( 'You do not need to give a reason. If you have an account, you can also start from My account → Orders.', 'wpotkaz' ); ?>
+		<p class="otkazpro__small">
+			<?php esc_html_e( 'You do not need to give a reason. If you have an account, you can also start from My account → Orders.', 'otkazpro' ); ?>
 		</p>
 	</form>
 </div>
