@@ -10,6 +10,14 @@ defined( 'WP_UNINSTALL_PLUGIN' ) || exit;
 
 global $wpdb;
 
+// Another edition of the plugin (renamed: OtkazPro / WPOtkaz) is still installed and uses the
+// same settings and data – keep everything.
+foreach ( array( 'otkazpro/otkazpro.php', 'wpotkaz/wpotkaz.php', 'otkazpro-main/otkazpro.php', 'wpotkaz-main/wpotkaz.php' ) as $py_otkaz_other ) {
+	if ( WP_UNINSTALL_PLUGIN !== $py_otkaz_other && file_exists( WP_PLUGIN_DIR . '/' . $py_otkaz_other ) ) {
+		return;
+	}
+}
+
 $py_otkaz_delete_data = 'yes' === get_option( 'py_otkaz_delete_data' );
 
 // Settings.
