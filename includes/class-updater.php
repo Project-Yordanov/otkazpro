@@ -38,7 +38,8 @@ class Updater {
 		add_filter( 'upgrader_pre_download', array( __CLASS__, 'download' ), 10, 4 );
 		add_filter( 'upgrader_source_selection', array( __CLASS__, 'fix_folder' ), 10, 4 );
 		add_action( 'upgrader_process_complete', array( __CLASS__, 'flush' ), 10, 0 );
-		add_action( 'load-update-core.php', array( __CLASS__, 'maybe_flush_on_force_check' ) );
+		// Priority 1: before WordPress runs its own update check on this screen (priority 10).
+		add_action( 'load-update-core.php', array( __CLASS__, 'maybe_flush_on_force_check' ), 1 );
 	}
 
 	/**
