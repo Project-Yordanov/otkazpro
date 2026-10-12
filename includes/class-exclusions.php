@@ -236,7 +236,7 @@ class Exclusions {
 		global $product_object;
 		$product = $product_object instanceof \WC_Product ? $product_object : null;
 
-		echo '<div class="options_group py-otkaz-product-fields">';
+		echo '<div class="options_group wpotkaz-product-fields">';
 		woocommerce_wp_select(
 			array(
 				'id'          => self::META_FLAG,
@@ -325,7 +325,7 @@ class Exclusions {
 		if ( ! $product ) {
 			return;
 		}
-		echo '<div class="py-otkaz-variation-fields form-row form-row-full">';
+		echo '<div class="wpotkaz-variation-fields form-row form-row-full">';
 		woocommerce_wp_select(
 			array(
 				'id'            => self::META_FLAG . '_' . $loop,
@@ -483,7 +483,7 @@ class Exclusions {
 	 */
 	public static function label_html( $exclusion ) {
 		return sprintf(
-			'<p class="py-otkaz-label"><strong>%1$s</strong> <span>%2$s</span></p>',
+			'<p class="wpotkaz-label"><strong>%1$s</strong> <span>%2$s</span></p>',
 			esc_html__( 'No right of withdrawal', 'wpotkaz' ),
 			esc_html( '(' . $exclusion['label'] . ')' )
 		);
@@ -568,8 +568,8 @@ class Exclusions {
 		if ( ! function_exists( 'is_product' ) || ! is_product() ) {
 			return;
 		}
-		wp_register_style( 'py-otkaz-label', false, array(), PY_OTKAZ_VERSION );
-		wp_enqueue_style( 'py-otkaz-label' );
-		wp_add_inline_style( 'py-otkaz-label', '.py-otkaz-label{margin:.75em 0;padding:.5em .75em;border-left:3px solid currentColor;font-size:.9em;line-height:1.4}' );
+		wp_register_style( 'wpotkaz-label', false, array(), PY_OTKAZ_VERSION );
+		wp_enqueue_style( 'wpotkaz-label' );
+		wp_add_inline_style( 'wpotkaz-label', '.wpotkaz-label{margin:.75em 0;padding:.5em .75em;border-left:3px solid currentColor;font-size:.9em;line-height:1.4}' );
 	}
 }

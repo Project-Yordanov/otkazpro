@@ -72,18 +72,18 @@ $py_td = 'text-align:left;padding:8px 12px;border:1px solid #e5e5e5;vertical-ali
 		</tr>
 	</thead>
 	<tbody>
-		<?php foreach ( $submission->items as $py_item ) : ?>
+		<?php foreach ( $submission->items as $wpotkaz_item ) : ?>
 			<tr>
 				<td style="<?php echo esc_attr( $py_td ); ?>">
-					<?php echo esc_html( $py_item['name'] ); ?>
-					<?php if ( ! empty( $py_item['sku'] ) ) : ?>
-						<br /><small><?php echo esc_html( sprintf( 'SKU: %s', $py_item['sku'] ) ); ?></small>
+					<?php echo esc_html( $wpotkaz_item['name'] ); ?>
+					<?php if ( ! empty( $wpotkaz_item['sku'] ) ) : ?>
+						<br /><small><?php echo esc_html( sprintf( 'SKU: %s', $wpotkaz_item['sku'] ) ); ?></small>
 					<?php endif; ?>
-					<?php if ( $sent_to_admin && ! empty( $py_item['excluded'] ) ) : ?>
+					<?php if ( $sent_to_admin && ! empty( $wpotkaz_item['excluded'] ) ) : ?>
 						<br /><strong style="color:#b45309;">
 							<?php
 							/* translators: %s: reason */
-							echo esc_html( sprintf( __( 'Excluded product: %s', 'wpotkaz' ), $py_item['excluded_reason'] ) );
+							echo esc_html( sprintf( __( 'Excluded product: %s', 'wpotkaz' ), $wpotkaz_item['excluded_reason'] ) );
 							?>
 						</strong>
 					<?php endif; ?>
@@ -91,7 +91,7 @@ $py_td = 'text-align:left;padding:8px 12px;border:1px solid #e5e5e5;vertical-ali
 				<td style="<?php echo esc_attr( $py_td ); ?>">
 					<?php
 					/* translators: 1: withdrawn quantity, 2: purchased quantity */
-					echo esc_html( sprintf( __( '%1$d of %2$d', 'wpotkaz' ), (int) $py_item['qty'], (int) $py_item['ordered_qty'] ) );
+					echo esc_html( sprintf( __( '%1$d of %2$d', 'wpotkaz' ), (int) $wpotkaz_item['qty'], (int) $wpotkaz_item['ordered_qty'] ) );
 					?>
 				</td>
 			</tr>

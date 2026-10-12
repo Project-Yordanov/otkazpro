@@ -400,10 +400,10 @@ class Submission {
 		foreach ( (array) $data['items'] as $item_id => $qty ) {
 			$item_id = absint( $item_id );
 			$qty     = (int) $qty;
-			$field   = 'py_item_' . $item_id;
+			$field   = 'wpotkaz_item_' . $item_id;
 
 			if ( ! isset( $available[ $item_id ] ) ) {
-				$fields['py_items'] = __( 'One of the selected products is not part of this order.', 'wpotkaz' );
+				$fields['wpotkaz_items'] = __( 'One of the selected products is not part of this order.', 'wpotkaz' );
 				continue;
 			}
 			$item = $available[ $item_id ];
@@ -440,7 +440,7 @@ class Submission {
 		}
 
 		if ( ! $selected && ! $fields ) {
-			$fields['py_items'] = __( 'Select at least one product.', 'wpotkaz' );
+			$fields['wpotkaz_items'] = __( 'Select at least one product.', 'wpotkaz' );
 		}
 		if ( $fields ) {
 			$error = new \WP_Error( 'py_otkaz_validation', __( 'Please correct the highlighted fields.', 'wpotkaz' ) );

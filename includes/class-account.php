@@ -61,7 +61,7 @@ class Account {
 		}
 		Form::enqueue_assets();
 		?>
-		<section class="py-otkaz-account">
+		<section class="wpotkaz-account">
 			<h2><?php esc_html_e( 'Withdrawal from contract', 'wpotkaz' ); ?></h2>
 			<?php if ( $history ) : ?>
 				<ul>
@@ -83,7 +83,7 @@ class Account {
 			<?php endif; ?>
 			<?php if ( $selectable ) : ?>
 				<p><?php esc_html_e( 'You can withdraw from the contract online without giving a reason.', 'wpotkaz' ); ?></p>
-				<p><a class="button py-otkaz-account__btn" href="<?php echo esc_url( Form::order_url( $order, I18n::current_language() ) ); ?>"><?php echo esc_html( Settings::text( 'text_start_button' ) ); ?></a></p>
+				<p><a class="button wpotkaz-account__btn" href="<?php echo esc_url( Form::order_url( $order, I18n::current_language() ) ); ?>"><?php echo esc_html( Settings::text( 'text_start_button' ) ); ?></a></p>
 			<?php endif; ?>
 		</section>
 		<?php

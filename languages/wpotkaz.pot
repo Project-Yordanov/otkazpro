@@ -2,9 +2,9 @@
 # This file is distributed under the GPL-2.0-or-later.
 msgid ""
 msgstr ""
-"Project-Id-Version: WPOtkaz 1.2.0\n"
+"Project-Id-Version: WPOtkaz 1.2.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-12 14:20+0000\n"
+"POT-Creation-Date: 2026-10-12 16:41+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -221,7 +221,7 @@ msgstr ""
 msgid "Customer confirmation"
 msgstr ""
 
-#: includes/class-cache-check.php:365
+#: includes/class-cache-check.php:376
 msgid "Customer order pages of the withdrawal form are cached"
 msgstr ""
 
@@ -302,21 +302,21 @@ msgstr ""
 msgid "Enter a quantity between 1 and %2$d for “%1$s”."
 msgstr ""
 
-#: includes/class-form.php:330
-#: includes/class-form.php:439
+#: includes/class-form.php:384
+#: includes/class-form.php:493
 msgid "Enter a valid email address, e.g. name@example.com."
 msgstr ""
 
-#: includes/class-form.php:327
+#: includes/class-form.php:381
 msgid "Enter the order number."
 msgstr ""
 
-#: includes/class-form.php:434
+#: includes/class-form.php:488
 msgid "Enter your name."
 msgstr ""
 
 #. translators: 1: cache names, 2: page path
-#: includes/class-cache-check.php:301
+#: includes/class-cache-check.php:312
 #, php-format
 msgid "Exclude %2$s and everything after it from caching in %1$s (for Cloudflare: a Cache Rule “Bypass cache” for this path), purge the cache and run the check again."
 msgstr ""
@@ -578,7 +578,7 @@ msgstr ""
 msgid "Only for “Other”. Shown to the customer."
 msgstr ""
 
-#: includes/class-cache-check.php:375
+#: includes/class-cache-check.php:386
 msgid "Open WPOtkaz settings"
 msgstr ""
 
@@ -662,7 +662,7 @@ msgstr ""
 msgid "Page containing the [wpotkaz] shortcode. Created automatically on activation."
 msgstr ""
 
-#: includes/class-cache-check.php:307
+#: includes/class-cache-check.php:318
 msgid "Pages with a query string are served from cache: a customer’s order page could be shown to other visitors."
 msgstr ""
 
@@ -818,7 +818,7 @@ msgstr ""
 msgid "Select all"
 msgstr ""
 
-#: includes/class-form.php:778
+#: includes/class-form.php:832
 msgid "Select at least one product to continue."
 msgstr ""
 
@@ -827,7 +827,7 @@ msgid "Select at least one product."
 msgstr ""
 
 #. translators: 1: number of products, 2: number of pieces
-#: includes/class-form.php:780
+#: includes/class-form.php:834
 #, php-format
 msgid "Selected: %1$s products, %2$s pcs."
 msgstr ""
@@ -840,7 +840,7 @@ msgstr ""
 msgid "Send attempts"
 msgstr ""
 
-#: includes/class-form.php:777
+#: includes/class-form.php:831
 msgid "Sending…"
 msgstr ""
 
@@ -965,11 +965,11 @@ msgstr ""
 msgid "Texts"
 msgstr ""
 
-#: includes/class-cache-check.php:292
+#: includes/class-cache-check.php:303
 msgid "The cache check has not run yet."
 msgstr ""
 
-#: includes/class-cache-check.php:313
+#: includes/class-cache-check.php:324
 msgid "The check could not be completed:"
 msgstr ""
 
@@ -994,29 +994,29 @@ msgstr ""
 msgid "The form inherits the theme font. The accent colour is used only for primary buttons, focus rings, checkboxes, links and the active step; button text colour is chosen automatically for contrast."
 msgstr ""
 
-#: includes/class-cache-check.php:90
+#: includes/class-cache-check.php:91
 msgid "The form page is missing or not published."
 msgstr ""
 
-#: includes/class-cache-check.php:311
+#: includes/class-cache-check.php:322
 msgid "The form page is not cached."
 msgstr ""
 
-#: includes/class-cache-check.php:309
+#: includes/class-cache-check.php:320
 msgid "The form page is served from cache. The form keeps working, but excluding it is recommended."
 msgstr ""
 
 #. translators: %d: HTTP status code
-#: includes/class-cache-check.php:148
+#: includes/class-cache-check.php:149
 #, php-format
 msgid "The form page returned HTTP %d to the check (firewall or bot protection?)."
 msgstr ""
 
-#: includes/class-cache-check.php:155
+#: includes/class-cache-check.php:168
 msgid "The form was not found on the page (is the shortcode on the selected page?)."
 msgstr ""
 
-#: includes/class-form.php:436
+#: includes/class-form.php:490
 msgid "The name is too long."
 msgstr ""
 
@@ -1038,11 +1038,11 @@ msgstr ""
 msgid "The page could not be updated. Add [wpotkaz] to the page manually and select it in the settings."
 msgstr ""
 
-#: includes/class-form.php:429
+#: includes/class-form.php:483
 msgid "The page was open for too long. Please review the details and confirm again."
 msgstr ""
 
-#: includes/class-form.php:322
+#: includes/class-form.php:376
 msgid "The page was open for too long. Please submit the form again."
 msgstr ""
 
@@ -1061,7 +1061,7 @@ msgstr ""
 msgid "The statement includes products marked as having no right of withdrawal. Review the request and reply to the customer."
 msgstr ""
 
-#: includes/class-cache-check.php:364
+#: includes/class-cache-check.php:375
 msgid "The withdrawal form page is cached or could not be checked"
 msgstr ""
 
@@ -1069,7 +1069,7 @@ msgstr ""
 msgid "The withdrawal form page is missing or not published. Customers cannot exercise their right of withdrawal online."
 msgstr ""
 
-#: includes/class-cache-check.php:363
+#: includes/class-cache-check.php:374
 msgid "The withdrawal form page is not cached"
 msgstr ""
 
@@ -1077,8 +1077,8 @@ msgstr ""
 msgid "The withdrawal form page is set up. Check it and add the link to your footer."
 msgstr ""
 
-#: includes/class-form.php:374
-#: includes/class-form.php:573
+#: includes/class-form.php:428
+#: includes/class-form.php:627
 msgid "This link is invalid or has expired. Please find your order using its number and email."
 msgstr ""
 
@@ -1092,7 +1092,7 @@ msgstr ""
 msgid "To"
 msgstr ""
 
-#: includes/class-form.php:308
+#: includes/class-form.php:362
 msgid "Too many unsuccessful attempts. Please try again in 15 minutes or contact us."
 msgstr ""
 
@@ -1136,7 +1136,7 @@ msgstr ""
 msgid "WPOtkaz: a page “Withdrawal from contract” already exists"
 msgstr ""
 
-#: includes/class-cache-check.php:347
+#: includes/class-cache-check.php:358
 msgid "WPOtkaz: withdrawal form is not cached"
 msgstr ""
 
@@ -1147,7 +1147,7 @@ msgstr ""
 msgid "We confirm that we received your statement of withdrawal from the contract on %1$s at %2$s. Its content is below."
 msgstr ""
 
-#: includes/class-form.php:289
+#: includes/class-form.php:343
 msgid "We could not find an order with these details. Check the order number and use the email address the order was placed with."
 msgstr ""
 
@@ -1311,7 +1311,7 @@ msgstr ""
 #: includes/class-admin.php:251
 #: includes/class-admin.php:273
 #: includes/class-admin.php:463
-#: includes/class-cache-check.php:323
+#: includes/class-cache-check.php:334
 msgid "You do not have permission to do this."
 msgstr ""
 
@@ -1339,11 +1339,11 @@ msgstr ""
 msgid "Your withdrawal could not be saved due to a technical error. Please try again or contact us by email."
 msgstr ""
 
-#: includes/class-form.php:422
+#: includes/class-form.php:476
 msgid "Your withdrawal could not be submitted. Please try again."
 msgstr ""
 
-#: includes/class-form.php:552
+#: includes/class-form.php:606
 msgid "Your withdrawal has already been submitted. The confirmation was sent to your email."
 msgstr ""
 
@@ -1359,7 +1359,7 @@ msgstr ""
 msgid "[{site_title}] New withdrawal {otkaz_number} – order #{order_number}"
 msgstr ""
 
-#: includes/class-cache-check.php:294
+#: includes/class-cache-check.php:305
 msgid "a page cache (plugin, hosting or CDN)"
 msgstr ""
 

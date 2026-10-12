@@ -15,10 +15,10 @@ defined( 'ABSPATH' ) || exit;
 
 $py_has_errors = ! empty( $errors ) || ! empty( $fields );
 ?>
-<div class="py-otkaz__live" aria-live="polite" aria-atomic="true">
+<div class="wpotkaz__live" aria-live="polite" aria-atomic="true">
 	<?php if ( $py_has_errors ) : ?>
-		<div class="py-otkaz__notice py-otkaz__notice--error" role="alert" tabindex="-1" data-py-focus>
-			<p class="py-otkaz__notice-title"><strong><?php esc_html_e( 'Please check the following:', 'wpotkaz' ); ?></strong></p>
+		<div class="wpotkaz__notice wpotkaz__notice--error" role="alert" tabindex="-1" data-wpotkaz-focus>
+			<p class="wpotkaz__notice-title"><strong><?php esc_html_e( 'Please check the following:', 'wpotkaz' ); ?></strong></p>
 			<ul>
 				<?php foreach ( (array) $errors as $py_message ) : ?>
 					<li><?php echo esc_html( $py_message ); ?></li>
@@ -29,7 +29,7 @@ $py_has_errors = ! empty( $errors ) || ! empty( $fields );
 			</ul>
 		</div>
 	<?php elseif ( ! empty( $notice ) ) : ?>
-		<div class="py-otkaz__notice py-otkaz__notice--info" role="status">
+		<div class="wpotkaz__notice wpotkaz__notice--info" role="status">
 			<p><?php echo esc_html( $notice ); ?></p>
 		</div>
 	<?php endif; ?>

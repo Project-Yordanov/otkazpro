@@ -75,7 +75,7 @@ class Privacy {
 			$data[] = array(
 				'group_id'    => 'wpotkaz',
 				'group_label' => __( 'Withdrawals from contract', 'wpotkaz' ),
-				'item_id'     => 'py-otkaz-' . $s->id,
+				'item_id'     => 'wpotkaz-' . $s->id,
 				'data'        => array(
 					array(
 						'name'  => __( 'Statement number', 'wpotkaz' ),

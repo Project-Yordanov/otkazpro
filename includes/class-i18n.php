@@ -67,6 +67,9 @@ class I18n {
 	 * @return string
 	 */
 	public static function translate( $key, $value, $lang = null ) {
+		if ( ! self::is_multilingual() ) {
+			return $value;
+		}
 		if ( has_filter( 'wpml_translate_single_string' ) ) {
 			return (string) apply_filters( 'wpml_translate_single_string', $value, self::CONTEXT, $key, $lang );
 		}
@@ -85,11 +88,24 @@ class I18n {
 	 * @return string
 	 */
 	public static function current_language() {
+		// Other plugins sometimes answer WPML's filters without WPML being installed.
+		if ( ! self::is_multilingual() ) {
+			return '';
+		}
 		$lang = apply_filters( 'wpml_current_language', null );
 		if ( ! $lang && function_exists( 'pll_current_language' ) ) {
 			$lang = pll_current_language();
 		}
 		return $lang ? (string) $lang : '';
+	}
+
+	/**
+	 * Is WPML or Polylang actually active?
+	 *
+	 * @return bool
+	 */
+	public static function is_multilingual() {
+		return defined( 'ICL_SITEPRESS_VERSION' ) || function_exists( 'pll_current_language' );
 	}
 
 	/**
@@ -114,7 +130,7 @@ class I18n {
 	 * @return string
 	 */
 	public static function locale_for( $lang ) {
-		if ( ! $lang ) {
+		if ( ! $lang || ! self::is_multilingual() ) {
 			return '';
 		}
 		$languages = apply_filters( 'wpml_active_languages', null, array( 'skip_missing' => 0 ) );
@@ -147,7 +163,7 @@ class I18n {
 			'switched'  => false,
 		);
 
-		if ( $lang && has_action( 'wpml_switch_language' ) ) {
+		if ( $lang && self::is_multilingual() && has_action( 'wpml_switch_language' ) ) {
 			$state['wpml_prev'] = self::current_language();
 			do_action( 'wpml_switch_language', $lang );
 		}

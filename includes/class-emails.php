@@ -144,7 +144,7 @@ class Emails {
 		$plain   = 'plain' === $email->get_email_type();
 		$message = $params[2];
 		$url     = Form::order_url( $order, I18n::order_language( $order ) );
-		if ( false !== strpos( $message, 'py-otkaz-email-link' ) || false !== strpos( $message, esc_url( $url ) ) || false !== strpos( $message, $url ) ) {
+		if ( false !== strpos( $message, 'wpotkaz-email-link' ) || false !== strpos( $message, esc_url( $url ) ) || false !== strpos( $message, $url ) ) {
 			return $params;
 		}
 		$block = self::link_block( $order, $email, $plain );
@@ -196,7 +196,7 @@ class Emails {
 		}
 
 		return sprintf(
-			'<div class="py-otkaz-email-link" style="margin:0 0 24px;padding:12px 16px;border:1px solid #e5e5e5;border-radius:4px;"><p style="margin:0 0 6px;">%1$s</p><p style="margin:0;"><a href="%2$s" style="font-weight:600;text-decoration:underline;">%3$s</a></p></div>',
+			'<div class="wpotkaz-email-link" style="margin:0 0 24px;padding:12px 16px;border:1px solid #e5e5e5;border-radius:4px;"><p style="margin:0 0 6px;">%1$s</p><p style="margin:0;"><a href="%2$s" style="font-weight:600;text-decoration:underline;">%3$s</a></p></div>',
 			esc_html( $intro ),
 			esc_url( $url ),
 			esc_html( $label )

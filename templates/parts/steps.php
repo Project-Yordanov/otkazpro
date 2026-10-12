@@ -17,14 +17,14 @@ $py_steps = array(
 	3 => __( 'Done', 'wpotkaz' ),
 );
 ?>
-<ol class="py-otkaz__steps">
+<ol class="wpotkaz__steps">
 	<?php foreach ( $py_steps as $py_n => $py_label ) : ?>
 		<?php
 		$py_class = $py_n < $current ? 'is-done' : ( $py_n === $current ? 'is-active' : '' );
 		?>
-		<li class="py-otkaz__step <?php echo esc_attr( $py_class ); ?>"<?php echo $py_n === $current ? ' aria-current="step"' : ''; ?>>
-			<span class="py-otkaz__step-num" aria-hidden="true"><?php echo esc_html( (string) $py_n ); ?></span>
-			<span class="py-otkaz__step-label">
+		<li class="wpotkaz__step <?php echo esc_attr( $py_class ); ?>"<?php echo $py_n === $current ? ' aria-current="step"' : ''; ?>>
+			<span class="wpotkaz__step-num" aria-hidden="true"><?php echo esc_html( (string) $py_n ); ?></span>
+			<span class="wpotkaz__step-label">
 				<span class="screen-reader-text">
 					<?php
 					/* translators: 1: step number, 2: total steps */

@@ -33,12 +33,12 @@ if ( $sent_to_admin ) {
 }
 
 echo "\n" . esc_html( mb_strtoupper( __( 'Products', 'wpotkaz' ) ) ) . "\n";
-foreach ( $submission->items as $py_item ) {
+foreach ( $submission->items as $wpotkaz_item ) {
 	/* translators: 1: product name, 2: withdrawn quantity, 3: purchased quantity */
-	echo '- ' . esc_html( sprintf( __( '%1$s – %2$d of %3$d', 'wpotkaz' ), $py_item['name'], (int) $py_item['qty'], (int) $py_item['ordered_qty'] ) );
-	if ( $sent_to_admin && ! empty( $py_item['excluded'] ) ) {
+	echo '- ' . esc_html( sprintf( __( '%1$s – %2$d of %3$d', 'wpotkaz' ), $wpotkaz_item['name'], (int) $wpotkaz_item['qty'], (int) $wpotkaz_item['ordered_qty'] ) );
+	if ( $sent_to_admin && ! empty( $wpotkaz_item['excluded'] ) ) {
 		/* translators: %s: reason */
-		echo ' [' . esc_html( sprintf( __( 'Excluded product: %s', 'wpotkaz' ), $py_item['excluded_reason'] ) ) . ']';
+		echo ' [' . esc_html( sprintf( __( 'Excluded product: %s', 'wpotkaz' ), $wpotkaz_item['excluded_reason'] ) ) . ']';
 	}
 	echo "\n";
 }

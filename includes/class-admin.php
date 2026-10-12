@@ -23,9 +23,9 @@ class Admin {
 	 */
 	public static function init() {
 		add_action( 'admin_menu', array( __CLASS__, 'menu' ), 60 );
-		add_action( 'admin_post_py_otkaz_export', array( __CLASS__, 'export_csv' ) );
-		add_action( 'admin_post_py_otkaz_resend', array( __CLASS__, 'resend' ) );
-		add_action( 'admin_post_py_otkaz_page', array( __CLASS__, 'resolve_page_conflict' ) );
+		add_action( 'admin_post_wpotkaz_export', array( __CLASS__, 'export_csv' ) );
+		add_action( 'admin_post_wpotkaz_resend', array( __CLASS__, 'resend' ) );
+		add_action( 'admin_post_wpotkaz_page', array( __CLASS__, 'resolve_page_conflict' ) );
 		add_filter( 'plugin_row_meta', array( __CLASS__, 'row_meta' ), 10, 2 );
 		add_filter( 'admin_footer_text', array( __CLASS__, 'footer_credit' ), 20 );
 		add_action( 'admin_notices', array( __CLASS__, 'notices' ) );
@@ -80,14 +80,14 @@ class Admin {
 		$table = new Admin_List_Table();
 		$table->prepare_items();
 		?>
-		<div class="wrap py-otkaz-admin">
+		<div class="wrap wpotkaz-admin">
 			<h1 class="wp-heading-inline"><?php esc_html_e( 'Withdrawals from contract', 'wpotkaz' ); ?></h1>
 			<a href="<?php echo esc_url( Settings::url() ); ?>" class="page-title-action"><?php esc_html_e( 'Settings', 'wpotkaz' ); ?></a>
 			<hr class="wp-header-end" />
 			<form method="get">
 				<input type="hidden" name="page" value="<?php echo esc_attr( self::PAGE ); ?>" />
 				<?php
-				$table->search_box( __( 'Search', 'wpotkaz' ), 'py-otkaz-search' );
+				$table->search_box( __( 'Search', 'wpotkaz' ), 'wpotkaz-search' );
 				$table->display();
 				?>
 			</form>
@@ -125,7 +125,7 @@ class Admin {
 			__( 'Store notification', 'wpotkaz' ) => esc_html( self::status_label( $s->admin_email_status ) ),
 		);
 		?>
-		<div class="wrap py-otkaz-admin">
+		<div class="wrap wpotkaz-admin">
 			<h1><?php echo esc_html( sprintf( /* translators: %s: number */ __( 'Withdrawal %s', 'wpotkaz' ), $s->number ) ); ?></h1>
 			<p><a href="<?php echo esc_url( self::url() ); ?>">&larr; <?php esc_html_e( 'All withdrawals', 'wpotkaz' ); ?></a></p>
 			<table class="widefat striped" style="max-width:960px">
@@ -147,7 +147,7 @@ class Admin {
 	 * @return string
 	 */
 	public static function items_html( $s ) {
-		$out = '<ul class="py-otkaz-admin-items">';
+		$out = '<ul class="wpotkaz-admin-items">';
 		foreach ( $s->items as $item ) {
 			$out .= '<li>' . esc_html( $item['name'] ) . ' &times; ' . (int) $item['qty'];
 			if ( ! empty( $item['ordered_qty'] ) ) {
@@ -155,7 +155,7 @@ class Admin {
 				$out .= ' <span class="description">(' . esc_html( sprintf( __( 'of %d', 'wpotkaz' ), (int) $item['ordered_qty'] ) ) . ')</span>';
 			}
 			if ( ! empty( $item['excluded'] ) ) {
-				$out .= ' <mark class="py-otkaz-badge py-otkaz-badge--warn" title="' . esc_attr( $item['excluded_reason'] ) . '">' . esc_html__( 'Excluded product', 'wpotkaz' ) . '</mark>';
+				$out .= ' <mark class="wpotkaz-badge wpotkaz-badge--warn" title="' . esc_attr( $item['excluded_reason'] ) . '">' . esc_html__( 'Excluded product', 'wpotkaz' ) . '</mark>';
 			}
 			$out .= '</li>';
 		}
@@ -170,12 +170,12 @@ class Admin {
 	 */
 	public static function deadline_badge( $s ) {
 		if ( true === $s->within_deadline ) {
-			return '<mark class="py-otkaz-badge py-otkaz-badge--ok">' . esc_html__( 'In time', 'wpotkaz' ) . '</mark>';
+			return '<mark class="wpotkaz-badge wpotkaz-badge--ok">' . esc_html__( 'In time', 'wpotkaz' ) . '</mark>';
 		}
 		if ( false === $s->within_deadline ) {
-			return '<mark class="py-otkaz-badge py-otkaz-badge--warn">' . esc_html__( 'After the deadline', 'wpotkaz' ) . '</mark>';
+			return '<mark class="wpotkaz-badge wpotkaz-badge--warn">' . esc_html__( 'After the deadline', 'wpotkaz' ) . '</mark>';
 		}
-		return '<mark class="py-otkaz-badge" title="' . esc_attr__( 'The order was not completed when the statement was submitted.', 'wpotkaz' ) . '">' . esc_html__( 'Not started', 'wpotkaz' ) . '</mark>';
+		return '<mark class="wpotkaz-badge" title="' . esc_attr__( 'The order was not completed when the statement was submitted.', 'wpotkaz' ) . '">' . esc_html__( 'Not started', 'wpotkaz' ) . '</mark>';
 	}
 
 	/**
@@ -187,7 +187,7 @@ class Admin {
 	public static function email_badge( $s ) {
 		$class = 'sent' === $s->email_status ? 'ok' : ( 'failed' === $s->email_status ? 'error' : '' );
 		$label = 'failed' === $s->email_status ? __( 'Email not sent', 'wpotkaz' ) : self::status_label( $s->email_status );
-		return '<mark class="py-otkaz-badge' . ( $class ? ' py-otkaz-badge--' . $class : '' ) . '">' . esc_html( $label ) . '</mark>';
+		return '<mark class="wpotkaz-badge' . ( $class ? ' wpotkaz-badge--' . $class : '' ) . '">' . esc_html( $label ) . '</mark>';
 	}
 
 	/**
@@ -231,7 +231,7 @@ class Admin {
 		$url = wp_nonce_url(
 			add_query_arg(
 				array(
-					'action' => 'py_otkaz_resend',
+					'action' => 'wpotkaz_resend',
 					'id'     => $s->id,
 				),
 				admin_url( 'admin-post.php' )
@@ -260,7 +260,7 @@ class Admin {
 			}
 		}
 		$back = wp_get_referer();
-		wp_safe_redirect( add_query_arg( 'py_otkaz_msg', $ok ? 'resent' : 'resend_failed', $back ? $back : self::url() ) );
+		wp_safe_redirect( add_query_arg( 'wpotkaz_msg', $ok ? 'resent' : 'resend_failed', $back ? $back : self::url() ) );
 		exit;
 	}
 
@@ -268,7 +268,7 @@ class Admin {
 	 * CSV export of the current filters (all columns).
 	 */
 	public static function export_csv() {
-		check_admin_referer( 'py_otkaz_export' );
+		check_admin_referer( 'wpotkaz_export' );
 		if ( ! current_user_can( self::CAP ) ) {
 			wp_die( esc_html__( 'You do not have permission to do this.', 'wpotkaz' ) );
 		}
@@ -369,7 +369,7 @@ class Admin {
 		}
 
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		$msg = isset( $_GET['py_otkaz_msg'] ) ? sanitize_key( wp_unslash( $_GET['py_otkaz_msg'] ) ) : '';
+		$msg = isset( $_GET['wpotkaz_msg'] ) ? sanitize_key( wp_unslash( $_GET['wpotkaz_msg'] ) ) : '';
 		if ( 'resent' === $msg ) {
 			echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__( 'The confirmation was sent to the customer.', 'wpotkaz' ) . '</p></div>';
 		} elseif ( 'cache_checked' === $msg ) {
@@ -427,7 +427,7 @@ class Admin {
 			return;
 		}
 		$url = static function ( $choice ) use ( $page_id ) {
-			return wp_nonce_url( add_query_arg( array( 'action' => 'py_otkaz_page', 'choice' => $choice, 'page_id' => $page_id ), admin_url( 'admin-post.php' ) ), 'py_otkaz_page' );
+			return wp_nonce_url( add_query_arg( array( 'action' => 'wpotkaz_page', 'choice' => $choice, 'page_id' => $page_id ), admin_url( 'admin-post.php' ) ), 'wpotkaz_page' );
 		};
 		?>
 		<div class="notice notice-warning">
@@ -458,7 +458,7 @@ class Admin {
 	 * Handle the page conflict choice.
 	 */
 	public static function resolve_page_conflict() {
-		check_admin_referer( 'py_otkaz_page' );
+		check_admin_referer( 'wpotkaz_page' );
 		if ( ! current_user_can( self::CAP ) || ! current_user_can( 'edit_pages' ) ) {
 			wp_die( esc_html__( 'You do not have permission to do this.', 'wpotkaz' ) );
 		}
@@ -470,7 +470,7 @@ class Admin {
 		} elseif ( 'new' === $choice ) {
 			$ok = (bool) Install::create_page();
 		}
-		wp_safe_redirect( add_query_arg( 'py_otkaz_msg', $ok ? 'page_ok' : 'page_failed', Settings::url() ) );
+		wp_safe_redirect( add_query_arg( 'wpotkaz_msg', $ok ? 'page_ok' : 'page_failed', Settings::url() ) );
 		exit;
 	}
 
@@ -524,12 +524,12 @@ class Admin {
 	public static function admin_css() {
 		?>
 		<style>
-			.py-otkaz-badge{display:inline-block;padding:2px 8px;border-radius:10px;background:#f0f0f1;color:#50575e;font-size:12px;line-height:1.6;white-space:nowrap}
-			.py-otkaz-badge--ok{background:#edfaef;color:#00691c}
-			.py-otkaz-badge--warn{background:#fcf9e8;color:#8a4b00}
-			.py-otkaz-badge--error{background:#fcf0f1;color:#a00}
-			.py-otkaz-admin-items{margin:0}
-			.py-otkaz-admin-items li{margin:0 0 2px}
+			.wpotkaz-badge{display:inline-block;padding:2px 8px;border-radius:10px;background:#f0f0f1;color:#50575e;font-size:12px;line-height:1.6;white-space:nowrap}
+			.wpotkaz-badge--ok{background:#edfaef;color:#00691c}
+			.wpotkaz-badge--warn{background:#fcf9e8;color:#8a4b00}
+			.wpotkaz-badge--error{background:#fcf0f1;color:#a00}
+			.wpotkaz-admin-items{margin:0}
+			.wpotkaz-admin-items li{margin:0 0 2px}
 			.column-py_otkaz{width:90px}
 		</style>
 		<?php
@@ -575,7 +575,7 @@ class Admin {
 		}
 		$numbers = wp_list_pluck( $history, 'number' );
 		printf(
-			'<a href="%s" class="py-otkaz-badge py-otkaz-badge--warn" title="%s">%s</a>',
+			'<a href="%s" class="wpotkaz-badge wpotkaz-badge--warn" title="%s">%s</a>',
 			esc_url( self::url( array( 's' => $order->get_order_number() ) ) ),
 			esc_attr( implode( ', ', $numbers ) ),
 			esc_html(
@@ -605,7 +605,7 @@ class Admin {
 		if ( ! $order || ! Order_Data::history( $order ) ) {
 			return;
 		}
-		add_meta_box( 'py-otkaz-order', __( 'Withdrawal from contract', 'wpotkaz' ), array( __CLASS__, 'meta_box_content' ), $screen_id, 'side', 'high' );
+		add_meta_box( 'wpotkaz-order', __( 'Withdrawal from contract', 'wpotkaz' ), array( __CLASS__, 'meta_box_content' ), $screen_id, 'side', 'high' );
 	}
 
 	/**

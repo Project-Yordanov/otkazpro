@@ -20,7 +20,7 @@ class Form {
 	 * Earlier shortcode names, kept as aliases.
 	 */
 	const LEGACY_SHORTCODES = array( 'otkazpro', 'py_otkaz_form' );
-	const HONEYPOT  = 'py_website';
+	const HONEYPOT  = 'wpotkaz_website';
 
 	/**
 	 * Request state shared between template_redirect and shortcode render.
@@ -44,9 +44,44 @@ class Form {
 		foreach ( self::shortcodes() as $tag ) {
 			add_shortcode( $tag, array( __CLASS__, 'shortcode' ) );
 		}
+		add_action( 'init', array( __CLASS__, 'map_legacy_request' ), 1 );
 		add_action( 'template_redirect', array( __CLASS__, 'template_redirect' ), 5 );
 		add_action( 'wp_enqueue_scripts', array( __CLASS__, 'enqueue' ) );
 		add_filter( 'wp_robots', array( __CLASS__, 'robots' ) );
+	}
+
+	/**
+	 * Before 1.3 the URL / form fields were called py_* (e.g. ?py_order=…&py_key=…).
+	 * Links in emails already sent and cached copies of the old form must keep working.
+	 */
+	public static function map_legacy_request() {
+		$map = array(
+			'py_order'        => 'wpotkaz_order',
+			'py_key'          => 'wpotkaz_key',
+			'py_done'         => 'wpotkaz_done',
+			'py_src'          => 'wpotkaz_src',
+			'py_otkaz_action' => 'wpotkaz_action',
+			'_py_otkaz_nonce' => '_wpotkaz_nonce',
+			'py_order_number' => 'wpotkaz_order_number',
+			'py_email'        => 'wpotkaz_email',
+			'py_name'         => 'wpotkaz_name',
+			'py_token'        => 'wpotkaz_token',
+			'py_items'        => 'wpotkaz_items',
+			'py_reason'       => 'wpotkaz_reason',
+			'py_website'      => 'wpotkaz_website',
+		);
+		// phpcs:disable WordPress.Security.NonceVerification
+		foreach ( $map as $old => $new ) {
+			if ( isset( $_GET[ $old ] ) && ! isset( $_GET[ $new ] ) ) {
+				$_GET[ $new ]     = $_GET[ $old ]; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
+				$_REQUEST[ $new ] = $_GET[ $old ]; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
+			}
+			if ( isset( $_POST[ $old ] ) && ! isset( $_POST[ $new ] ) ) {
+				$_POST[ $new ]    = $_POST[ $old ]; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
+				$_REQUEST[ $new ] = $_POST[ $old ]; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
+			}
+		}
+		// phpcs:enable
 	}
 
 	/**
@@ -85,17 +120,34 @@ class Form {
 	 */
 	public static function page_url( $lang = '' ) {
 		$page_id = (int) Settings::get( 'page_id' );
-		if ( $page_id && $lang ) {
-			$translated = apply_filters( 'wpml_object_id', $page_id, 'page', true, $lang );
-			if ( $translated ) {
-				$page_id = (int) $translated;
-			} elseif ( function_exists( 'pll_get_post' ) ) {
-				$pll     = pll_get_post( $page_id, $lang );
-				$page_id = $pll ? (int) $pll : $page_id;
+		if ( $page_id && $lang && I18n::is_multilingual() ) {
+			$translated = (int) apply_filters( 'wpml_object_id', $page_id, 'page', true, $lang );
+			if ( ( ! $translated || $translated === $page_id ) && function_exists( 'pll_get_post' ) ) {
+				$translated = (int) pll_get_post( $page_id, $lang );
+			}
+			// Use the translation only if it really is a published page with the form.
+			if ( $translated && $translated !== $page_id && 'publish' === get_post_status( $translated ) && self::page_has_form( $translated ) ) {
+				$page_id = $translated;
 			}
 		}
 		$url = $page_id ? get_permalink( $page_id ) : '';
 		return $url ? $url : home_url( '/' );
+	}
+
+	/**
+	 * Does the page contain the form (post content or Elementor data)?
+	 *
+	 * @param int $page_id Page ID.
+	 * @return bool
+	 */
+	public static function page_has_form( $page_id ) {
+		$content = (string) get_post_field( 'post_content', $page_id ) . ' ' . (string) get_post_meta( $page_id, '_elementor_data', true );
+		foreach ( self::shortcodes() as $tag ) {
+			if ( false !== strpos( $content, '[' . $tag ) ) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -108,8 +160,8 @@ class Form {
 	public static function order_url( $order, $lang = '' ) {
 		return add_query_arg(
 			array(
-				'py_order' => $order->get_id(),
-				'py_key'   => $order->get_order_key(),
+				'wpotkaz_order' => $order->get_id(),
+				'wpotkaz_key'   => $order->get_order_key(),
 			),
 			self::page_url( $lang )
 		);
@@ -142,9 +194,11 @@ class Form {
 		if ( $page_id && is_page( $page_id ) ) {
 			return true;
 		}
-		$translated = $page_id ? apply_filters( 'wpml_object_id', $page_id, 'page', false ) : 0;
-		if ( $translated && is_page( (int) $translated ) ) {
-			return true;
+		if ( $page_id && I18n::is_multilingual() ) {
+			$translated = (int) apply_filters( 'wpml_object_id', $page_id, 'page', false );
+			if ( $translated && is_page( $translated ) ) {
+				return true;
+			}
 		}
 		$post = get_post();
 		return $post && self::has_form_shortcode( (string) $post->post_content );
@@ -157,7 +211,7 @@ class Form {
 	 */
 	private static function has_private_params() {
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		return isset( $_GET['py_order'] ) || isset( $_GET['py_key'] ) || isset( $_GET['py_done'] );
+		return isset( $_GET['wpotkaz_order'] ) || isset( $_GET['wpotkaz_key'] ) || isset( $_GET['wpotkaz_done'] );
 	}
 
 	/**
@@ -229,11 +283,11 @@ class Form {
 
 		$method = isset( $_SERVER['REQUEST_METHOD'] ) ? strtoupper( sanitize_key( wp_unslash( $_SERVER['REQUEST_METHOD'] ) ) ) : 'GET';
 		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- nonce is verified in the handlers.
-		if ( 'POST' !== $method || empty( $_POST['py_otkaz_action'] ) ) {
+		if ( 'POST' !== $method || empty( $_POST['wpotkaz_action'] ) ) {
 			return;
 		}
 		// phpcs:ignore WordPress.Security.NonceVerification.Missing
-		$action = sanitize_key( wp_unslash( $_POST['py_otkaz_action'] ) );
+		$action = sanitize_key( wp_unslash( $_POST['wpotkaz_action'] ) );
 
 		if ( 'lookup' === $action ) {
 			self::handle_lookup( $can_redirect );
@@ -295,13 +349,13 @@ class Form {
 	 * @param bool $can_redirect Can redirect.
 	 */
 	private static function handle_lookup( $can_redirect ) {
-		$number = self::post( 'py_order_number' );
-		$email  = sanitize_email( self::post( 'py_email' ) );
+		$number = self::post( 'wpotkaz_order_number' );
+		$email  = sanitize_email( self::post( 'wpotkaz_email' ) );
 
 		self::$state['view']   = 'lookup';
 		self::$state['values'] = array(
 			'order_number' => $number,
-			'email'        => self::post( 'py_email' ),
+			'email'        => self::post( 'wpotkaz_email' ),
 		);
 
 		if ( Verifier::is_rate_limited() ) {
@@ -314,7 +368,7 @@ class Form {
 			return;
 		}
 		// phpcs:ignore WordPress.Security.NonceVerification.Missing
-		$nonce = isset( $_POST['_py_otkaz_nonce'] ) ? sanitize_key( wp_unslash( $_POST['_py_otkaz_nonce'] ) ) : '';
+		$nonce = isset( $_POST['_wpotkaz_nonce'] ) ? sanitize_key( wp_unslash( $_POST['_wpotkaz_nonce'] ) ) : '';
 		// Guests: no nonce. Page caches that ignore DONOTCACHEPAGE would otherwise serve a
 		// stale nonce and block every lookup (= obstructing the withdrawal). A cross-site
 		// lookup changes nothing; rate limiting + honeypot protect against enumeration.
@@ -324,10 +378,10 @@ class Form {
 		}
 
 		if ( '' === $number ) {
-			self::$state['fields']['py_order_number'] = __( 'Enter the order number.', 'wpotkaz' );
+			self::$state['fields']['wpotkaz_order_number'] = __( 'Enter the order number.', 'wpotkaz' );
 		}
 		if ( '' === $email || ! is_email( $email ) ) {
-			self::$state['fields']['py_email'] = __( 'Enter a valid email address, e.g. name@example.com.', 'wpotkaz' );
+			self::$state['fields']['wpotkaz_email'] = __( 'Enter a valid email address, e.g. name@example.com.', 'wpotkaz' );
 		}
 
 		/**
@@ -352,7 +406,7 @@ class Form {
 			return;
 		}
 
-		$url = add_query_arg( 'py_src', 'lookup', self::order_url( $order, I18n::current_language() ) );
+		$url = add_query_arg( 'wpotkaz_src', 'lookup', self::order_url( $order, I18n::current_language() ) );
 		self::redirect( $url, $can_redirect );
 	}
 
@@ -362,8 +416,8 @@ class Form {
 	 * @param bool $can_redirect Can redirect.
 	 */
 	private static function handle_submit( $can_redirect ) {
-		$order_id = absint( self::post( 'py_order' ) );
-		$key      = self::post( 'py_key' );
+		$order_id = absint( self::post( 'wpotkaz_order' ) );
+		$key      = self::post( 'wpotkaz_key' );
 		$order    = Verifier::get_order( $order_id );
 
 		self::$state['view'] = 'order';
@@ -376,7 +430,7 @@ class Form {
 		}
 
 		// phpcs:disable WordPress.Security.NonceVerification.Missing
-		$raw_items = isset( $_POST['py_items'] ) && is_array( $_POST['py_items'] ) ? wp_unslash( $_POST['py_items'] ) : array(); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- sanitised below.
+		$raw_items = isset( $_POST['wpotkaz_items'] ) && is_array( $_POST['wpotkaz_items'] ) ? wp_unslash( $_POST['wpotkaz_items'] ) : array(); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- sanitised below.
 		$items     = array();
 		$posted    = array();
 		foreach ( $raw_items as $item_id => $item ) {
@@ -394,17 +448,17 @@ class Form {
 				$items[ $item_id ] = $qty;
 			}
 		}
-		$reason = Settings::enabled( 'reason_field' ) && isset( $_POST['py_reason'] ) ? sanitize_textarea_field( wp_unslash( $_POST['py_reason'] ) ) : '';
-		$token  = self::post( 'py_token' );
-		$nonce  = isset( $_POST['_py_otkaz_nonce'] ) ? sanitize_key( wp_unslash( $_POST['_py_otkaz_nonce'] ) ) : '';
+		$reason = Settings::enabled( 'reason_field' ) && isset( $_POST['wpotkaz_reason'] ) ? sanitize_textarea_field( wp_unslash( $_POST['wpotkaz_reason'] ) ) : '';
+		$token  = self::post( 'wpotkaz_token' );
+		$nonce  = isset( $_POST['_wpotkaz_nonce'] ) ? sanitize_key( wp_unslash( $_POST['_wpotkaz_nonce'] ) ) : '';
 		// phpcs:enable
 
-		$name  = self::post( 'py_name' );
-		$email = strtolower( sanitize_email( self::post( 'py_email' ) ) );
+		$name  = self::post( 'wpotkaz_name' );
+		$email = strtolower( sanitize_email( self::post( 'wpotkaz_email' ) ) );
 
 		self::$state['values'] = array(
 			'name'   => $name,
-			'email'  => self::post( 'py_email' ),
+			'email'  => self::post( 'wpotkaz_email' ),
 			'items'  => $posted,
 			'reason' => $reason,
 		);
@@ -413,7 +467,7 @@ class Form {
 		if ( $token && preg_match( '/^[a-zA-Z0-9]{16,64}$/', $token ) ) {
 			$done = get_transient( 'py_otkaz_idem_' . $token );
 			if ( $done ) {
-				self::redirect( add_query_arg( 'py_done', $done, self::current_page_url() ), $can_redirect, (string) $done );
+				self::redirect( add_query_arg( 'wpotkaz_done', $done, self::current_page_url() ), $can_redirect, (string) $done );
 				return;
 			}
 		}
@@ -431,12 +485,12 @@ class Form {
 		}
 
 		if ( '' === $name ) {
-			self::$state['fields']['py_name'] = __( 'Enter your name.', 'wpotkaz' );
+			self::$state['fields']['wpotkaz_name'] = __( 'Enter your name.', 'wpotkaz' );
 		} elseif ( mb_strlen( $name ) > 200 ) {
-			self::$state['fields']['py_name'] = __( 'The name is too long.', 'wpotkaz' );
+			self::$state['fields']['wpotkaz_name'] = __( 'The name is too long.', 'wpotkaz' );
 		}
 		if ( '' === $email || ! is_email( $email ) ) {
-			self::$state['fields']['py_email'] = __( 'Enter a valid email address, e.g. name@example.com.', 'wpotkaz' );
+			self::$state['fields']['wpotkaz_email'] = __( 'Enter a valid email address, e.g. name@example.com.', 'wpotkaz' );
 		}
 		if ( mb_strlen( $reason ) > 2000 ) {
 			$reason = mb_substr( $reason, 0, 2000 );
@@ -447,7 +501,7 @@ class Form {
 
 		$source = Verifier::is_owner( $order ) ? 'account' : 'link';
 		// phpcs:ignore WordPress.Security.NonceVerification.Missing
-		if ( isset( $_POST['py_src'] ) && 'lookup' === $_POST['py_src'] ) {
+		if ( isset( $_POST['wpotkaz_src'] ) && 'lookup' === $_POST['wpotkaz_src'] ) {
 			$source = 'lookup';
 		}
 
@@ -478,7 +532,7 @@ class Form {
 			set_transient( 'py_otkaz_idem_' . $token, $done, DAY_IN_SECONDS );
 		}
 		self::$state['submission'] = $result;
-		self::redirect( add_query_arg( 'py_done', $done, self::current_page_url() ), $can_redirect, $done );
+		self::redirect( add_query_arg( 'wpotkaz_done', $done, self::current_page_url() ), $can_redirect, $done );
 	}
 
 	/**
@@ -543,8 +597,8 @@ class Form {
 		$args = array();
 
 		// phpcs:disable WordPress.Security.NonceVerification.Recommended
-		if ( ! $view && isset( $_GET['py_done'] ) ) {
-			$submission = self::submission_from_token( sanitize_text_field( wp_unslash( $_GET['py_done'] ) ) );
+		if ( ! $view && isset( $_GET['wpotkaz_done'] ) ) {
+			$submission = self::submission_from_token( sanitize_text_field( wp_unslash( $_GET['wpotkaz_done'] ) ) );
 			if ( $submission ) {
 				$view                      = 'success';
 				self::$state['submission'] = $submission;
@@ -560,8 +614,8 @@ class Form {
 
 		$order = null;
 		if ( ! $view || 'order' === $view ) {
-			$order_id = isset( $_POST['py_order'] ) ? absint( $_POST['py_order'] ) : ( isset( $_GET['py_order'] ) ? absint( $_GET['py_order'] ) : 0 ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
-			$key      = isset( $_POST['py_key'] ) ? sanitize_text_field( wp_unslash( $_POST['py_key'] ) ) : ( isset( $_GET['py_key'] ) ? sanitize_text_field( wp_unslash( $_GET['py_key'] ) ) : '' ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+			$order_id = isset( $_POST['wpotkaz_order'] ) ? absint( $_POST['wpotkaz_order'] ) : ( isset( $_GET['wpotkaz_order'] ) ? absint( $_GET['wpotkaz_order'] ) : 0 ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+			$key      = isset( $_POST['wpotkaz_key'] ) ? sanitize_text_field( wp_unslash( $_POST['wpotkaz_key'] ) ) : ( isset( $_GET['wpotkaz_key'] ) ? sanitize_text_field( wp_unslash( $_GET['wpotkaz_key'] ) ) : '' ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
 			if ( $order_id ) {
 				$order = Verifier::get_order( $order_id );
 				if ( Verifier::can_access( $order, $key ) ) {
@@ -688,7 +742,7 @@ class Form {
 		$name = trim( $order->get_billing_first_name() . ' ' . $order->get_billing_last_name() );
 
 		// phpcs:ignore WordPress.Security.NonceVerification
-		$src = isset( $_REQUEST['py_src'] ) && 'lookup' === $_REQUEST['py_src'] ? 'lookup' : '';
+		$src = isset( $_REQUEST['wpotkaz_src'] ) && 'lookup' === $_REQUEST['wpotkaz_src'] ? 'lookup' : '';
 
 		return array(
 			'order'          => $order,
@@ -772,7 +826,7 @@ class Form {
 		);
 		wp_localize_script(
 			'wpotkaz',
-			'pyOtkaz',
+			'wpotkazL10n',
 			array(
 				'sending'   => __( 'Sending…', 'wpotkaz' ),
 				'selectOne' => __( 'Select at least one product to continue.', 'wpotkaz' ),
@@ -794,7 +848,7 @@ class Form {
 		$radius = in_array( $radius, array( 0, 4, 8, 999 ), true ) ? $radius : 8;
 
 		return sprintf(
-			'.py-otkaz,.py-otkaz-account{--py-otkaz-accent:%1$s;--py-otkaz-accent-contrast:%2$s;--py-otkaz-ink:%3$s;--py-otkaz-radius:%4$dpx;--py-otkaz-btn-radius:%5$dpx}',
+			'.wpotkaz,.wpotkaz-account{--wpotkaz-accent:%1$s;--wpotkaz-accent-contrast:%2$s;--wpotkaz-ink:%3$s;--wpotkaz-radius:%4$dpx;--wpotkaz-btn-radius:%5$dpx}',
 			$accent,
 			Util::text_on( $accent ),
 			Util::ink_on_white( $accent ),

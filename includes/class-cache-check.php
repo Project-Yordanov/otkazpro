@@ -36,7 +36,7 @@ class Cache_Check {
 	public static function init() {
 		add_action( Install::CRON_HOOK, array( __CLASS__, 'run' ), 20 );
 		add_action( self::ONCE_HOOK, array( __CLASS__, 'run' ) );
-		add_action( 'admin_post_py_otkaz_cache_check', array( __CLASS__, 'handle_button' ) );
+		add_action( 'admin_post_wpotkaz_cache_check', array( __CLASS__, 'handle_button' ) );
 		add_filter( 'site_status_tests', array( __CLASS__, 'register_site_health' ) );
 	}
 
@@ -50,7 +50,7 @@ class Cache_Check {
 			self::$marker = wp_generate_password( 20, false );
 		}
 		// Comment + attribute: HTML minifiers may strip comments but keep attributes.
-		return '<!-- ' . self::MARKER_KEY . self::$marker . ' --><span hidden data-py-render="' . esc_attr( self::$marker ) . '"></span>';
+		return '<!-- ' . self::MARKER_KEY . self::$marker . ' --><span hidden data-wpotkaz-render="' . esc_attr( self::$marker ) . '"></span>';
 	}
 
 	/**
@@ -95,7 +95,7 @@ class Cache_Check {
 		}
 
 		$bare  = self::probe( $url );
-		$query = self::probe( add_query_arg( 'py_done', 'cachecheck', $url ) );
+		$query = self::probe( add_query_arg( 'wpotkaz_done', 'cachecheck', $url ) );
 
 		$detected = array_merge( $bare['detected'], $query['detected'] );
 		if ( 'cached' === $bare['status'] || 'cached' === $query['status'] ) {
@@ -150,11 +150,11 @@ class Cache_Check {
 					'detected' => $detected,
 				);
 			}
-			if ( preg_match( '/data-py-render="([A-Za-z0-9]+)"/', $body, $m ) || preg_match( '/' . preg_quote( self::MARKER_KEY, '/' ) . '([A-Za-z0-9]+)/', $body, $m ) ) {
+			if ( preg_match( '/data-wpotkaz-render="([A-Za-z0-9]+)"/', $body, $m ) || preg_match( '/' . preg_quote( self::MARKER_KEY, '/' ) . '([A-Za-z0-9]+)/', $body, $m ) ) {
 				$markers[] = $m[1];
 				continue;
 			}
-			if ( false !== strpos( $body, 'data-py-otkaz' ) ) {
+			if ( false !== strpos( $body, 'data-wpotkaz-otkaz' ) ) {
 				// The form is there but without a render marker: an old cached copy
 				// (made before the marker existed) – i.e. the page is served from cache.
 				return array(
@@ -329,12 +329,12 @@ class Cache_Check {
 	 * "Check cache" button.
 	 */
 	public static function handle_button() {
-		check_admin_referer( 'py_otkaz_cache_check' );
+		check_admin_referer( 'wpotkaz_cache_check' );
 		if ( ! current_user_can( 'manage_woocommerce' ) ) {
 			wp_die( esc_html__( 'You do not have permission to do this.', 'wpotkaz' ) );
 		}
 		self::run();
-		wp_safe_redirect( add_query_arg( 'py_otkaz_msg', 'cache_checked', Settings::url() ) );
+		wp_safe_redirect( add_query_arg( 'wpotkaz_msg', 'cache_checked', Settings::url() ) );
 		exit;
 	}
 
@@ -344,7 +344,7 @@ class Cache_Check {
 	 * @return string
 	 */
 	public static function button_url() {
-		return wp_nonce_url( admin_url( 'admin-post.php?action=py_otkaz_cache_check' ), 'py_otkaz_cache_check' );
+		return wp_nonce_url( admin_url( 'admin-post.php?action=wpotkaz_cache_check' ), 'wpotkaz_cache_check' );
 	}
 
 	/**
