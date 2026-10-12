@@ -406,12 +406,14 @@ class Admin {
 		}
 
 		$page_id = (int) Settings::get( 'page_id' );
-		$screen  = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
-		if ( $screen && in_array( $screen->id, array( 'woocommerce_page_wc-settings', 'woocommerce_page_' . self::PAGE ), true ) ) {
-			$post = $page_id ? get_post( $page_id ) : null;
-			if ( ! $post || 'publish' !== $post->post_status ) {
-				echo '<div class="notice notice-warning"><p>' . esc_html__( 'The withdrawal form page is missing or not published. Customers cannot exercise their right of withdrawal online.', 'wpotkaz' ) . '</p></div>';
-			}
+		if ( current_user_can( self::CAP ) && ! Form::is_valid_page( $page_id ) ) {
+			printf(
+				'<div class="notice notice-error"><p><strong>%1$s</strong> %2$s</p><p><a class="button button-primary" href="%3$s">%4$s</a></p></div>',
+				esc_html__( 'WPOtkaz:', 'wpotkaz' ),
+				esc_html__( 'The withdrawal form page is missing, not published or no longer contains the form. Customers are sent to a fallback page so the function keeps working – select a page with [wpotkaz] in the settings.', 'wpotkaz' ),
+				esc_url( Settings::url() ),
+				esc_html__( 'Open settings', 'wpotkaz' )
+			);
 		}
 	}
 

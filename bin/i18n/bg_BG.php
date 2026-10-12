@@ -201,7 +201,6 @@ return array(
 	'The plugin does not cancel the order, refund the payment or restock automatically – process the withdrawal manually in the order (refund within 14 days of receiving the statement).' => 'Плъгинът не анулира поръчката, не възстановява сумата и наличността автоматично – обработете отказа ръчно в поръчката (възстановяване до 14 дни от получаване на изявлението).',
 	'The products in this order are not subject to the right of withdrawal (see the reasons below). If you think this is a mistake, please contact us at %s.' => 'Артикулите в тази поръчка не подлежат на право на отказ (вижте основанията по-долу). Ако смятате, че е грешка, свържете се с нас на %s.',
 	'The statement includes products marked as having no right of withdrawal. Review the request and reply to the customer.' => 'Изявлението включва продукти, маркирани без право на отказ. Прегледайте заявката и отговорете на клиента.',
-	'The withdrawal form page is missing or not published. Customers cannot exercise their right of withdrawal online.' => 'Страницата с формата за отказ липсва или не е публикувана. Клиентите не могат да упражнят правото си на отказ онлайн.',
 	'This link is invalid or has expired. Please find your order using its number and email.' => 'Линкът е невалиден или е изтекъл. Моля, намерете поръчката си по номер и имейл.',
 	'This product is marked as having no right of withdrawal (%s). You can still select it – the store will review your request.' => 'Този продукт е маркиран без право на отказ (%s). Все пак можете да го изберете – магазинът ще прегледа заявката Ви.',
 	'To' => 'До',
@@ -293,4 +292,5 @@ return array(
 	'WPOtkaz:' => 'WPOtkaz:',
 	'WPOtkaz: withdrawal form is not cached' => 'WPOtkaz: формата за отказ не се кешира',
 	'a page cache (plugin, hosting or CDN)' => 'кеш на страници (плъгин, хостинг или CDN)',
+	'The withdrawal form page is missing, not published or no longer contains the form. Customers are sent to a fallback page so the function keeps working – select a page with [wpotkaz] in the settings.' => 'Страницата с формата за отказ липсва, не е публикувана или вече не съдържа формата. Клиентите се пращат към резервна страница, за да работи функцията – изберете страница с [wpotkaz] в настройките.',
 );

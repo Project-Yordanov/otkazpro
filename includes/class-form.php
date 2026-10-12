@@ -130,8 +130,45 @@ class Form {
 				$page_id = $translated;
 			}
 		}
-		$url = $page_id ? get_permalink( $page_id ) : '';
-		return $url ? $url : home_url( '/' );
+		$url = $page_id && self::is_valid_page( $page_id ) ? get_permalink( $page_id ) : '';
+		return $url ? $url : self::fallback_url();
+	}
+
+	/**
+	 * Is the configured page usable: published and actually showing the form?
+	 *
+	 * @param int $page_id Page ID.
+	 * @return bool
+	 */
+	public static function is_valid_page( $page_id ) {
+		static $cache = array();
+		$page_id = (int) $page_id;
+		if ( ! isset( $cache[ $page_id ] ) ) {
+			$cache[ $page_id ] = $page_id
+				&& 'publish' === get_post_status( $page_id )
+				&& ( self::page_has_form( $page_id ) || (int) get_option( 'py_otkaz_seen_page' ) === $page_id );
+		}
+		return $cache[ $page_id ];
+	}
+
+	/**
+	 * Fallback address that always shows the form (theme header/footer), used when
+	 * the form page is missing, unpublished or no longer contains the form.
+	 *
+	 * @return string
+	 */
+	public static function fallback_url() {
+		return add_query_arg( 'wpotkaz', '1', home_url( '/' ) );
+	}
+
+	/**
+	 * Is the current request the fallback page?
+	 *
+	 * @return bool
+	 */
+	public static function is_fallback_request() {
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		return ! is_admin() && isset( $_GET['wpotkaz'] );
 	}
 
 	/**
@@ -173,6 +210,9 @@ class Form {
 	 * @return string
 	 */
 	private static function current_page_url() {
+		if ( self::is_fallback_request() ) {
+			return self::fallback_url();
+		}
 		$id = get_queried_object_id();
 		return $id ? get_permalink( $id ) : self::page_url();
 	}
@@ -211,18 +251,73 @@ class Form {
 	 */
 	private static function has_private_params() {
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		return isset( $_GET['wpotkaz_order'] ) || isset( $_GET['wpotkaz_key'] ) || isset( $_GET['wpotkaz_done'] );
+		return isset( $_GET['wpotkaz_order'] ) || isset( $_GET['wpotkaz_key'] ) || isset( $_GET['wpotkaz_done'] ) || isset( $_GET['wpotkaz'] );
 	}
 
 	/**
 	 * No caching / no indexing / no referrer on the form page; handle POST before output.
 	 */
 	public static function template_redirect() {
+		if ( self::is_fallback_request() ) {
+			self::no_cache();
+			self::maybe_handle_post( true );
+			self::render_fallback_page();
+			exit;
+		}
 		if ( ! self::is_form_page() ) {
 			return;
 		}
 		self::no_cache();
 		self::maybe_handle_post( true );
+	}
+
+	/**
+	 * Output the fallback page with the theme's header and footer.
+	 */
+	private static function render_fallback_page() {
+		status_header( 200 );
+		$title = __( 'Withdrawal from contract', 'wpotkaz' );
+		add_filter(
+			'pre_get_document_title',
+			static function () use ( $title ) {
+				return $title . ' – ' . wp_specialchars_decode( get_bloginfo( 'name' ), ENT_QUOTES );
+			}
+		);
+		$main = '<main id="main" class="wpotkaz-fallback" style="max-width:760px;margin:40px auto;padding:0 16px">'
+			. '<h1 class="wpotkaz-fallback__title">' . esc_html( $title ) . '</h1>'
+			. self::shortcode()
+			. '</main>';
+
+		if ( function_exists( 'wp_is_block_theme' ) && wp_is_block_theme() ) {
+			// Block theme: render the theme's header/footer template parts ourselves.
+			$header = do_blocks( '<!-- wp:template-part {"slug":"header","tagName":"header"} /-->' );
+			$footer = do_blocks( '<!-- wp:template-part {"slug":"footer","tagName":"footer"} /-->' );
+			if ( function_exists( '_block_template_render_title_tag' ) && ! has_action( 'wp_head', '_block_template_render_title_tag' ) ) {
+				add_action( 'wp_head', '_block_template_render_title_tag', 1 );
+			}
+			?><!doctype html>
+<html <?php language_attributes(); ?>>
+<head>
+<meta charset="<?php bloginfo( 'charset' ); ?>">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+			<?php wp_head(); ?>
+</head>
+<body <?php body_class( 'wpotkaz-fallback-page' ); ?>>
+			<?php wp_body_open(); ?>
+<div class="wp-site-blocks">
+			<?php
+			echo $header . $main . $footer; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- rendered blocks / escaped above.
+			?>
+</div>
+			<?php wp_footer(); ?>
+</body>
+</html>
+			<?php
+			return;
+		}
+		get_header();
+		echo $main; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped above / template output.
+		get_footer();
 	}
 
 	/**
@@ -262,7 +357,7 @@ class Form {
 	 * @return array
 	 */
 	public static function robots( $robots ) {
-		if ( self::has_private_params() && self::is_form_page() ) {
+		if ( self::has_private_params() && ( self::is_form_page() || self::is_fallback_request() ) ) {
 			$robots['noindex']  = true;
 			$robots['nofollow'] = true;
 			unset( $robots['index'], $robots['follow'] );
@@ -591,6 +686,9 @@ class Form {
 		if ( ! defined( 'DONOTCACHEPAGE' ) ) {
 			define( 'DONOTCACHEPAGE', true );
 		}
+		if ( ! self::is_fallback_request() && is_page() && (int) get_option( 'py_otkaz_seen_page' ) !== (int) get_queried_object_id() ) {
+			update_option( 'py_otkaz_seen_page', (int) get_queried_object_id(), false );
+		}
 		self::maybe_handle_post( false );
 
 		$view = self::$state['view'];
@@ -795,7 +893,7 @@ class Form {
 	 * Enqueue on the form page and in My Account.
 	 */
 	public static function enqueue() {
-		if ( self::is_form_page() || ( function_exists( 'is_account_page' ) && is_account_page() ) ) {
+		if ( self::is_fallback_request() || self::is_form_page() || ( function_exists( 'is_account_page' ) && is_account_page() ) ) {
 			self::enqueue_assets();
 		}
 	}

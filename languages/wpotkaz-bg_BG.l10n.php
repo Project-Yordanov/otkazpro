@@ -1,6 +1,6 @@
 <?php
 return array (
-  'project-id-version' => 'WPOtkaz 1.2.3',
+  'project-id-version' => 'WPOtkaz 1.3.0',
   'domain' => 'wpotkaz',
   'language' => 'bg_BG',
   'plural-forms' => 'nplurals=2; plural=(n != 1);',
@@ -231,7 +231,7 @@ return array (
     'The products in this order are not subject to the right of withdrawal (see the reasons below). If you think this is a mistake, please contact us at %s.' => 'Артикулите в тази поръчка не подлежат на право на отказ (вижте основанията по-долу). Ако смятате, че е грешка, свържете се с нас на %s.',
     'The statement includes products marked as having no right of withdrawal. Review the request and reply to the customer.' => 'Изявлението включва продукти, маркирани без право на отказ. Прегледайте заявката и отговорете на клиента.',
     'The withdrawal form page is cached or could not be checked' => 'Страницата с формата за отказ се кешира или не можа да бъде проверена',
-    'The withdrawal form page is missing or not published. Customers cannot exercise their right of withdrawal online.' => 'Страницата с формата за отказ липсва или не е публикувана. Клиентите не могат да упражнят правото си на отказ онлайн.',
+    'The withdrawal form page is missing, not published or no longer contains the form. Customers are sent to a fallback page so the function keeps working – select a page with [wpotkaz] in the settings.' => 'Страницата с формата за отказ липсва, не е публикувана или вече не съдържа формата. Клиентите се пращат към резервна страница, за да работи функцията – изберете страница с [wpotkaz] в настройките.',
     'The withdrawal form page is not cached' => 'Страницата с формата за отказ не се кешира',
     'The withdrawal form page is set up. Check it and add the link to your footer.' => 'Страницата с формата за отказ е настроена. Прегледайте я и добавете линка във футъра.',
     'This link is invalid or has expired. Please find your order using its number and email.' => 'Линкът е невалиден или е изтекъл. Моля, намерете поръчката си по номер и имейл.',
