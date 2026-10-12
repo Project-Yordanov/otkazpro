@@ -1,6 +1,6 @@
 <?php
 return array (
-  'project-id-version' => 'WPOtkaz 1.1.0',
+  'project-id-version' => 'WPOtkaz 1.1.1',
   'domain' => 'wpotkaz',
   'language' => 'bg_BG',
   'plural-forms' => 'nplurals=2; plural=(n != 1);',

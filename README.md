@@ -56,11 +56,11 @@ WooCommerce плъгин за онлайн функцията за отказ о
 
 ## Сигурност, спам, GDPR
 
-- Nonce на двете стъпки, `manage_woocommerce` за админ действията, prepared statements, escaping навсякъде.
+- CSRF: подаването изисква секретния ключ на поръчката (от имейла/линка) или nonce при логнат собственик; търсенето по номер + имейл не изисква nonce за гости, за да работи и когато кеш плъгин кешира страницата. `manage_woocommerce` за админ действията, prepared statements, escaping навсякъде.
 - Достъп до поръчка: `order_key` (hash_equals), собственик или номер + billing имейл (без значение главни/малки букви). Едно общо съобщение при грешка, без да се разкрива дали поръчката съществува.
 - Rate limit: 10 неуспешни опита / 15 мин на IP (филтри `py_otkaz_rate_limit_attempts`, `py_otkaz_rate_limit_window`). Зад Cloudflare/прокси коригирайте IP-то с `py_otkaz_client_ip`.
 - Honeypot, без reCAPTCHA. CAPTCHA може да се добави с `py_otkaz_lookup_form_fields` + `py_otkaz_validate_lookup`.
-- Страницата не се кешира (`DONOTCACHEPAGE`, no-cache headers, LiteSpeed), URL-ите с параметри са `noindex, nofollow`, `Referrer-Policy: no-referrer` (order key не изтича към външни сайтове).
+- Страницата не се кешира (`DONOTCACHEPAGE`, no-cache headers, LiteSpeed, FlyingPress; hook `py_otkaz_no_cache` за други). След инсталация изчистете кеша на сайта, URL-ите с параметри са `noindex, nofollow`, `Referrer-Policy: no-referrer` (order key не изтича към външни сайтове).
 - Защита от двойно подаване (токен + MySQL `GET_LOCK` на поръчка).
 - WP Personal Data Exporter включва изявленията. Eraser-ът ги **запазва** като доказателство (чл. 17, ал. 3 GDPR) до изтичане на срока; за анонимизиране – `add_filter( 'py_otkaz_privacy_erase', '__return_true' )`. Записите се трият автоматично след N години (по подразбиране 5, дневен cron). Плъгинът добавя предложен текст в Политиката за поверителност.
 - Uninstall трие настройките, но **не** записите, освен ако „Изтриване на данните при деинсталиране“ е включено.

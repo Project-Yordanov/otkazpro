@@ -2,10 +2,10 @@
 # This file is distributed under the GPL-2.0-or-later.
 msgid ""
 msgstr ""
-"Project-Id-Version: WPOtkaz 1.1.0\n"
+"Project-Id-Version: WPOtkaz 1.1.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-11 17:06+0000\n"
-"PO-Revision-Date: 2026-10-11 17:06+0000\n"
+"POT-Creation-Date: 2026-10-12 12:19+0000\n"
+"PO-Revision-Date: 2026-10-12 12:19+0000\n"
 "Last-Translator: Project Yordanov\n"
 "Language-Team: Bulgarian\n"
 "Language: bg_BG\n"
@@ -280,16 +280,16 @@ msgstr "Имейли"
 msgid "Enter a quantity between 1 and %2$d for “%1$s”."
 msgstr "Въведете количество между 1 и %2$d за „%1$s“."
 
-#: includes/class-form.php:305
-#: includes/class-form.php:411
+#: includes/class-form.php:315
+#: includes/class-form.php:424
 msgid "Enter a valid email address, e.g. name@example.com."
 msgstr "Въведете валиден имейл адрес, напр. ime@primer.bg."
 
-#: includes/class-form.php:302
+#: includes/class-form.php:312
 msgid "Enter the order number."
 msgstr "Въведете номера на поръчката."
 
-#: includes/class-form.php:406
+#: includes/class-form.php:419
 msgid "Enter your name."
 msgstr "Въведете името си."
 
@@ -766,7 +766,7 @@ msgstr "Избор и потвърждение"
 msgid "Select all"
 msgstr "Избери всички"
 
-#: includes/class-form.php:749
+#: includes/class-form.php:762
 msgid "Select at least one product to continue."
 msgstr "Изберете поне един артикул, за да продължите."
 
@@ -775,7 +775,7 @@ msgid "Select at least one product."
 msgstr "Изберете поне един артикул."
 
 #. translators: 1: number of products, 2: number of pieces
-#: includes/class-form.php:751
+#: includes/class-form.php:764
 #, php-format
 msgid "Selected: %1$s products, %2$s pcs."
 msgstr "Избрани: %1$s артикула, %2$s бр."
@@ -788,7 +788,7 @@ msgstr "Изпрати пак"
 msgid "Send attempts"
 msgstr "Опити за изпращане"
 
-#: includes/class-form.php:748
+#: includes/class-form.php:761
 msgid "Sending…"
 msgstr "Изпращане…"
 
@@ -934,7 +934,7 @@ msgstr "Съществуващото съдържание се запазва. �
 msgid "The form inherits the theme font. The accent colour is used only for primary buttons, focus rings, checkboxes, links and the active step; button text colour is chosen automatically for contrast."
 msgstr "Формата наследява шрифта на темата. Акцентният цвят се ползва само за основните бутони, фокуса на полетата, отметките, линковете и активния етап; цветът на текста върху бутона се избира автоматично за контраст."
 
-#: includes/class-form.php:408
+#: includes/class-form.php:421
 msgid "The name is too long."
 msgstr "Името е твърде дълго."
 
@@ -956,11 +956,11 @@ msgstr "Страницата %1$s (%2$s) използва адреса, нуже
 msgid "The page could not be updated. Add [wpotkaz] to the page manually and select it in the settings."
 msgstr "Страницата не можа да бъде обновена. Добавете [wpotkaz] ръчно в страницата и я изберете в настройките."
 
-#: includes/class-form.php:401
+#: includes/class-form.php:414
 msgid "The page was open for too long. Please review the details and confirm again."
 msgstr "Страницата е била отворена твърде дълго. Моля, прегледайте данните и потвърдете отново."
 
-#: includes/class-form.php:297
+#: includes/class-form.php:307
 msgid "The page was open for too long. Please submit the form again."
 msgstr "Страницата е била отворена твърде дълго. Моля, изпратете формата отново."
 
@@ -987,8 +987,8 @@ msgstr "Страницата с формата за отказ липсва ил
 msgid "The withdrawal form page is set up. Check it and add the link to your footer."
 msgstr "Страницата с формата за отказ е настроена. Прегледайте я и добавете линка във футъра."
 
-#: includes/class-form.php:349
-#: includes/class-form.php:545
+#: includes/class-form.php:359
+#: includes/class-form.php:558
 msgid "This link is invalid or has expired. Please find your order using its number and email."
 msgstr "Линкът е невалиден или е изтекъл. Моля, намерете поръчката си по номер и имейл."
 
@@ -1002,7 +1002,7 @@ msgstr "Този продукт е маркиран без право на от�
 msgid "To"
 msgstr "До"
 
-#: includes/class-form.php:286
+#: includes/class-form.php:293
 msgid "Too many unsuccessful attempts. Please try again in 15 minutes or contact us."
 msgstr "Твърде много неуспешни опити. Моля, опитайте отново след 15 минути или се свържете с нас."
 
@@ -1049,7 +1049,7 @@ msgstr "WPOtkaz: вече има страница „Отказ от догов�
 msgid "We confirm that we received your statement of withdrawal from the contract on %1$s at %2$s. Its content is below."
 msgstr "Потвърждаваме, че получихме Вашето изявление за отказ от договора на %1$s в %2$s. Съдържанието му е по-долу."
 
-#: includes/class-form.php:267
+#: includes/class-form.php:274
 msgid "We could not find an order with these details. Check the order number and use the email address the order was placed with."
 msgstr "Не открихме поръчка с тези данни. Проверете номера на поръчката и използвайте имейла, с който е направена."
 
@@ -1240,11 +1240,11 @@ msgstr "Вашите поръчки"
 msgid "Your withdrawal could not be saved due to a technical error. Please try again or contact us by email."
 msgstr "Отказът не можа да бъде записан поради техническа грешка. Моля, опитайте отново или ни пишете по имейл."
 
-#: includes/class-form.php:397
+#: includes/class-form.php:407
 msgid "Your withdrawal could not be submitted. Please try again."
 msgstr "Отказът не можа да бъде подаден. Моля, опитайте отново."
 
-#: includes/class-form.php:524
+#: includes/class-form.php:537
 msgid "Your withdrawal has already been submitted. The confirmation was sent to your email."
 msgstr "Отказът Ви вече е подаден. Потвърждението е изпратено на имейла Ви."
 

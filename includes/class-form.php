@@ -185,7 +185,14 @@ class Form {
 				header( 'X-Robots-Tag: noindex, nofollow' );
 			}
 		}
+		// Cache plugins that do not honour DONOTCACHEPAGE / no-store.
 		do_action( 'litespeed_control_set_nocache', 'wpotkaz form' );
+		add_filter( 'flying_press_is_cacheable', '__return_false', 999 );
+		add_filter( 'rocket_override_donotcachepage', '__return_false', 999 );
+		/**
+		 * Fires when the form page is excluded from caching (hook up other cache plugins here).
+		 */
+		do_action( 'py_otkaz_no_cache' );
 	}
 
 	/**
@@ -293,7 +300,10 @@ class Form {
 		}
 		// phpcs:ignore WordPress.Security.NonceVerification.Missing
 		$nonce = isset( $_POST['_py_otkaz_nonce'] ) ? sanitize_key( wp_unslash( $_POST['_py_otkaz_nonce'] ) ) : '';
-		if ( ! wp_verify_nonce( $nonce, 'py_otkaz_lookup' ) ) {
+		// Guests: no nonce. Page caches that ignore DONOTCACHEPAGE would otherwise serve a
+		// stale nonce and block every lookup (= obstructing the withdrawal). A cross-site
+		// lookup changes nothing; rate limiting + honeypot protect against enumeration.
+		if ( is_user_logged_in() && ! wp_verify_nonce( $nonce, 'py_otkaz_lookup' ) ) {
 			self::error( __( 'The page was open for too long. Please submit the form again.', 'wpotkaz' ) );
 			return;
 		}
@@ -397,7 +407,10 @@ class Form {
 			self::error( __( 'Your withdrawal could not be submitted. Please try again.', 'wpotkaz' ) );
 			return;
 		}
-		if ( ! wp_verify_nonce( $nonce, 'py_otkaz_submit_' . $order->get_id() ) ) {
+		// The secret order key already proves the request comes from the order email / page,
+		// so it doubles as CSRF protection; the nonce is required only for owner access.
+		$has_key = '' !== $key && hash_equals( (string) $order->get_order_key(), $key );
+		if ( ! $has_key && ! wp_verify_nonce( $nonce, 'py_otkaz_submit_' . $order->get_id() ) ) {
 			self::error( __( 'The page was open for too long. Please review the details and confirm again.', 'wpotkaz' ) );
 			return;
 		}
