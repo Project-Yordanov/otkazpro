@@ -2,9 +2,9 @@
 # This file is distributed under the GPL-2.0-or-later.
 msgid ""
 msgstr ""
-"Project-Id-Version: WPOtkaz 1.1.1\n"
+"Project-Id-Version: WPOtkaz 1.2.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-12 12:19+0000\n"
+"POT-Creation-Date: 2026-10-12 14:20+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -21,7 +21,7 @@ msgid "%1$d of %2$d"
 msgstr ""
 
 #. translators: 1: plugin name, 2: version, 3: agency name with link
-#: includes/class-admin.php:495
+#: includes/class-admin.php:514
 #, php-format
 msgid "%1$s %2$s · developed by %3$s"
 msgstr ""
@@ -60,6 +60,12 @@ msgstr ""
 msgid "%1$s – %2$d of %3$d"
 msgstr ""
 
+#. translators: %s: date and time
+#: includes/class-settings.php:279
+#, php-format
+msgid "(last check: %s)"
+msgstr ""
+
 #. translators: %s: order date
 #: templates/emails/parts/otkaz-details.php:39
 #, php-format
@@ -84,15 +90,15 @@ msgstr ""
 msgid "A withdrawal has already been submitted for all eligible products in this order. The confirmations were sent to your email."
 msgstr ""
 
-#: includes/class-settings.php:460
+#: includes/class-settings.php:511
 msgid "Accent colour"
 msgstr ""
 
-#: includes/class-settings.php:238
+#: includes/class-settings.php:240
 msgid "Add this link to the footer / menu with the text “Withdraw from the contract here”. Customers can use it without logging in."
 msgstr ""
 
-#: includes/class-settings.php:407
+#: includes/class-settings.php:458
 msgid "Adds a “Withdraw from the contract here” link (works without login) to these customer emails."
 msgstr ""
 
@@ -114,7 +120,7 @@ msgstr ""
 msgid "Already refunded: %d pcs."
 msgstr ""
 
-#: includes/class-settings.php:506
+#: includes/class-settings.php:557
 msgid "Also delete all withdrawal records when the plugin is deleted. Off = records are kept as evidence."
 msgstr ""
 
@@ -132,7 +138,7 @@ msgstr ""
 msgid "Any email status"
 msgstr ""
 
-#: includes/class-settings.php:454
+#: includes/class-settings.php:505
 msgid "Appearance"
 msgstr ""
 
@@ -144,23 +150,32 @@ msgstr ""
 msgid "By clicking the button you send a statement of withdrawal from the contract for the selected products. You will receive a confirmation with the date and time of submission by email."
 msgstr ""
 
+#: includes/class-settings.php:265
+msgid "Cached"
+msgstr ""
+
+#: includes/class-admin.php:398
+#: includes/class-settings.php:285
+msgid "Check cache now"
+msgstr ""
+
 #: templates/form-lookup.php:50
 msgid "Choose"
 msgstr ""
 
-#: includes/class-settings.php:240
+#: includes/class-settings.php:242
 msgid "Choose the page that contains the [wpotkaz] shortcode."
 msgstr ""
 
-#: includes/class-settings.php:397
+#: includes/class-settings.php:448
 msgid "Comma-separated. Receives the “New withdrawal” notification."
 msgstr ""
 
-#: includes/class-settings.php:259
+#: includes/class-settings.php:304
 msgid "Completed order"
 msgstr ""
 
-#: includes/class-settings.php:81
+#: includes/class-settings.php:82
 msgid "Confirm withdrawal"
 msgstr ""
 
@@ -169,7 +184,7 @@ msgstr ""
 msgid "Confirmation"
 msgstr ""
 
-#: includes/class-settings.php:345
+#: includes/class-settings.php:396
 msgid "Confirmation button"
 msgstr ""
 
@@ -181,12 +196,16 @@ msgstr ""
 msgid "Confirmation sent (UTC)"
 msgstr ""
 
-#: includes/class-settings.php:467
+#: includes/class-settings.php:518
 msgid "Corner radius"
 msgstr ""
 
-#: includes/class-admin.php:430
+#: includes/class-admin.php:449
 msgid "Create a separate page"
+msgstr ""
+
+#: includes/class-settings.php:266
+msgid "Critical"
 msgstr ""
 
 #: includes/class-admin-list-table.php:67
@@ -202,7 +221,11 @@ msgstr ""
 msgid "Customer confirmation"
 msgstr ""
 
-#: includes/class-settings.php:485
+#: includes/class-cache-check.php:365
+msgid "Customer order pages of the withdrawal form are cached"
+msgstr ""
+
+#: includes/class-settings.php:536
 msgid "Data retention"
 msgstr ""
 
@@ -218,12 +241,12 @@ msgstr ""
 msgid "Deadline"
 msgstr ""
 
-#: includes/class-settings.php:502
+#: includes/class-settings.php:553
 msgid "Delete data on uninstall"
 msgstr ""
 
 #. translators: %s: agency name with link
-#: includes/class-admin.php:469
+#: includes/class-admin.php:488
 #, php-format
 msgid "Developed by %s"
 msgstr ""
@@ -240,11 +263,11 @@ msgstr ""
 msgid "Done"
 msgstr ""
 
-#: includes/class-admin.php:431
+#: includes/class-admin.php:450
 msgid "Edit the page manually"
 msgstr ""
 
-#: includes/class-settings.php:289
+#: includes/class-settings.php:340
 msgid "Eligible order statuses"
 msgstr ""
 
@@ -269,7 +292,7 @@ msgstr ""
 msgid "Email used for the order"
 msgstr ""
 
-#: includes/class-settings.php:382
+#: includes/class-settings.php:433
 msgid "Emails"
 msgstr ""
 
@@ -279,17 +302,23 @@ msgstr ""
 msgid "Enter a quantity between 1 and %2$d for “%1$s”."
 msgstr ""
 
-#: includes/class-form.php:315
-#: includes/class-form.php:424
+#: includes/class-form.php:330
+#: includes/class-form.php:439
 msgid "Enter a valid email address, e.g. name@example.com."
 msgstr ""
 
-#: includes/class-form.php:312
+#: includes/class-form.php:327
 msgid "Enter the order number."
 msgstr ""
 
-#: includes/class-form.php:419
+#: includes/class-form.php:434
 msgid "Enter your name."
+msgstr ""
+
+#. translators: 1: cache names, 2: page path
+#: includes/class-cache-check.php:301
+#, php-format
+msgid "Exclude %2$s and everything after it from caching in %1$s (for Cloudflare: a Cache Rule “Bypass cache” for this path), purge the cache and run the check again."
 msgstr ""
 
 #: includes/class-exclusions.php:78
@@ -333,11 +362,11 @@ msgstr ""
 msgid "Find your order"
 msgstr ""
 
-#: includes/class-settings.php:283
+#: includes/class-settings.php:328
 msgid "Form URL"
 msgstr ""
 
-#: includes/class-settings.php:273
+#: includes/class-settings.php:318
 msgid "Form page"
 msgstr ""
 
@@ -345,7 +374,7 @@ msgstr ""
 msgid "From"
 msgstr ""
 
-#: includes/class-settings.php:267
+#: includes/class-settings.php:312
 msgid "General"
 msgstr ""
 
@@ -370,7 +399,7 @@ msgstr ""
 msgid "How to return the goods"
 msgstr ""
 
-#: includes/class-settings.php:82
+#: includes/class-settings.php:83
 msgid "I hereby give notice that I withdraw from the contract for the following goods: {items}, order No. {order_number}, submitted on {date} at {time}."
 msgstr ""
 
@@ -397,7 +426,7 @@ msgid "Indicative deadline"
 msgstr ""
 
 #. translators: %s: date
-#: includes/class-admin.php:612
+#: includes/class-admin.php:631
 #, php-format
 msgid "Indicative deadline: %s"
 msgstr ""
@@ -406,11 +435,11 @@ msgstr ""
 msgid "Inherit from category"
 msgstr ""
 
-#: includes/class-settings.php:331
+#: includes/class-settings.php:382
 msgid "Intro text"
 msgstr ""
 
-#: includes/class-settings.php:490
+#: includes/class-settings.php:541
 msgid "Keep records (years)"
 msgstr ""
 
@@ -432,23 +461,27 @@ msgstr ""
 msgid "Link from email"
 msgstr ""
 
-#: includes/class-settings.php:400
+#: includes/class-settings.php:451
 msgid "Link in order emails"
+msgstr ""
+
+#: includes/class-settings.php:286
+msgid "Loads the form page twice as an anonymous visitor. Runs automatically daily and after updates."
 msgstr ""
 
 #: includes/class-exclusions.php:63
 msgid "Made to the consumer’s specifications or personalised"
 msgstr ""
 
-#: includes/class-settings.php:418
+#: includes/class-settings.php:469
 msgid "Mark products in the product / variation / category edit screens. Do not mark goods that lose the right only once unsealed (hygiene, cosmetics, sealed media)."
 msgstr ""
 
-#: includes/class-settings.php:422
+#: includes/class-settings.php:473
 msgid "Mode"
 msgstr ""
 
-#: includes/class-settings.php:315
+#: includes/class-settings.php:366
 msgid "Move the order to a custom “Withdrawal requested” status after each submission."
 msgstr ""
 
@@ -499,6 +532,10 @@ msgstr ""
 msgid "No withdrawals yet."
 msgstr ""
 
+#: includes/class-settings.php:267
+msgid "Not checked"
+msgstr ""
+
 #: templates/form-order.php:176
 msgid "Not required. Your withdrawal is valid without a reason."
 msgstr ""
@@ -513,11 +550,15 @@ msgstr ""
 msgid "Number"
 msgstr ""
 
-#: includes/class-settings.php:316
+#: includes/class-settings.php:264
+msgid "OK"
+msgstr ""
+
+#: includes/class-settings.php:367
 msgid "Off by default: changing the status may interfere with invoicing, ERP or courier integrations that depend on order status."
 msgstr ""
 
-#: includes/class-settings.php:373
+#: includes/class-settings.php:424
 msgid "Off by default: the law does not provide for asking a reason. Enable only after legal review."
 msgstr ""
 
@@ -525,16 +566,20 @@ msgstr ""
 msgid "One of the selected products is not part of this order."
 msgstr ""
 
-#: includes/class-settings.php:438
+#: includes/class-settings.php:489
 msgid "One per line. An order item with a non-empty value for any of these meta keys (e.g. engraving text from an add-ons plugin) is treated as personalised."
 msgstr ""
 
-#: includes/class-settings.php:269
+#: includes/class-settings.php:314
 msgid "Online withdrawal function under Art. 52a of the Consumer Protection Act. The function stays available for eligible orders at all times – the 14-day deadline is shown only to you in the admin."
 msgstr ""
 
 #: includes/class-exclusions.php:267
 msgid "Only for “Other”. Shown to the customer."
+msgstr ""
+
+#: includes/class-cache-check.php:375
+msgid "Open WPOtkaz settings"
 msgstr ""
 
 #: includes/class-admin.php:367
@@ -546,7 +591,7 @@ msgstr ""
 msgid "Open the order"
 msgstr ""
 
-#: includes/class-settings.php:368
+#: includes/class-settings.php:419
 msgid "Optional “Reason” field"
 msgstr ""
 
@@ -578,7 +623,7 @@ msgstr ""
 msgid "Order ID"
 msgstr ""
 
-#: includes/class-settings.php:261
+#: includes/class-settings.php:306
 msgid "Order details / invoice"
 msgstr ""
 
@@ -591,7 +636,7 @@ msgstr ""
 msgid "Order number + email"
 msgstr ""
 
-#: includes/class-settings.php:260
+#: includes/class-settings.php:305
 msgid "Order on-hold"
 msgstr ""
 
@@ -601,7 +646,7 @@ msgctxt "Order status"
 msgid "Withdrawal requested"
 msgstr ""
 
-#: includes/class-settings.php:296
+#: includes/class-settings.php:347
 msgid "Orders in these statuses can be withdrawn from. Do not add cancelled, refunded, failed or pending payment."
 msgstr ""
 
@@ -609,8 +654,16 @@ msgstr ""
 msgid "Other (specify)"
 msgstr ""
 
-#: includes/class-settings.php:279
+#: includes/class-settings.php:334
+msgid "Page cache check"
+msgstr ""
+
+#: includes/class-settings.php:324
 msgid "Page containing the [wpotkaz] shortcode. Created automatically on activation."
+msgstr ""
+
+#: includes/class-cache-check.php:307
+msgid "Pages with a query string are served from cache: a customer’s order page could be shown to other visitors."
 msgstr ""
 
 #: includes/class-admin.php:203
@@ -622,11 +675,11 @@ msgstr ""
 msgid "Period not started (order not completed)"
 msgstr ""
 
-#: includes/class-settings.php:433
+#: includes/class-settings.php:484
 msgid "Personalisation meta keys"
 msgstr ""
 
-#: includes/class-settings.php:474
+#: includes/class-settings.php:525
 msgid "Pill buttons"
 msgstr ""
 
@@ -636,7 +689,7 @@ msgstr ""
 msgid "Placed on %s"
 msgstr ""
 
-#: includes/class-settings.php:357
+#: includes/class-settings.php:408
 msgid "Placeholders: {items}, {order_number}, {order_date}, {date}, {time}, {name}, {email}, {site_title}."
 msgstr ""
 
@@ -656,7 +709,7 @@ msgstr ""
 msgid "Print"
 msgstr ""
 
-#: includes/class-settings.php:258
+#: includes/class-settings.php:303
 msgid "Processing order"
 msgstr ""
 
@@ -672,7 +725,7 @@ msgstr ""
 msgid "Products"
 msgstr ""
 
-#: includes/class-settings.php:416
+#: includes/class-settings.php:467
 #: templates/form-order.php:151
 msgid "Products without right of withdrawal"
 msgstr ""
@@ -722,7 +775,7 @@ msgstr ""
 msgid "Reason text (for “Other”)"
 msgstr ""
 
-#: includes/class-admin.php:614
+#: includes/class-admin.php:633
 msgid "Refund and restock manually; the plugin does not change payments or stock."
 msgstr ""
 
@@ -734,7 +787,7 @@ msgstr ""
 msgid "Resend"
 msgstr ""
 
-#: includes/class-settings.php:360
+#: includes/class-settings.php:411
 msgid "Return instructions"
 msgstr ""
 
@@ -745,7 +798,7 @@ msgstr ""
 msgid "Right of withdrawal"
 msgstr ""
 
-#: includes/class-settings.php:473
+#: includes/class-settings.php:524
 msgid "Rounded (8px)"
 msgstr ""
 
@@ -765,7 +818,7 @@ msgstr ""
 msgid "Select all"
 msgstr ""
 
-#: includes/class-form.php:762
+#: includes/class-form.php:778
 msgid "Select at least one product to continue."
 msgstr ""
 
@@ -774,7 +827,7 @@ msgid "Select at least one product."
 msgstr ""
 
 #. translators: 1: number of products, 2: number of pieces
-#: includes/class-form.php:764
+#: includes/class-form.php:780
 #, php-format
 msgid "Selected: %1$s products, %2$s pcs."
 msgstr ""
@@ -787,7 +840,7 @@ msgstr ""
 msgid "Send attempts"
 msgstr ""
 
-#: includes/class-form.php:761
+#: includes/class-form.php:777
 msgid "Sending…"
 msgstr ""
 
@@ -805,27 +858,27 @@ msgid "Sent to the store when a customer submits a withdrawal statement. Recipie
 msgstr ""
 
 #: includes/class-admin.php:85
-#: includes/class-plugin.php:84
+#: includes/class-plugin.php:85
 msgid "Settings"
 msgstr ""
 
-#: includes/class-settings.php:471
+#: includes/class-settings.php:522
 msgid "Sharp (0)"
 msgstr ""
 
-#: includes/class-settings.php:372
+#: includes/class-settings.php:423
 msgid "Show an optional free-text reason field (never required)."
 msgstr ""
 
-#: includes/class-settings.php:445
+#: includes/class-settings.php:496
 msgid "Show “No right of withdrawal” on the product page and next to the item in cart / checkout."
 msgstr ""
 
-#: includes/class-settings.php:472
+#: includes/class-settings.php:523
 msgid "Slight (4px)"
 msgstr ""
 
-#: includes/class-settings.php:427
+#: includes/class-settings.php:478
 msgid "Soft – selectable with a warning, flagged for you"
 msgstr ""
 
@@ -834,7 +887,7 @@ msgstr ""
 msgid "Source"
 msgstr ""
 
-#: includes/class-settings.php:338
+#: includes/class-settings.php:389
 msgid "Start button"
 msgstr ""
 
@@ -846,7 +899,7 @@ msgstr ""
 msgid "Statement number"
 msgstr ""
 
-#: includes/class-settings.php:352
+#: includes/class-settings.php:403
 msgid "Statement template"
 msgstr ""
 
@@ -861,20 +914,20 @@ msgstr ""
 msgid "Store notification"
 msgstr ""
 
-#: includes/class-settings.php:392
+#: includes/class-settings.php:443
 msgid "Store notification email(s)"
 msgstr ""
 
-#: includes/class-settings.php:441
+#: includes/class-settings.php:492
 msgid "Storefront label"
 msgstr ""
 
-#: includes/class-settings.php:428
+#: includes/class-settings.php:479
 msgid "Strict – cannot be selected"
 msgstr ""
 
 #. translators: %s: link to WooCommerce emails settings
-#: includes/class-settings.php:386
+#: includes/class-settings.php:437
 #, php-format
 msgid "Subjects, headings and design of the two emails are edited in %s."
 msgstr ""
@@ -908,8 +961,16 @@ msgstr ""
 msgid "Text of the statement"
 msgstr ""
 
-#: includes/class-settings.php:325
+#: includes/class-settings.php:376
 msgid "Texts"
+msgstr ""
+
+#: includes/class-cache-check.php:292
+msgid "The cache check has not run yet."
+msgstr ""
+
+#: includes/class-cache-check.php:313
+msgid "The check could not be completed:"
 msgstr ""
 
 #: templates/emails/admin-new-otkaz.php:53
@@ -921,19 +982,41 @@ msgstr ""
 msgid "The confirmation was sent to the customer."
 msgstr ""
 
-#: includes/class-admin.php:380
+#: includes/class-admin.php:384
 msgid "The email could not be sent. Check your SMTP settings and WooCommerce → Status → Logs (source “wpotkaz”)."
 msgstr ""
 
-#: includes/class-admin.php:433
+#: includes/class-admin.php:452
 msgid "The existing content is kept. If the page contains an old returns form (Contact Form 7, WPForms, Forminator), remove it afterwards so customers see only one form. A complaints form stays separate."
 msgstr ""
 
-#: includes/class-settings.php:456
+#: includes/class-settings.php:507
 msgid "The form inherits the theme font. The accent colour is used only for primary buttons, focus rings, checkboxes, links and the active step; button text colour is chosen automatically for contrast."
 msgstr ""
 
-#: includes/class-form.php:421
+#: includes/class-cache-check.php:90
+msgid "The form page is missing or not published."
+msgstr ""
+
+#: includes/class-cache-check.php:311
+msgid "The form page is not cached."
+msgstr ""
+
+#: includes/class-cache-check.php:309
+msgid "The form page is served from cache. The form keeps working, but excluding it is recommended."
+msgstr ""
+
+#. translators: %d: HTTP status code
+#: includes/class-cache-check.php:148
+#, php-format
+msgid "The form page returned HTTP %d to the check (firewall or bot protection?)."
+msgstr ""
+
+#: includes/class-cache-check.php:155
+msgid "The form was not found on the page (is the shortcode on the selected page?)."
+msgstr ""
+
+#: includes/class-form.php:436
 msgid "The name is too long."
 msgstr ""
 
@@ -946,20 +1029,20 @@ msgid "The order was not completed when the statement was submitted."
 msgstr ""
 
 #. translators: 1: page title with link, 2: page status
-#: includes/class-admin.php:421
+#: includes/class-admin.php:440
 #, php-format
 msgid "The page %1$s (%2$s) uses the address that WPOtkaz needs, so no new page was created and nothing was changed. Choose how to continue:"
 msgstr ""
 
-#: includes/class-admin.php:378
+#: includes/class-admin.php:382
 msgid "The page could not be updated. Add [wpotkaz] to the page manually and select it in the settings."
 msgstr ""
 
-#: includes/class-form.php:414
+#: includes/class-form.php:429
 msgid "The page was open for too long. Please review the details and confirm again."
 msgstr ""
 
-#: includes/class-form.php:307
+#: includes/class-form.php:322
 msgid "The page was open for too long. Please submit the form again."
 msgstr ""
 
@@ -978,16 +1061,24 @@ msgstr ""
 msgid "The statement includes products marked as having no right of withdrawal. Review the request and reply to the customer."
 msgstr ""
 
-#: includes/class-admin.php:394
+#: includes/class-cache-check.php:364
+msgid "The withdrawal form page is cached or could not be checked"
+msgstr ""
+
+#: includes/class-admin.php:413
 msgid "The withdrawal form page is missing or not published. Customers cannot exercise their right of withdrawal online."
 msgstr ""
 
-#: includes/class-admin.php:376
+#: includes/class-cache-check.php:363
+msgid "The withdrawal form page is not cached"
+msgstr ""
+
+#: includes/class-admin.php:380
 msgid "The withdrawal form page is set up. Check it and add the link to your footer."
 msgstr ""
 
-#: includes/class-form.php:359
-#: includes/class-form.php:558
+#: includes/class-form.php:374
+#: includes/class-form.php:573
 msgid "This link is invalid or has expired. Please find your order using its number and email."
 msgstr ""
 
@@ -1001,7 +1092,7 @@ msgstr ""
 msgid "To"
 msgstr ""
 
-#: includes/class-form.php:293
+#: includes/class-form.php:308
 msgid "Too many unsuccessful attempts. Please try again in 15 minutes or contact us."
 msgstr ""
 
@@ -1009,11 +1100,11 @@ msgstr ""
 msgid "Total quantity"
 msgstr ""
 
-#: includes/class-admin.php:429
+#: includes/class-admin.php:448
 msgid "Use this page – add the form at the end"
 msgstr ""
 
-#: includes/class-settings.php:308
+#: includes/class-settings.php:359
 msgid "Used only for the admin “in time / late” indicator (counted from the completed date). The form never closes automatically."
 msgstr ""
 
@@ -1037,8 +1128,16 @@ msgstr ""
 msgid "WPOtkaz requires WooCommerce %s or newer to be installed and active."
 msgstr ""
 
-#: includes/class-admin.php:415
+#: includes/class-admin.php:395
+msgid "WPOtkaz:"
+msgstr ""
+
+#: includes/class-admin.php:434
 msgid "WPOtkaz: a page “Withdrawal from contract” already exists"
+msgstr ""
+
+#: includes/class-cache-check.php:347
+msgid "WPOtkaz: withdrawal form is not cached"
 msgstr ""
 
 #. translators: 1: date, 2: time
@@ -1048,7 +1147,7 @@ msgstr ""
 msgid "We confirm that we received your statement of withdrawal from the contract on %1$s at %2$s. Its content is below."
 msgstr ""
 
-#: includes/class-form.php:274
+#: includes/class-form.php:289
 msgid "We could not find an order with these details. Check the order number and use the email address the order was placed with."
 msgstr ""
 
@@ -1070,11 +1169,11 @@ msgstr ""
 msgid "When you withdraw from a contract through our online form, we process your name, email address, order number, the selected products, the date and time of submission, your IP address and browser user agent. We use this data to process your withdrawal, to send you a confirmation on a durable medium and as evidence of the submission (legal obligation and legitimate interest, Art. 6(1)(c) and (f) GDPR)."
 msgstr ""
 
-#: includes/class-settings.php:365
+#: includes/class-settings.php:416
 msgid "Where and how to return the goods. Shown on the success screen and in the confirmation email. Basic HTML allowed."
 msgstr ""
 
-#: includes/class-settings.php:327
+#: includes/class-settings.php:378
 msgid "With WPML / Polylang these texts can be translated in String Translation (domain “wpotkaz”). Keep the legally required wording of the two buttons."
 msgstr ""
 
@@ -1084,14 +1183,14 @@ msgstr ""
 msgid "Withdraw from the contract for order #%s"
 msgstr ""
 
-#: includes/class-settings.php:80
+#: includes/class-settings.php:81
 msgid "Withdraw from the contract here"
 msgstr ""
 
-#: includes/class-admin.php:530
-#: includes/class-admin.php:534
-#: includes/class-admin.php:566
-#: includes/class-settings.php:180
+#: includes/class-admin.php:549
+#: includes/class-admin.php:553
+#: includes/class-admin.php:585
+#: includes/class-settings.php:181
 msgid "Withdrawal"
 msgstr ""
 
@@ -1128,8 +1227,8 @@ msgid "Withdrawal confirmation %1$s resent to %2$s."
 msgstr ""
 
 #: includes/class-account.php:65
-#: includes/class-admin.php:589
-#: includes/class-install.php:163
+#: includes/class-admin.php:608
+#: includes/class-install.php:171
 msgid "Withdrawal from contract"
 msgstr ""
 
@@ -1137,11 +1236,11 @@ msgstr ""
 msgid "Withdrawal not found."
 msgstr ""
 
-#: includes/class-settings.php:299
+#: includes/class-settings.php:350
 msgid "Withdrawal period (days)"
 msgstr ""
 
-#: includes/class-settings.php:499
+#: includes/class-settings.php:550
 msgid "Withdrawal records (incl. IP and user agent as evidence) older than this are deleted automatically. 0 = keep forever."
 msgstr ""
 
@@ -1172,13 +1271,13 @@ msgid "Withdrawal submitted on %2$s for %1$d pcs. (%3$s)"
 msgstr ""
 
 #. translators: %d: count
-#: includes/class-admin.php:565
+#: includes/class-admin.php:584
 #, php-format
 msgid "Withdrawal ×%d"
 msgstr ""
 
 #: includes/class-admin.php:58
-#: includes/class-plugin.php:85
+#: includes/class-plugin.php:86
 msgid "Withdrawals"
 msgstr ""
 
@@ -1189,7 +1288,7 @@ msgstr ""
 msgid "Withdrawals from contract"
 msgstr ""
 
-#: includes/class-settings.php:387
+#: includes/class-settings.php:438
 msgid "WooCommerce → Settings → Emails"
 msgstr ""
 
@@ -1197,7 +1296,7 @@ msgstr ""
 msgid "Yes"
 msgstr ""
 
-#: includes/class-settings.php:79
+#: includes/class-settings.php:80
 msgid "You can withdraw from a distance contract within 14 days without giving any reason. Find your order, choose the products and confirm – you will receive a confirmation by email straight away."
 msgstr ""
 
@@ -1211,7 +1310,8 @@ msgstr ""
 
 #: includes/class-admin.php:251
 #: includes/class-admin.php:273
-#: includes/class-admin.php:444
+#: includes/class-admin.php:463
+#: includes/class-cache-check.php:323
 msgid "You do not have permission to do this."
 msgstr ""
 
@@ -1239,11 +1339,11 @@ msgstr ""
 msgid "Your withdrawal could not be saved due to a technical error. Please try again or contact us by email."
 msgstr ""
 
-#: includes/class-form.php:407
+#: includes/class-form.php:422
 msgid "Your withdrawal could not be submitted. Please try again."
 msgstr ""
 
-#: includes/class-form.php:537
+#: includes/class-form.php:552
 msgid "Your withdrawal has already been submitted. The confirmation was sent to your email."
 msgstr ""
 
@@ -1257,6 +1357,10 @@ msgstr ""
 
 #: includes/emails/class-admin-notification.php:40
 msgid "[{site_title}] New withdrawal {otkaz_number} – order #{order_number}"
+msgstr ""
+
+#: includes/class-cache-check.php:294
+msgid "a page cache (plugin, hosting or CDN)"
 msgstr ""
 
 #. translators: %s: deadline date
@@ -1278,6 +1382,6 @@ msgstr ""
 msgid "“%s” is not eligible for withdrawal."
 msgstr ""
 
-#: includes/class-settings.php:311
+#: includes/class-settings.php:362
 msgid "“Withdrawal requested” status"
 msgstr ""

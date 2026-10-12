@@ -58,6 +58,7 @@ final class Plugin {
 		Emails::init();
 		Account::init();
 		Privacy::init();
+		Cache_Check::init();
 		Updater::init();
 
 		if ( is_admin() ) {

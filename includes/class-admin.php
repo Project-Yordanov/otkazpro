@@ -372,12 +372,31 @@ class Admin {
 		$msg = isset( $_GET['py_otkaz_msg'] ) ? sanitize_key( wp_unslash( $_GET['py_otkaz_msg'] ) ) : '';
 		if ( 'resent' === $msg ) {
 			echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__( 'The confirmation was sent to the customer.', 'wpotkaz' ) . '</p></div>';
+		} elseif ( 'cache_checked' === $msg ) {
+			$level = Cache_Check::level( Cache_Check::result() );
+			$class = 'good' === $level ? 'notice-success' : ( 'critical' === $level ? 'notice-error' : 'notice-warning' );
+			echo '<div class="notice ' . esc_attr( $class ) . ' is-dismissible"><p>' . wp_kses_post( Cache_Check::describe( Cache_Check::result() ) ) . '</p></div>';
 		} elseif ( 'page_ok' === $msg ) {
 			echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__( 'The withdrawal form page is set up. Check it and add the link to your footer.', 'wpotkaz' ) . '</p></div>';
 		} elseif ( 'page_failed' === $msg ) {
 			echo '<div class="notice notice-error is-dismissible"><p>' . esc_html__( 'The page could not be updated. Add [wpotkaz] to the page manually and select it in the settings.', 'wpotkaz' ) . '</p></div>';
 		} elseif ( 'resend_failed' === $msg ) {
 			echo '<div class="notice notice-error is-dismissible"><p>' . esc_html__( 'The email could not be sent. Check your SMTP settings and WooCommerce → Status → Logs (source “wpotkaz”).', 'wpotkaz' ) . '</p></div>';
+		}
+
+		// Cache self-check: critical everywhere, "cached" only on WPOtkaz screens.
+		$cache_level = Cache_Check::level( Cache_Check::result() );
+		$cache_scr   = function_exists( 'get_current_screen' ) ? get_current_screen() : null;
+		$on_ours     = $cache_scr && ( 'woocommerce_page_' . self::PAGE === $cache_scr->id || 'woocommerce_page_wc-settings' === $cache_scr->id );
+		if ( 'cache_checked' !== $msg && current_user_can( self::CAP ) && ( 'critical' === $cache_level || ( 'recommended' === $cache_level && $on_ours ) ) ) {
+			printf(
+				'<div class="notice %1$s"><p><strong>%2$s</strong> %3$s</p><p><a class="button" href="%4$s">%5$s</a></p></div>',
+				'critical' === $cache_level ? 'notice-error' : 'notice-warning',
+				esc_html__( 'WPOtkaz:', 'wpotkaz' ),
+				wp_kses_post( Cache_Check::describe( Cache_Check::result() ) ),
+				esc_url( Cache_Check::button_url() ),
+				esc_html__( 'Check cache now', 'wpotkaz' )
+			);
 		}
 
 		$conflict = (int) get_option( Install::CONFLICT_OPTION );

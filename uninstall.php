@@ -18,6 +18,7 @@ $wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE 'py\\_otkaz\\
 $wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE '\\_transient\\_py\\_otkaz\\_%' OR option_name LIKE '\\_transient\\_timeout\\_py\\_otkaz\\_%' OR option_name LIKE '\\_site\\_transient\\_py\\_otkaz\\_%' OR option_name LIKE '\\_site\\_transient\\_timeout\\_py\\_otkaz\\_%'" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 
 wp_clear_scheduled_hook( 'py_otkaz_daily_cleanup' );
+wp_clear_scheduled_hook( 'py_otkaz_cache_check_once' );
 
 if ( $py_otkaz_delete_data ) {
 	$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}py_otkaz_submissions" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery,WordPress.DB.DirectDatabaseQuery.SchemaChange

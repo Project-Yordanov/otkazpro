@@ -39,7 +39,9 @@ class Install {
 		self::maybe_create_page();
 		self::ensure_cron();
 		update_option( self::DB_VERSION_OPTION, self::DB_VERSION, false );
+		update_option( 'py_otkaz_version', PY_OTKAZ_VERSION, false );
 		set_transient( 'py_otkaz_activated', 1, MINUTE_IN_SECONDS * 5 );
+		Cache_Check::schedule_soon();
 	}
 
 	/**
@@ -47,6 +49,7 @@ class Install {
 	 */
 	public static function deactivate() {
 		wp_clear_scheduled_hook( self::CRON_HOOK );
+		wp_clear_scheduled_hook( Cache_Check::ONCE_HOOK );
 	}
 
 	/**
@@ -56,6 +59,11 @@ class Install {
 		if ( get_option( self::DB_VERSION_OPTION ) !== self::DB_VERSION ) {
 			self::create_tables();
 			update_option( self::DB_VERSION_OPTION, self::DB_VERSION, false );
+		}
+		// After a plugin update: re-run the cache check once.
+		if ( get_option( 'py_otkaz_version' ) !== PY_OTKAZ_VERSION ) {
+			update_option( 'py_otkaz_version', PY_OTKAZ_VERSION, false );
+			Cache_Check::schedule_soon();
 		}
 	}
 

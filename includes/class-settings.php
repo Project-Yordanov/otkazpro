@@ -37,6 +37,7 @@ class Settings {
 		add_action( 'woocommerce_settings_' . self::TAB, array( __CLASS__, 'output' ) );
 		add_action( 'woocommerce_update_options_' . self::TAB, array( __CLASS__, 'save' ) );
 		add_action( 'woocommerce_admin_field_py_otkaz_info', array( __CLASS__, 'field_info' ) );
+		add_action( 'woocommerce_admin_field_py_otkaz_cache', array( __CLASS__, 'field_cache' ) );
 		add_action( 'switch_locale', array( __CLASS__, 'reset_defaults' ) );
 		add_action( 'restore_previous_locale', array( __CLASS__, 'reset_defaults' ) );
 	}
@@ -214,6 +215,7 @@ class Settings {
 
 		self::$defaults = null;
 		I18n::register_strings();
+		Cache_Check::schedule_soon();
 
 		if ( class_exists( Order_Status::class ) ) {
 			// Custom status visibility may have changed.
@@ -239,6 +241,49 @@ class Settings {
 				<?php else : ?>
 					<p class="description"><?php esc_html_e( 'Choose the page that contains the [wpotkaz] shortcode.', 'wpotkaz' ); ?></p>
 				<?php endif; ?>
+			</td>
+		</tr>
+		<?php
+	}
+
+	/**
+	 * Cache self-check status + button.
+	 *
+	 * @param array $value Field definition.
+	 */
+	public static function field_cache( $value ) {
+		$r      = Cache_Check::result();
+		$level  = Cache_Check::level( $r );
+		$colors = array(
+			'good'        => '#00691c',
+			'recommended' => '#8a4b00',
+			'critical'    => '#b32d2e',
+			'unknown'     => '#50575e',
+		);
+		$labels = array(
+			'good'        => __( 'OK', 'wpotkaz' ),
+			'recommended' => __( 'Cached', 'wpotkaz' ),
+			'critical'    => __( 'Critical', 'wpotkaz' ),
+			'unknown'     => __( 'Not checked', 'wpotkaz' ),
+		);
+		?>
+		<tr valign="top">
+			<th scope="row" class="titledesc"><?php echo esc_html( $value['title'] ); ?></th>
+			<td class="forminp">
+				<p>
+					<strong style="color:<?php echo esc_attr( $colors[ $level ] ); ?>"><?php echo esc_html( $labels[ $level ] ); ?></strong>
+					<?php if ( $r ) : ?>
+						<span class="description">
+							<?php
+							/* translators: %s: date and time */
+							echo esc_html( sprintf( __( '(last check: %s)', 'wpotkaz' ), wp_date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), (int) $r['time'] ) ) );
+							?>
+						</span>
+					<?php endif; ?>
+				</p>
+				<p class="description" style="max-width:640px"><?php echo wp_kses_post( Cache_Check::describe( $r ) ); ?></p>
+				<p><a class="button" href="<?php echo esc_url( Cache_Check::button_url() ); ?>"><?php esc_html_e( 'Check cache now', 'wpotkaz' ); ?></a></p>
+				<p class="description"><?php esc_html_e( 'Loads the form page twice as an anonymous visitor. Runs automatically daily and after updates.', 'wpotkaz' ); ?></p>
 			</td>
 		</tr>
 		<?php
@@ -283,6 +328,12 @@ class Settings {
 				'title'     => __( 'Form URL', 'wpotkaz' ),
 				'type'      => 'py_otkaz_info',
 				'id'        => 'py_otkaz_info_url',
+				'is_option' => false,
+			),
+			array(
+				'title'     => __( 'Page cache check', 'wpotkaz' ),
+				'type'      => 'py_otkaz_cache',
+				'id'        => 'py_otkaz_cache_status',
 				'is_option' => false,
 			),
 			array(

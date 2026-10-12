@@ -184,6 +184,12 @@ class Form {
 			if ( self::has_private_params() ) {
 				header( 'X-Robots-Tag: noindex, nofollow' );
 			}
+			// CDNs / reverse proxies that ignore Cache-Control for HTML.
+			header( 'CDN-Cache-Control: no-store' );
+			header( 'Cloudflare-CDN-Cache-Control: no-store' );
+			header( 'Surrogate-Control: no-store' );
+			header( 'X-Accel-Expires: 0' );
+			header( 'X-LiteSpeed-Cache-Control: no-cache' );
 		}
 		// Cache plugins that do not honour DONOTCACHEPAGE / no-store.
 		do_action( 'litespeed_control_set_nocache', 'wpotkaz form' );
@@ -234,6 +240,15 @@ class Form {
 		} elseif ( 'submit' === $action ) {
 			self::handle_submit( $can_redirect );
 		}
+	}
+
+	/**
+	 * Is this a POST request?
+	 *
+	 * @return bool
+	 */
+	private static function is_post() {
+		return isset( $_SERVER['REQUEST_METHOD'] ) && 'POST' === strtoupper( sanitize_key( wp_unslash( $_SERVER['REQUEST_METHOD'] ) ) );
 	}
 
 	/**
@@ -595,7 +610,7 @@ class Form {
 		 */
 		$args = apply_filters( 'py_otkaz_form_args', $args, $view );
 
-		return self::template( 'form-' . $view . '.php', $args );
+		return Cache_Check::marker() . self::template( 'form-' . $view . '.php', $args );
 	}
 
 	/**
@@ -631,7 +646,8 @@ class Form {
 			'intro'          => Settings::text( 'text_intro' ),
 			'start_label'    => Settings::text( 'text_start_button' ),
 			'account_orders' => $orders,
-			'rate_limited'   => Verifier::is_rate_limited(),
+			// Only in the POST response: a cached GET page must never carry one visitor's block.
+			'rate_limited'   => self::is_post() && Verifier::is_rate_limited(),
 		);
 	}
 
