@@ -3,7 +3,7 @@
  * Plugin Name:       WPOtkaz – Бутон за отказ от договор
  * Plugin URI:        https://github.com/Project-Yordanov/wpotkaz
  * Description:       Онлайн функция за отказ от договор (чл. 52а ЗЗП / Директива (ЕС) 2023/2673) за WooCommerce: бутон „Откажете се от договора тук“, двустъпкова форма, частичен отказ, потвърждение на траен носител и регистър на изявленията.
- * Version:           1.2.0
+ * Version:           1.2.1
  * Requires at least: 6.4
  * Requires PHP:      7.4
  * Requires Plugins:  woocommerce
@@ -22,7 +22,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'PY_OTKAZ_VERSION', '1.2.0' );
+define( 'PY_OTKAZ_VERSION', '1.2.1' );
 define( 'PY_OTKAZ_FILE', __FILE__ );
 define( 'PY_OTKAZ_DIR', plugin_dir_path( __FILE__ ) );
 define( 'PY_OTKAZ_URL', plugin_dir_url( __FILE__ ) );
