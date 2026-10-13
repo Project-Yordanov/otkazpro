@@ -31,7 +31,7 @@ jobs:
         run: |
           TAG="${GITHUB_REF_NAME#v}"
           HEADER=$(grep -m1 -E '^\s*\*\s*Version:' otkazpro.php | awk '{print $3}')
-          CONST=$(grep -m1 "PY_OTKAZ_VERSION'" otkazpro.php | sed -E "s/.*'([0-9.]+)'.*/\1/")
+          CONST=$(grep -m1 "define( 'PY_OTKAZ_VERSION'" otkazpro.php | sed -E "s/.*'([0-9.]+)'.*/\1/")
           STABLE=$(grep -m1 -i '^Stable tag:' readme.txt | awk '{print $3}')
           echo "tag=$TAG header=$HEADER const=$CONST stable=$STABLE"
           test "$TAG" = "$HEADER" && test "$TAG" = "$CONST" && test "$TAG" = "$STABLE"
