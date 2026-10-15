@@ -81,6 +81,10 @@ Yes – all texts (buttons, statement template, return instructions) are editabl
 
 Name, email, order, selected products, statement text, date/time, IP address and user agent – as evidence of the statement. Records are deleted automatically after the configured retention period (default 5 years).
 
+= Does the plugin connect to external services? =
+
+No. All data stays in your WordPress database and nothing is sent to third parties. The only HTTP requests the plugin makes are to your own site: the cache check loads your withdrawal form page to verify that it is not served from a page cache.
+
 == Screenshots ==
 
 1. Step 2 – the customer selects products and confirms the withdrawal.
